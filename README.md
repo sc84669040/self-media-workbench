@@ -2,6 +2,8 @@
 
 Local-first content discovery, body fetching, topic packaging, and writing workspace.
 
+中文新手说明见 [README.zh-CN.md](README.zh-CN.md).
+
 This repository is the public, deployable version of the original local project. The source project remains untouched; all runtime data and private settings are kept outside tracked files.
 
 ## Quick Start
