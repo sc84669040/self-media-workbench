@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创作工作台</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-soft: #1f2937;
+      --line: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --primary: #38bdf8;
+      --success: #22c55e;
+      --warn: #f59e0b;
+      --danger: #f87171;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      color: var(--text);
+    }
+    a { color: var(--primary); }
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 20px 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.85);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; }
+    .hero p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .hero-actions a {
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(30, 41, 59, 0.7);
+    }
+    .flow-banner {
+      display: none;
+      margin: 14px 0 20px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(14, 116, 144, 0.14);
+      color: #dbeafe;
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .card h2, .card h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .muted { color: var(--muted); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(56, 189, 248, 0.12);
+      color: #bae6fd;
+      font-size: 12px;
+    }
+    .toolbar, .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      color: #020617;
+      background: var(--primary);
+      font-weight: 700;
+    }
+    button.secondary {
+      background: #334155;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button.ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button.success { background: var(--success); }
+    button.warn { background: var(--warn); }
+    button.danger { background: var(--danger); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    input, textarea, select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+    .task-list {
+      display: grid;
+      gap: 10px;
+      max-height: 720px;
+      overflow: auto;
+    }
+    .task-item {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.78);
+      cursor: pointer;
+    }
+    .task-item.active {
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35);
+    }
+    .task-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .inline-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .subcard {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.7);
+    }
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .list-item {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(2, 6, 23, 0.55);
+    }
+    .list-item h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--text);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .status-bar {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      margin-bottom: 14px;
+      white-space: pre-wrap;
+    }
+    .activity-card {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+    }
+    .activity-feed {
+      display: grid;
+      gap: 8px;
+      max-height: 240px;
+      overflow: auto;
+    }
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(15, 23, 42, 0.55);
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+    .activity-item strong {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+    .activity-item.success { border-color: rgba(34, 197, 94, 0.35); }
+    .activity-item.error { border-color: rgba(248, 113, 113, 0.4); }
+    .activity-item.warn { border-color: rgba(245, 158, 11, 0.35); }
+    .activity-time {
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 12px;
+    }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .empty {
+      padding: 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.35);
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 13px;
+    }
+    .kv strong { color: #cbd5e1; }
+    .compact-inputs {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(120px, 160px);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .footer-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    @media (max-width: 1080px) {
+      .grid, .section-grid, .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="badge">独立页面 / 创作工作台</span>
+        <h1>创作工作台</h1>
+        <p>把任务创建、检索筛选、引用清单、大纲包、writer 输入包收在一个页面里。先把闭环跑通，再慢慢长肉。</p>
+      </div>
+      <div class="hero-actions">
+        <a href="/create/studio">进入创作前台</a>
+        <a href="/index.html">返回搜索工作台</a>
+        <a href="/create/topic">进入主题搜索页</a>
+        <a href="/create/nighthawk">进入 NightHawk 正文池</a>
+        <a href="/create/workspace">刷新当前页面</a>
+      </div>
+    </section>
+
+    <div id="status-bar" class="status-bar">就绪。先创建任务，或者从左边挑一个最近任务。</div>
+
+    <section class="card activity-card">
+      <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">当前配置</h2>
+        <div class="button-row">
+          <button id="refresh-config-btn" class="secondary" type="button">刷新配置</button>
+        </div>
+      </div>
+      <div id="config-summary" class="empty">正在读取创作台当前配置...</div>
+    </section>
+
+    <div id="entry-flow-banner" class="flow-banner"></div>
+
+    <section class="card activity-card">
+      <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">索引库状态</h2>
+        <div class="button-row">
+          <button id="sync-index-btn" type="button">同步索引</button>
+          <button id="bootstrap-index-btn" type="button">初始化索引库</button>
+          <button id="refresh-index-btn" class="secondary" type="button">刷新状态</button>
+        </div>
+      </div>
+      <div id="index-status-summary" class="empty">正在读取创作台索引库状态...</div>
+    </section>
+
+    <section class="card activity-card">
+      <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">最近动作</h2>
+        <span id="activity-hint" class="muted">空闲中</span>
+      </div>
+      <div id="activity-feed" class="activity-feed">
+        <div class="empty">还没有动作记录。你一动手，本小姐就给你记着。</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <aside class="stack">
+        <section class="card">
+          <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0;">最近任务</h2>
+            <button class="secondary" id="refresh-tasks-btn" type="button">刷新</button>
+          </div>
+          <div class="task-list" id="task-list"></div>
+        </section>
+
+        <section class="card">
+          <h2>快速载入</h2>
+          <div class="compact-inputs">
+            <input id="task-id-input" placeholder="输入 task_id，比如 CT-xxxx" />
+            <button id="load-task-btn" class="secondary" type="button">载入任务</button>
+          </div>
+          <p class="footer-note">适合你从日志里抄一个 task_id 直接跳，不用慢吞吞翻列表。</p>
+        </section>
+      </aside>
+
+      <main class="stack">
+        <section class="card">
+          <h2>新建任务</h2>
+          <form id="task-form">
+            <div class="field-grid">
+              <label>主题 topic
+                <input name="topic" required placeholder="比如：为什么编排层比单模型更值钱" />
+              </label>
+              <label>平台 platform
+                <select name="platform">
+                  <option value="wechat">wechat</option>
+                  <option value="xiaohongshu">xiaohongshu</option>
+                  <option value="x">x</option>
+                  <option value="bilibili">bilibili</option>
+                </select>
+              </label>
+              <label>目标 writer
+                <select name="preferred_writer_skill" id="preferred-writer-select">
+                  <option value="">正在读取 writer 列表...</option>
+                </select>
+              </label>
+              <label>受众 audience
+                <input name="audience" required placeholder="比如：AI 产品/运营从业者" />
+              </label>
+              <label>目标 goal
+                <input name="goal" required placeholder="比如：产出一篇可直接写作的长文任务单" />
+              </label>
+            </div>
+            <label>切入角 angle
+              <input name="angle" placeholder="比如：从流程稳定性解释创作编排层的价值" />
+            </label>
+            <label>风格要求 style_notes（每行一条）
+              <textarea name="style_notes" placeholder="先下判断&#10;少空话&#10;更像操盘手复盘"></textarea>
+            </label>
+            <label>禁区 banned_patterns（每行一条）
+              <textarea name="banned_patterns" placeholder="正确的废话&#10;为了圆而圆"></textarea>
+            </label>
+            <label>素材范围 source_scope（每行一条，可空）
+              <textarea name="source_scope" placeholder="公众号分析卡&#10;YouTube transcript&#10;B站拆解"></textarea>
+            </label>
+            <div class="button-row">
+              <button id="create-task-btn" type="submit">创建任务</button>
+              <button id="fill-demo-btn" class="ghost" type="button">填一份示例</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card" id="workspace-card">
+          <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <h2 style="margin: 0 0 8px;">当前任务</h2>
+              <div id="task-headline" class="muted">还没选任务。</div>
+            </div>
+            <div class="button-row">
+              <button id="refresh-current-btn" class="secondary" type="button">刷新当前任务</button>
+            </div>
+          </div>
+
+          <div class="section-grid">
+            <div class="subcard">
+              <h3>任务详情</h3>
+              <div id="task-detail" class="empty">先选一个任务。</div>
+            </div>
+            <div class="subcard">
+              <h3>Gate 状态</h3>
+              <div id="gate-detail" class="empty">还没有 gate 数据。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h2 style="margin: 0;">检索工作台</h2>
+            <div class="button-row">
+              <button id="run-retrieval-btn" type="button">跑检索</button>
+              <button id="refresh-retrieval-btn" class="secondary" type="button">刷新检索</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <label>query_terms（每行一条）
+              <textarea id="query-terms-input" placeholder="默认会回退到 topic"></textarea>
+            </label>
+            <label>检索限制 limit
+              <input id="retrieval-limit-input" type="number" min="1" max="50" value="8" />
+            </label>
+          </div>
+          <div id="retrieval-summary" class="footer-note">还没跑检索。</div>
+          <div id="retrieval-list" class="list"></div>
+        </section>
+
+        <section class="card">
+          <div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h2 style="margin: 0;">引用清单 / 大纲包 / Writer 包</h2>
+            <div class="button-row">
+              <button id="generate-citations-btn" class="success" type="button">生成引用清单</button>
+              <button id="fetch-primary-body-btn" class="secondary" type="button">补主资料正文</button>
+              <button id="generate-outline-btn" class="warn" type="button">生成大纲</button>
+              <button id="generate-writer-btn" type="button">生成 Writer 包</button>
+              <button id="refresh-assets-btn" class="secondary" type="button">刷新成果</button>
+            </div>
+          </div>
+          <div class="section-grid">
+            <div class="subcard">
+              <h3>引用清单</h3>
+              <div id="citations-view" class="empty">还没生成引用清单。</div>
+            </div>
+            <div class="subcard">
+              <h3>大纲包</h3>
+              <div id="outline-view" class="empty">还没生成大纲包。</div>
+            </div>
+          </div>
+          <div class="subcard" style="margin-top: 18px;">
+            <h3>Writer 输入包预览</h3>
+            <div id="writer-registry-note" class="footer-note" style="margin-bottom: 10px;">正在读取 writer 配置...</div>
+            <div id="writer-view" class="empty">还没生成 Writer 包。</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      currentTaskId: "",
+      tasks: [],
+      bundle: null,
+      retrieval: null,
+      citations: null,
+      outline: null,
+      writerJob: null,
+      writerPacket: null,
+      writerRegistry: null,
+      indexStatus: null,
+      activityLog: [],
+      busyCount: 0,
+      entrySource: "",
+      entryPacketId: "",
+    };
+
+    const TRACKED_NOOP = Symbol("tracked-noop");
+    const $ = (selector) => document.querySelector(selector);
+    const statusBar = $("#status-bar");
+    const activityFeed = $("#activity-feed");
+    const activityHint = $("#activity-hint");
+    const configSummary = $("#config-summary");
+    const indexStatusSummary = $("#index-status-summary");
+    const preferredWriterSelect = $("#preferred-writer-select");
+    const writerRegistryNote = $("#writer-registry-note");
+
+    function getWriterOptions() {
+      return Array.isArray(state.writerRegistry?.writers) ? state.writerRegistry.writers : [];
+    }
+
+    function getWriterDisplayName(skill) {
+      const normalized = String(skill || "").trim();
+      const match = getWriterOptions().find((item) => String(item.skill || "").trim() === normalized);
+      return match?.display_name || normalized || "-";
+    }
+
+    function setPreferredWriterSelection(skill) {
+      if (!preferredWriterSelect) return;
+      const normalized = String(skill || "").trim();
+      if (normalized) {
+        preferredWriterSelect.value = normalized;
+      } else if (state.writerRegistry?.default_writer) {
+        preferredWriterSelect.value = state.writerRegistry.default_writer;
+      }
+    }
+
+    function renderWriterRegistry() {
+      if (!preferredWriterSelect) return;
+      const writers = getWriterOptions();
+      if (!writers.length) {
+        preferredWriterSelect.innerHTML = '<option value="">暂无 writer 配置</option>';
+        if (writerRegistryNote) writerRegistryNote.textContent = "当前还没有可用 writer，先检查 writer-adapters.yaml。";
+        return;
+      }
+      preferredWriterSelect.innerHTML = writers.map((writer) => `
+        <option value="${escapeHtmlAttr(writer.skill || "")}">
+          ${escapeHtml((writer.display_name || writer.skill || ""))}${writer.is_default ? "（默认）" : ""}
+        </option>
+      `).join("");
+      setPreferredWriterSelection(state.writerRegistry?.default_writer || writers[0]?.skill || "");
+      if (writerRegistryNote) {
+        const defaultWriter = writers.find((item) => item.is_default) || writers[0];
+        writerRegistryNote.textContent = `当前默认 writer：${defaultWriter?.display_name || defaultWriter?.skill || "-"}。后面接更多写作器时，这里会继续扩展。`;
+      }
+    }
+
+    function setStatus(message, kind = "info") {
+      const colors = {
+        info: "rgba(15, 23, 42, 0.8)",
+        success: "rgba(20, 83, 45, 0.45)",
+        warn: "rgba(120, 53, 15, 0.45)",
+        error: "rgba(127, 29, 29, 0.45)",
+      };
+      statusBar.textContent = message;
+      statusBar.style.background = colors[kind] || colors.info;
+    }
+
+    function renderEntryFlowBanner() {
+      const banner = $("#entry-flow-banner");
+      if (!banner) return;
+      if (state.entrySource !== "packet") {
+        banner.style.display = "none";
+        banner.textContent = "";
+        ensurePacketBootstrapButton();
+        return;
+      }
+      const packetText = state.entryPacketId ? `资料包 ${state.entryPacketId}` : "上一步资料包";
+      const taskText = state.currentTaskId ? `当前任务 ${state.currentTaskId}` : "当前任务";
+      banner.style.display = "block";
+      banner.textContent = `${packetText} 已经接入后续编排阶段。这里不再负责找资料，而是继续做筛选、引用、大纲和 Writer 输入包。${taskText} 会作为这一轮编排的工作落点。`;
+      ensurePacketBootstrapButton();
+    }
+
+    function ensurePacketBootstrapButton() {
+      const anchor = $("#generate-citations-btn");
+      const actionRow = anchor?.parentElement;
+      if (!actionRow) return null;
+      let button = $("#bootstrap-packet-task-btn");
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "bootstrap-packet-task-btn";
+        button.type = "button";
+        button.className = "success";
+        button.textContent = "一键生成第一版起点";
+        actionRow.insertBefore(button, anchor);
+      }
+      const shouldShow = state.entrySource === "packet" && Boolean(state.currentTaskId);
+      button.style.display = shouldShow ? "" : "none";
+      button.disabled = !shouldShow;
+      if (!button.dataset.bound) {
+        button.dataset.bound = "1";
+        button.addEventListener("click", async () => {
+          try {
+            await runTrackedAction({
+              button,
+              startMessage: "正在生成第一版引用清单和大纲...",
+              busyText: "生成中...",
+              errorPrefix: "生成第一版起点失败：",
+              action: () => bootstrapPacketTask(),
+              successMessage: "第一版引用清单和大纲已经准备好。",
+            });
+          } catch (error) {
+            setStatus(`生成第一版起点失败：${error.message}`, "error");
+          }
+        });
+      }
+      return button;
+    }
+
+    function renderActivityFeed() {
+      if (!activityFeed) return;
+      if (!state.activityLog.length) {
+        activityFeed.innerHTML = '<div class="empty">还没有动作记录。你一动手，本小姐就给你记着。</div>';
+        return;
+      }
+      activityFeed.innerHTML = state.activityLog.map((item) => `
+        <div class="activity-item ${escapeHtmlAttr(item.kind || "info")}">
+          <strong>${escapeHtml(item.message || "-")}</strong>
+          <span class="activity-time">${escapeHtml(item.time || "")}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderConfigSummary(payload) {
+      if (!configSummary) return;
+      if (!payload || payload.ok === false) {
+        configSummary.innerHTML = '<div class="empty">暂时还没拿到创作台配置。</div>';
+        return;
+      }
+      const vaultRoots = (payload.knowledge_sources?.vault_roots || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("");
+      const envOverrides = (payload.env_overrides || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("");
+      configSummary.innerHTML = `
+        <div class="kv"><strong>配置文件</strong><span>${escapeHtml(payload.config_path || "-")}${payload.config_file_loaded ? "" : "（未命中，当前使用默认值）"}</span></div>
+        <div class="kv"><strong>知识库</strong><span>${vaultRoots || '<span class="muted">未配置</span>'}</span></div>
+        <div class="kv"><strong>NightHawk DB</strong><span>${escapeHtml(payload.database_sources?.nighthawk_db_path || "-")}</span></div>
+        <div class="kv"><strong>创作数据目录</strong><span>${escapeHtml(payload.creation_workspace?.data_root || "-")}</span></div>
+        <div class="kv"><strong>索引库</strong><span>${escapeHtml(payload.indexing?.content_index_db_path || "-")}</span></div>
+        <div class="kv"><strong>语义搜索</strong><span>FTS=${payload.semantic_search?.enable_fts ? "on" : "off"}；Embedding=${payload.semantic_search?.enable_embedding ? "on" : "off"}；Provider=${escapeHtml(payload.semantic_search?.embedding_provider || "-")}</span></div>
+        <div class="kv"><strong>事件聚合模式</strong><span>${escapeHtml(payload.event_clustering?.mode || "-")}；auto_run=${payload.event_clustering?.auto_run_enabled ? "on" : "off"}；interval=${escapeHtml(String(payload.event_clustering?.auto_run_interval_minutes || 0))} min</span></div>
+        <div class="kv"><strong>环境覆盖</strong><span>${envOverrides || '<span class="muted">当前没有环境变量覆盖</span>'}</span></div>
+      `;
+    }
+
+    function renderIndexStatus(payload) {
+      if (!indexStatusSummary) return;
+      if (!payload || payload.ok === false) {
+        indexStatusSummary.innerHTML = '<div class="empty">暂时还没拿到索引库状态。</div>';
+        return;
+      }
+      const counts = Object.entries(payload.table_counts || {})
+        .map(([name, count]) => `<span class="pill">${escapeHtml(name)}: ${escapeHtml(String(count))}</span>`)
+        .join("");
+      const missingTables = (payload.missing_tables || [])
+        .map((item) => `<span class="pill">${escapeHtml(item)}</span>`)
+        .join("");
+      const syncSummary = payload.index_sync_summary || {};
+      const syncPhases = (syncSummary.phases || [])
+        .map((phase) => {
+          const detail = [];
+          if (Number(phase?.objects || 0) > 0) detail.push(`对象 ${phase.objects}`);
+          if (Number(phase?.chunks || 0) > 0) detail.push(`切块 ${phase.chunks}`);
+          if (phase?.error) detail.push(`错误：${phase.error}`);
+          return `<span class="pill">${escapeHtml(phase?.name || "-")} / ${escapeHtml(phase?.status || "-")}${detail.length ? ` / ${escapeHtml(detail.join("，"))}` : ""}</span>`;
+        })
+        .join("");
+      const indexSyncSummary = syncSummary.status
+        ? `
+          <div class="kv"><strong>上次完整同步</strong><span>${escapeHtml(syncSummary.status || "-")}；${escapeHtml(syncSummary.mode || "-")}；${escapeHtml(syncSummary.message || "-")}</span></div>
+          <div class="kv"><strong>同步结果</strong><span>新增对象 ${escapeHtml(String(syncSummary.totals?.new_objects || 0))}；新增切块 ${escapeHtml(String(syncSummary.totals?.new_chunks || 0))}；失败阶段 ${escapeHtml(String(syncSummary.totals?.failed_phases || 0))}</span></div>
+          <div class="kv"><strong>同步时间</strong><span>${escapeHtml(syncSummary.started_at || "-")}${syncSummary.finished_at ? ` -> ${escapeHtml(syncSummary.finished_at)}` : ""}；耗时 ${escapeHtml(String(syncSummary.duration_seconds || 0))}s</span></div>
+          <div class="kv"><strong>同步阶段</strong><span>${syncPhases || '<span class="muted">暂无阶段明细</span>'}</span></div>
+        `
+        : '<div class="kv"><strong>上次完整同步</strong><span class="muted">还没有完整同步记录</span></div>';
+      const latestSyncRun = payload.latest_sync_run
+        ? `
+          <div class="kv"><strong>最近子任务</strong><span>${escapeHtml(payload.latest_sync_run.source_name || "-")} / ${escapeHtml(payload.latest_sync_run.phase || "-")} / ${escapeHtml(payload.latest_sync_run.status || "-")}</span></div>
+          <div class="kv"><strong>子任务时间</strong><span>${escapeHtml(payload.latest_sync_run.started_at || "-")}${payload.latest_sync_run.finished_at ? ` -> ${escapeHtml(payload.latest_sync_run.finished_at)}` : ""}</span></div>
+        `
+        : '<div class="kv"><strong>最近子任务</strong><span class="muted">还没有同步记录</span></div>';
+      indexStatusSummary.innerHTML = `
+        <div class="kv"><strong>索引库路径</strong><span>${escapeHtml(payload.db_path || "-")}</span></div>
+        <div class="kv"><strong>初始化状态</strong><span>${escapeHtml(payload.initialized ? "ready" : "pending")}</span></div>
+        <div class="kv"><strong>Schema 版本</strong><span>${escapeHtml(String(payload.schema_version || 0))}</span></div>
+        <div class="kv"><strong>文件体积</strong><span>${escapeHtml(payload.file_size_human || "0 B")} (${escapeHtml(String(payload.file_size_bytes || 0))} bytes)</span></div>
+        <div class="kv"><strong>缺失表</strong><span>${missingTables || '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>表行数</strong><span>${counts || '<span class="muted">还没有建表</span>'}</span></div>
+        <div class="kv"><strong>初始化时间</strong><span>${escapeHtml(payload.meta?.initialized_at || "-")}</span></div>
+        <div class="kv"><strong>最近变更</strong><span>${escapeHtml(payload.meta?.last_mutation_at || "-")}</span></div>
+        ${indexSyncSummary}
+        ${latestSyncRun}
+      `;
+    }
+
+    function updateActivityHint() {
+      if (!activityHint) return;
+      activityHint.textContent = state.busyCount > 0 ? `处理中 ${state.busyCount} 项` : "空闲中";
+    }
+
+    function pushActivity(message, kind = "info") {
+      state.activityLog.unshift({
+        message,
+        kind,
+        time: new Date().toLocaleTimeString("zh-CN", { hour12: false }),
+      });
+      state.activityLog = state.activityLog.slice(0, 10);
+      renderActivityFeed();
+    }
+
+    function setActionBusy(button, busy, busyText = "处理中...") {
+      if (!button) return;
+      const wasBusy = button.dataset.busy === "1";
+      if (busy) {
+        if (!wasBusy) {
+          state.busyCount += 1;
+        }
+        button.dataset.busy = "1";
+        button.dataset.originalLabel = button.dataset.originalLabel || button.textContent;
+        button.disabled = true;
+        button.textContent = busyText;
+      } else {
+        if (wasBusy) {
+          state.busyCount = Math.max(0, state.busyCount - 1);
+        }
+        button.dataset.busy = "0";
+        button.disabled = false;
+        button.textContent = button.dataset.originalLabel || button.textContent;
+      }
+      updateActivityHint();
+    }
+
+    async function runTrackedAction({ button, startMessage, busyText, errorPrefix, action, successMessage }) {
+      if (startMessage) {
+        setStatus(startMessage, "info");
+        pushActivity(startMessage, "info");
+      }
+      setActionBusy(button, true, busyText || "处理中...");
+      try {
+        const result = await action();
+        if (result === TRACKED_NOOP) {
+          return result;
+        }
+        const finalMessage = typeof successMessage === "function" ? successMessage(result) : successMessage;
+        if (finalMessage) {
+          pushActivity(finalMessage, "success");
+        }
+        return result;
+      } catch (error) {
+        const message = `${errorPrefix}${error.message}`;
+        pushActivity(message, "error");
+        throw error;
+      } finally {
+        setActionBusy(button, false);
+      }
+    }
+
+    function bindTrackedClick(selector, configFactory) {
+      const button = $(selector);
+      if (!button) return;
+      button.addEventListener("click", async (event) => {
+        const config = typeof configFactory === "function" ? configFactory(event, button) : configFactory;
+        try {
+          await runTrackedAction({ button, ...config });
+        } catch (error) {
+          setStatus(`${config.errorPrefix}${error.message}`, "error");
+        }
+      });
+    }
+
+    function splitLines(value) {
+      return String(value || "")
+        .split(/\n|,/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      const isJson = response.headers.get("content-type")?.includes("application/json");
+      const data = isJson ? await response.json() : await response.text();
+      if (!response.ok) {
+        const message = data?.message || data?.error || `${response.status} ${response.statusText}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    async function loadCreateStudioConfig() {
+      const payload = await api("/api/create/config");
+      renderConfigSummary(payload);
+      return payload;
+    }
+
+    async function loadWriterRegistry() {
+      const payload = await api("/api/create/writers");
+      state.writerRegistry = payload;
+      renderWriterRegistry();
+      return payload;
+    }
+
+    async function loadCreateStudioIndexStatus() {
+      const payload = await api("/api/create/index/status");
+      state.indexStatus = payload;
+      renderIndexStatus(payload);
+      return payload;
+    }
+
+    async function bootstrapCreateStudioIndex() {
+      const payload = await api("/api/create/index/bootstrap", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      state.indexStatus = payload;
+      renderIndexStatus(payload);
+      return payload;
+    }
+
+    async function syncCreateStudioIndex() {
+      const payload = await api("/api/create/index/sync", {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      state.indexStatus = payload.store_status || payload;
+      renderIndexStatus(payload.store_status || payload);
+      return payload;
+    }
+
+    function renderTaskList() {
+      const root = $("#task-list");
+      if (!state.tasks.length) {
+        root.innerHTML = '<div class="empty">现在还没有任务，先在右边建一个。</div>';
+        return;
+      }
+      root.innerHTML = state.tasks.map((task) => `
+        <div class="task-item ${task.id === state.currentTaskId ? "active" : ""}" data-task-id="${task.id}">
+          <strong>${escapeHtml(task.topic || task.id)}</strong>
+          <div class="inline-meta">
+            <span>${escapeHtml(task.id)}</span>
+            <span>${escapeHtml(task.platform || "-")}</span>
+            <span>${escapeHtml(task.status || "draft")}</span>
+          </div>
+          <div class="inline-meta" style="margin-top: 6px;">
+            <span>${escapeHtml(task.updated_at || task.created_at || "")}</span>
+          </div>
+        </div>
+      `).join("");
+      root.querySelectorAll("[data-task-id]").forEach((node) => {
+        node.addEventListener("click", () => loadTask(node.dataset.taskId));
+      });
+    }
+
+    function renderTaskBundle() {
+      const task = state.bundle?.task;
+      const preferredWriterSkill = task?.metadata?.preferred_writer_skill || state.writerRegistry?.default_writer || "";
+      $("#task-id-input").value = state.currentTaskId || "";
+      if (!task) {
+        $("#task-headline").textContent = "还没选任务。";
+        $("#task-detail").innerHTML = '<div class="empty">先选一个任务。</div>';
+        $("#gate-detail").innerHTML = '<div class="empty">还没有 gate 数据。</div>';
+        setPreferredWriterSelection(state.writerRegistry?.default_writer || "");
+        return;
+      }
+      setPreferredWriterSelection(preferredWriterSkill);
+
+      $("#task-headline").innerHTML = `${escapeHtml(task.topic || task.id)} <span class="badge">${escapeHtml(task.status || "draft")}</span>`;
+      $("#task-detail").innerHTML = `
+        <div class="kv"><strong>ID</strong><span>${escapeHtml(task.id)}</span></div>
+        <div class="kv"><strong>平台</strong><span>${escapeHtml(task.platform || "-")}</span></div>
+        <div class="kv"><strong>Writer</strong><span>${escapeHtml(getWriterDisplayName(preferredWriterSkill))}</span></div>
+        <div class="kv"><strong>受众</strong><span>${escapeHtml(task.audience || "-")}</span></div>
+        <div class="kv"><strong>目标</strong><span>${escapeHtml(task.goal || "-")}</span></div>
+        <div class="kv"><strong>切入角</strong><span>${escapeHtml(task.angle || "-")}</span></div>
+        <div class="kv"><strong>风格</strong><span>${renderPills(task.style_notes || [])}</span></div>
+        <div class="kv"><strong>禁区</strong><span>${renderPills(task.banned_patterns || [])}</span></div>
+      `;
+      renderGateReport(state.bundle?.gates || []);
+    }
+
+    function renderGateReport(gates) {
+      const root = $("#gate-detail");
+      const gateList = Array.isArray(gates)
+        ? gates
+        : Object.entries(gates || {}).map(([key, value]) => ({
+            gate: key,
+            name: value?.name || key.replace(/_/g, " "),
+            pass: Boolean(value?.pass),
+            reasons: Array.isArray(value?.reasons) ? value.reasons : [],
+          }));
+      if (!gateList.length) {
+        root.innerHTML = '<div class="empty">当前接口还没给 gate 数据。</div>';
+        return;
+      }
+      root.innerHTML = gateList.map((gate) => `
+        <div class="list-item">
+          <div class="toolbar" style="justify-content: space-between; align-items: center;">
+            <strong>${escapeHtml(gate.name || gate.gate || "Gate")}</strong>
+            <span class="pill">${escapeHtml(gate.pass ? "pass" : "pending")}</span>
+          </div>
+          <div class="footer-note">${escapeHtml((gate.reasons || []).join("；") || "已满足")}</div>
+        </div>
+      `).join("");
+    }
+
+    function truncateText(value, max = 180) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      return text.length > max ? `${text.slice(0, max)}…` : text;
+    }
+
+    function summarizeRetrievalSignals(item) {
+      const raw = item?.raw || {};
+      const signals = [];
+      if (item?.recommend_full_fetch) signals.push(`深抓建议：${item.recommend_full_fetch}`);
+      if (raw?.source_kind) signals.push(`来源类型：${raw.source_kind}`);
+      if (raw?.body_fetch_ok === true) signals.push("已抓到正文");
+      if (raw?.body_fetch_ok === false) signals.push("正文未抓到");
+      if (raw?.recommendation) signals.push(`推荐动作：${raw.recommendation}`);
+      if (raw?.confidence) signals.push(`置信度：${raw.confidence}`);
+      if (raw?.route_bucket) signals.push(`路由：${raw.route_bucket}`);
+      if (item?.lang) signals.push(`语言：${item.lang}`);
+      if (item?.matched_handle) signals.push(`命中账号：${item.matched_handle}`);
+      return signals;
+    }
+
+    function buildRetrievalDetail(item) {
+      const raw = item?.raw || {};
+      const author = item?.author || raw?.author || "";
+      const rawPreview = raw?.content || raw?.transcript_excerpt || raw?.transcript_text || "";
+      const lines = [];
+      if (author) lines.push(`作者：${author}`);
+      if (item?.published_at || item?.created_at) lines.push(`时间：${item.published_at || item.created_at}`);
+      if (rawPreview) lines.push(`正文预览：${truncateText(rawPreview, 220)}`);
+      return lines;
+    }
+
+    function renderRetrieval() {
+      const root = $("#retrieval-list");
+      const retrieval = state.retrieval?.retrieval_batch || state.bundle?.retrieval_batch;
+      if (!retrieval) {
+        $("#retrieval-summary").textContent = "还没拿到检索批次。";
+        root.innerHTML = '<div class="empty">先创建任务或刷新任务详情。</div>';
+        return;
+      }
+      const results = retrieval.results || [];
+      $("#query-terms-input").value = (retrieval.query_terms || []).join("\n");
+      $("#retrieval-summary").textContent = `批次 ${retrieval.id || "-"} ｜ ${results.length} 条结果 ｜ 状态 ${retrieval.status || "draft"}`;
+      if (!results.length) {
+        root.innerHTML = '<div class="empty">这批还没有结果，点“跑检索”把原料拉进来。</div>';
+        return;
+      }
+      root.innerHTML = results.map((item) => {
+        const signals = summarizeRetrievalSignals(item);
+        const detailLines = buildRetrievalDetail(item);
+        return `
+        <div class="list-item">
+          <h4>${escapeHtml(item.title || item.source_id || "未命名结果")}</h4>
+          <div class="inline-meta">
+            <span>${escapeHtml(item.source_id || "-")}</span>
+            <span>${escapeHtml(item.source || "-")}</span>
+            <span>${escapeHtml(item.content_type || "-")}</span>
+            <span>${escapeHtml(item.decision || "undecided")}</span>
+            <span>${escapeHtml(item.classification || "unclassified")}</span>
+          </div>
+          <div class="footer-note" style="margin: 10px 0 8px;">${escapeHtml(item.summary || item.text || item.why_pick || "暂无摘要")}</div>
+          ${signals.length ? `<div class="pill-row" style="margin-bottom: 8px;">${signals.map((signal) => `<span class="pill">${escapeHtml(signal)}</span>`).join("")}</div>` : ""}
+          ${detailLines.map((line) => `<div class="footer-note" style="margin: 4px 0;">${escapeHtml(line)}</div>`).join("")}
+          <div class="button-row">
+            <button class="success" type="button" data-action="keep" data-source-id="${escapeHtmlAttr(item.source_id || "")}">保留</button>
+            <button class="danger" type="button" data-action="exclude" data-source-id="${escapeHtmlAttr(item.source_id || "")}">剔除</button>
+            <button class="warn" type="button" data-action="primary" data-source-id="${escapeHtmlAttr(item.source_id || "")}">设为主资料</button>
+            <button class="secondary" type="button" data-action="supporting" data-source-id="${escapeHtmlAttr(item.source_id || "")}">设为辅助</button>
+            ${item.url ? `<a href="${escapeHtmlAttr(item.url)}" target="_blank" rel="noreferrer">打开来源</a>` : ""}
+          </div>
+        </div>
+      `;
+      }).join("");
+
+      root.querySelectorAll("button[data-action]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const action = button.dataset.action;
+          const sourceId = button.dataset.sourceId;
+          if (!sourceId) return;
+          const labelMap = {
+            keep: "保留",
+            exclude: "剔除",
+            primary: "设为主资料",
+            supporting: "设为辅助",
+          };
+          try {
+            await runTrackedAction({
+              button,
+              startMessage: `正在处理 ${sourceId}：${labelMap[action] || action}`,
+              busyText: "提交中...",
+              errorPrefix: "更新检索决策失败：",
+              action: () => handleRetrievalDecision(action, sourceId, retrieval.id),
+              successMessage: `已更新 ${sourceId} 的检索决策。`,
+            });
+          } catch (error) {
+            setStatus(`更新检索决策失败：${error.message}`, "error");
+          }
+        });
+      });
+    }
+
+    function renderCitations() {
+      const root = $("#citations-view");
+      const citationList = state.citations?.citation_list || state.bundle?.citation_list;
+      if (!citationList || !(citationList.citations || []).length) {
+        root.innerHTML = '<div class="empty">还没拿到引用条目。先把检索结果保留并标成主资料；如果 Gate 3 提示正文未就绪，就先点“补主资料正文”。</div>';
+        return;
+      }
+      root.innerHTML = (citationList.citations || []).map((item) => `
+        <div class="list-item">
+          <h4>${escapeHtml(item.normalized_claim || item.title || item.citation_id || "未命名引用")}</h4>
+          <div class="inline-meta">
+            <span>${escapeHtml(item.citation_id || "-")}</span>
+            <span>${escapeHtml(item.source_id || "-")}</span>
+            <span>${escapeHtml(item.usage_scope || "-")}</span>
+          </div>
+          <div class="footer-note" style="margin-top: 8px;">${escapeHtml(item.quote_text || item.usable_excerpt || item.why_pick || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderOutline() {
+      const root = $("#outline-view");
+      const outlinePacket = state.outline?.outline_packet || state.bundle?.outline_packet;
+      if (!outlinePacket || !(outlinePacket.outline || []).length) {
+        root.innerHTML = '<div class="empty">还没生成大纲。引用清单出来后再点一下。</div>';
+        return;
+      }
+      root.innerHTML = `
+        <div class="list-item">
+          <h4>${escapeHtml(outlinePacket.core_judgement || "未填写核心判断")}</h4>
+          <div class="inline-meta">
+            <span>${escapeHtml(outlinePacket.content_template || "-")}</span>
+            <span>${escapeHtml(outlinePacket.status || "-")}</span>
+          </div>
+          <div class="footer-note" style="margin-top: 8px;">角度：${escapeHtml(outlinePacket.angle || "-")}</div>
+        </div>
+        ${(outlinePacket.outline || []).map((section) => `
+          <div class="list-item">
+            <h4>${escapeHtml(section.heading || section.section || section.section_id || "未命名段落")}</h4>
+            <div class="footer-note">${escapeHtml(section.summary || section.goal || "")}</div>
+            <div class="pill-row">${(section.citation_refs || []).map((ref) => `<span class="pill">${escapeHtml(ref)}</span>`).join("") || '<span class="pill">无引用</span>'}</div>
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function renderWriter() {
+      const root = $("#writer-view");
+      const writerJob = state.writerJob?.writer_job || state.bundle?.writer_job;
+      const packet = state.writerPacket?.packet;
+      if (!writerJob) {
+        root.innerHTML = '<div class="empty">还没生成 WriterJob。</div>';
+        return;
+      }
+      const writerAdapter = packet?.writer_adapter || {};
+      const writerDisplayName = writerAdapter.display_name || getWriterDisplayName(writerJob.writer_skill);
+      root.innerHTML = `
+        <div class="list-item">
+          <h4>${escapeHtml(writerJob.id || "WriterJob")}</h4>
+          <div class="inline-meta">
+            <span>${escapeHtml(writerJob.status || "-")}</span>
+            <span>${escapeHtml(writerDisplayName || writerJob.writer_skill || "-")}</span>
+            <span>${escapeHtml(writerAdapter.writer_type || "-")}</span>
+            <span>${escapeHtml((writerJob.primary_output || []).join(", ") || "-")}</span>
+          </div>
+          <div class="footer-note" style="margin-top: 8px;">输出原型：${escapeHtml(writerJob.article_archetype || "-")}</div>
+          ${writerJob.packet_path ? `<div class="footer-note">packet_path：${escapeHtml(writerJob.packet_path)}</div>` : ""}
+        </div>
+        ${packet ? `<pre>${escapeHtml(JSON.stringify(packet, null, 2))}</pre>` : '<div class="footer-note">包文件还没读到，点“刷新成果”再捞一次。</div>'}
+      `;
+    }
+
+    function renderPills(items) {
+      const list = Array.isArray(items) ? items.filter(Boolean) : [];
+      if (!list.length) return '<span class="muted">-</span>';
+      return `<span class="pill-row">${list.map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</span>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function escapeHtmlAttr(value) {
+      return escapeHtml(value).replaceAll("`", "&#96;");
+    }
+
+    async function refreshTaskList(selectLatest = false) {
+      const payload = await api("/api/create/tasks?limit=20");
+      state.tasks = payload.items || [];
+      renderTaskList();
+      if (selectLatest && state.tasks.length) {
+        await loadTask(state.tasks[0].id);
+      }
+      return payload;
+    }
+
+    async function loadTask(taskId) {
+      if (!taskId) {
+        setStatus("task_id 不能为空。", "warn");
+        pushActivity("task_id 不能为空。", "warn");
+        return TRACKED_NOOP;
+      }
+      state.currentTaskId = taskId.trim();
+      renderEntryFlowBanner();
+      setStatus(`正在载入 ${state.currentTaskId} ...`);
+      const bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      state.bundle = bundle;
+      await refreshDerivedViews();
+      renderTaskList();
+      setStatus(`任务 ${state.currentTaskId} 已载入。`, "success");
+      return bundle;
+    }
+
+    async function refreshDerivedViews() {
+      if (!state.currentTaskId) {
+        renderTaskBundle();
+        renderRetrieval();
+        renderCitations();
+        renderOutline();
+        renderWriter();
+        return;
+      }
+
+      const loaders = [
+        api(`/api/create/tasks/${state.currentTaskId}/retrieval`).then((data) => { state.retrieval = data; }).catch(() => { state.retrieval = null; }),
+        api(`/api/create/tasks/${state.currentTaskId}/citations`).then((data) => { state.citations = data; }).catch(() => { state.citations = null; }),
+        api(`/api/create/tasks/${state.currentTaskId}/outline`).then((data) => { state.outline = data; }).catch(() => { state.outline = null; }),
+        api(`/api/create/tasks/${state.currentTaskId}/writer-job`).then((data) => { state.writerJob = data; }).catch(() => { state.writerJob = null; }),
+        api(`/api/create/tasks/${state.currentTaskId}/writer-packet`).then((data) => { state.writerPacket = data; }).catch(() => { state.writerPacket = null; }),
+      ];
+      await Promise.all(loaders);
+      renderTaskBundle();
+      renderRetrieval();
+      renderCitations();
+      renderOutline();
+      renderWriter();
+    }
+
+    async function handleTaskCreate(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const preferredWriterSkill = form.preferred_writer_skill?.value?.trim() || state.writerRegistry?.default_writer || "";
+      const payload = {
+        trigger_type: "manual_topic",
+        topic: form.topic.value.trim(),
+        platform: form.platform.value.trim(),
+        audience: form.audience.value.trim(),
+        goal: form.goal.value.trim(),
+        angle: form.angle.value.trim(),
+        style_notes: splitLines(form.style_notes.value),
+        banned_patterns: splitLines(form.banned_patterns.value),
+        source_scope: splitLines(form.source_scope.value),
+        preferred_writer_skill: preferredWriterSkill,
+      };
+      setStatus("正在创建任务...");
+      const result = await api("/api/create/tasks", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      state.bundle = result;
+      state.currentTaskId = result?.task?.id || "";
+      pushActivity(`任务 ${state.currentTaskId || "-"} 已创建，正在同步派生数据。`, "info");
+      await refreshTaskList();
+      await refreshDerivedViews();
+      renderTaskList();
+      setStatus(`任务 ${state.currentTaskId} 已创建。接下来可以直接跑检索。`, "success");
+      return result;
+    }
+
+    async function runRetrieval() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务，再跑检索。", "warn");
+        pushActivity("先选任务，再跑检索。", "warn");
+        return TRACKED_NOOP;
+      }
+      const queryTerms = splitLines($("#query-terms-input").value);
+      const limit = Number($("#retrieval-limit-input").value || 8);
+      setStatus("正在跑检索，这一步要看后端有没有原料，不许怪页面。", "info");
+      pushActivity(`任务 ${state.currentTaskId} 已提交检索，关键词 ${queryTerms.length || 0} 个。`, "info");
+      const payload = await api(`/api/create/tasks/${state.currentTaskId}/retrieval/run`, {
+        method: "POST",
+        body: JSON.stringify({ query_terms: queryTerms, filters: { limit } }),
+      });
+      state.retrieval = payload;
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderRetrieval();
+      setStatus(`检索完成，拿到 ${(payload?.retrieval_batch?.results || []).length} 条结果。`, "success");
+      return payload;
+    }
+
+    async function handleRetrievalDecision(action, sourceId, batchId) {
+      if (!state.currentTaskId || !batchId) {
+        setStatus("当前没有可操作的检索批次。", "warn");
+        return;
+      }
+      let path = "";
+      let payload = {};
+      if (action === "keep") {
+        path = `/api/create/tasks/${state.currentTaskId}/retrieval/${batchId}/keep`;
+        payload = { source_id: sourceId, reason: "在独立创作页手动保留" };
+      } else if (action === "exclude") {
+        path = `/api/create/tasks/${state.currentTaskId}/retrieval/${batchId}/exclude`;
+        payload = { source_id: sourceId, reason: "在独立创作页手动剔除" };
+      } else {
+        path = `/api/create/tasks/${state.currentTaskId}/retrieval/${batchId}/classify`;
+        payload = { source_id: sourceId, classification: action, reason: "在独立创作页手动标注" };
+      }
+      const data = await api(path, { method: "POST", body: JSON.stringify(payload) });
+      state.retrieval = data;
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderRetrieval();
+      setStatus(`已更新 ${sourceId} 的检索决策。`, "success");
+    }
+
+    async function generateCitations() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务。", "warn");
+        pushActivity("先选任务，再生成引用清单。", "warn");
+        return TRACKED_NOOP;
+      }
+      pushActivity(`任务 ${state.currentTaskId} 开始整理引用清单。`, "info");
+      const data = await api(`/api/create/tasks/${state.currentTaskId}/citations/generate`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      state.citations = data;
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderCitations();
+      setStatus(`引用清单已生成，共 ${(data?.citation_list?.citations || []).length} 条。`, "success");
+      return data;
+    }
+
+    async function fetchPrimaryBody() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务。", "warn");
+        pushActivity("先选任务，再补主资料正文。", "warn");
+        return TRACKED_NOOP;
+      }
+      pushActivity(`任务 ${state.currentTaskId} 正在为主资料补正文。`, "info");
+      const data = await api(`/api/create/tasks/${state.currentTaskId}/citations/fetch-primary-body`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+      const fetchTask = data?.fetch_task || {};
+      const title = data?.title || data?.source_id || "主资料";
+      const reason = data?.reason ? `，原因：${data.reason}` : "";
+      const taskLabel = fetchTask?.id ? `（抓取任务 ${fetchTask.id}）` : "";
+      pushActivity(`已为 ${title} 创建补正文任务${taskLabel}${reason}`, "success");
+      if (data?.url) {
+        pushActivity(`补正文目标链接：${data.url}`, "info");
+      }
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderCitations();
+      setStatus(`已发起主资料补正文任务${taskLabel}。抓完后刷新检索/成果，再生成引用清单。`, "success");
+      return data;
+    }
+
+    async function generateOutline() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务。", "warn");
+        pushActivity("先选任务，再生成大纲。", "warn");
+        return TRACKED_NOOP;
+      }
+      const task = state.bundle?.task || {};
+      pushActivity(`任务 ${state.currentTaskId} 开始生成大纲包。`, "info");
+      const data = await api(`/api/create/tasks/${state.currentTaskId}/outline/generate`, {
+        method: "POST",
+        body: JSON.stringify({
+          core_judgement: task.topic || "先下判断",
+          angle: task.angle || task.topic || "",
+          content_template: "方法论型",
+        }),
+      });
+      state.outline = data;
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderOutline();
+      setStatus("大纲包已生成。", "success");
+      return data;
+    }
+
+    async function bootstrapPacketTask() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务，再生成第一版起点。", "warn");
+        pushActivity("先选任务，再生成第一版起点。", "warn");
+        return TRACKED_NOOP;
+      }
+      const task = state.bundle?.task || {};
+      pushActivity(`任务 ${state.currentTaskId} 正在生成第一版引用清单和大纲。`, "info");
+      const data = await api(`/api/create/tasks/${state.currentTaskId}/bootstrap-packet-flow`, {
+        method: "POST",
+        body: JSON.stringify({
+          core_judgement: task.topic || "",
+          angle: task.angle || task.topic || "",
+          content_template: "方法评论型",
+        }),
+      });
+      state.citations = { ok: true, citation_list: data?.citation_list || {} };
+      state.outline = { ok: true, outline_packet: data?.outline_packet || {} };
+      state.bundle = data?.bundle || await api(`/api/create/tasks/${state.currentTaskId}`);
+      renderTaskBundle();
+      renderCitations();
+      renderOutline();
+      renderWriter();
+      setStatus("第一版引用清单和大纲已经生成。", "success");
+      return data;
+    }
+
+    async function generateWriter() {
+      if (!state.currentTaskId) {
+        setStatus("先选任务。", "warn");
+        pushActivity("先选任务，再生成 Writer 包。", "warn");
+        return TRACKED_NOOP;
+      }
+      const preferredWriterSkill = preferredWriterSelect?.value?.trim()
+        || state.bundle?.task?.metadata?.preferred_writer_skill
+        || state.writerRegistry?.default_writer
+        || "";
+      if (preferredWriterSkill && preferredWriterSkill !== (state.bundle?.task?.metadata?.preferred_writer_skill || "")) {
+        const metadata = { ...(state.bundle?.task?.metadata || {}), preferred_writer_skill: preferredWriterSkill };
+        await api(`/api/create/tasks/${state.currentTaskId}`, {
+          method: "POST",
+          body: JSON.stringify({ metadata, preferred_writer_skill: preferredWriterSkill }),
+        });
+        state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      }
+      pushActivity(`任务 ${state.currentTaskId} 开始生成 Writer 包。`, "info");
+      const data = await api(`/api/create/tasks/${state.currentTaskId}/writer-job/generate`, {
+        method: "POST",
+        body: JSON.stringify({
+          writer_skill: preferredWriterSkill,
+          primary_output: ["long_article"],
+          optional_followups: ["oral_adaptation"],
+          article_archetype: "方法论分享型",
+        }),
+      });
+      state.writerJob = { ok: true, writer_job: data.writer_job || data };
+      state.bundle = await api(`/api/create/tasks/${state.currentTaskId}`);
+      state.writerPacket = await api(`/api/create/tasks/${state.currentTaskId}/writer-packet`).catch(() => null);
+      renderTaskBundle();
+      renderWriter();
+      setStatus("Writer 包已生成，可以直接预览。", "success");
+      return data;
+    }
+
+    function fillDemo() {
+      const form = $("#task-form");
+      form.topic.value = "为什么创作团队最后拼的是编排层，而不是单模型强弱";
+      form.platform.value = "wechat";
+      if (form.preferred_writer_skill) form.preferred_writer_skill.value = state.writerRegistry?.default_writer || "khazix-writer";
+      form.audience.value = "AI 产品经理与内容操盘手";
+      form.goal.value = "沉淀一篇可以直接进入下游 writer 的长文任务单";
+      form.angle.value = "从生产稳定性和证据组织解释编排层价值";
+      form.style_notes.value = "先给判断\n像做过项目复盘\n少说空洞正确话";
+      form.banned_patterns.value = "正确的废话\n为了稳妥把结论说虚";
+      form.source_scope.value = "公众号分析卡\nYouTube transcript\nB站拆解";
+      setStatus("示例字段已填好，想偷懒就直接创建。", "info");
+    }
+
+    function bindEvents() {
+      const createTaskButton = $("#create-task-btn");
+      ensurePacketBootstrapButton();
+      $("#task-form").addEventListener("submit", async (event) => {
+        try {
+          await runTrackedAction({
+            button: createTaskButton,
+            startMessage: "正在创建任务...",
+            busyText: "创建中...",
+            errorPrefix: "创建任务失败：",
+            action: () => handleTaskCreate(event),
+            successMessage: "任务已创建，可以继续跑检索。",
+          });
+        } catch (error) {
+          setStatus(`创建任务失败：${error.message}`, "error");
+        }
+      });
+      $("#fill-demo-btn").addEventListener("click", fillDemo);
+      bindTrackedClick("#refresh-tasks-btn", {
+        startMessage: "正在刷新任务列表...",
+        busyText: "刷新中...",
+        errorPrefix: "刷新任务列表失败：",
+        action: async () => {
+          await refreshTaskList();
+          setStatus("任务列表已刷新。", "success");
+        },
+        successMessage: "任务列表已刷新。",
+      });
+      bindTrackedClick("#refresh-current-btn", {
+        startMessage: "正在刷新当前任务...",
+        busyText: "刷新中...",
+        errorPrefix: "刷新当前任务失败：",
+        action: async () => {
+          if (!state.currentTaskId) {
+            setStatus("当前没有任务可刷新。", "warn");
+            pushActivity("当前没有任务可刷新。", "warn");
+            return TRACKED_NOOP;
+          }
+          return loadTask(state.currentTaskId);
+        },
+        successMessage: () => state.currentTaskId ? `任务 ${state.currentTaskId} 已刷新。` : "当前任务已刷新。",
+      });
+      bindTrackedClick("#load-task-btn", () => ({
+        startMessage: "正在载入任务...",
+        busyText: "载入中...",
+        errorPrefix: "载入任务失败：",
+        action: () => loadTask($("#task-id-input").value),
+        successMessage: () => state.currentTaskId ? `任务 ${state.currentTaskId} 已载入。` : "任务已载入。",
+      }));
+      bindTrackedClick("#run-retrieval-btn", {
+        startMessage: "正在跑检索，这一步会调用后端检索接口。",
+        busyText: "检索中...",
+        errorPrefix: "跑检索失败：",
+        action: () => runRetrieval(),
+        successMessage: (payload) => `检索完成，拿到 ${(payload?.retrieval_batch?.results || []).length} 条结果。`,
+      });
+      bindTrackedClick("#refresh-retrieval-btn", {
+        startMessage: "正在刷新检索视图...",
+        busyText: "刷新中...",
+        errorPrefix: "刷新检索失败：",
+        action: async () => {
+          if (!state.currentTaskId) {
+            setStatus("先选任务。", "warn");
+            pushActivity("先选任务，再刷新检索。", "warn");
+            return TRACKED_NOOP;
+          }
+          state.retrieval = await api(`/api/create/tasks/${state.currentTaskId}/retrieval`);
+          renderRetrieval();
+          setStatus("检索视图已刷新。", "success");
+          return state.retrieval;
+        },
+        successMessage: (payload) => payload?.retrieval_batch?.id ? `检索批次 ${payload.retrieval_batch.id} 已刷新。` : "检索视图已刷新。",
+      });
+      bindTrackedClick("#generate-citations-btn", {
+        startMessage: "正在生成引用清单...",
+        busyText: "生成中...",
+        errorPrefix: "生成引用清单失败：",
+        action: () => generateCitations(),
+        successMessage: (data) => `引用清单已生成，共 ${(data?.citation_list?.citations || []).length} 条。`,
+      });
+      bindTrackedClick("#fetch-primary-body-btn", {
+        startMessage: "正在为主资料补正文...",
+        busyText: "补正文中...",
+        errorPrefix: "补主资料正文失败：",
+        action: () => fetchPrimaryBody(),
+        successMessage: (data) => {
+          const fetchTaskId = data?.fetch_task?.id;
+          return fetchTaskId ? `已创建补正文任务 ${fetchTaskId}。` : "已发起主资料补正文任务。";
+        },
+      });
+      bindTrackedClick("#generate-outline-btn", {
+        startMessage: "正在生成大纲包...",
+        busyText: "生成中...",
+        errorPrefix: "生成大纲失败：",
+        action: () => generateOutline(),
+        successMessage: "大纲包已生成。",
+      });
+      bindTrackedClick("#generate-writer-btn", {
+        startMessage: "正在生成 Writer 包...",
+        busyText: "生成中...",
+        errorPrefix: "生成 Writer 包失败：",
+        action: () => generateWriter(),
+        successMessage: "Writer 包已生成，可以直接预览。",
+      });
+      bindTrackedClick("#refresh-assets-btn", {
+        startMessage: "正在刷新成果区...",
+        busyText: "刷新中...",
+        errorPrefix: "刷新成果失败：",
+        action: async () => {
+          if (!state.currentTaskId) {
+            setStatus("先选任务。", "warn");
+            pushActivity("先选任务，再刷新成果。", "warn");
+            return TRACKED_NOOP;
+          }
+          await refreshDerivedViews();
+          setStatus("成果区已刷新。", "success");
+          return { task_id: state.currentTaskId };
+        },
+        successMessage: (payload) => payload?.task_id ? `任务 ${payload.task_id} 的成果区已刷新。` : "成果区已刷新。",
+      });
+      bindTrackedClick("#refresh-config-btn", {
+        startMessage: "正在刷新创作台配置...",
+        busyText: "刷新中...",
+        errorPrefix: "刷新配置失败：",
+        action: async () => {
+          await loadWriterRegistry();
+          const payload = await loadCreateStudioConfig();
+          setStatus("创作台配置已刷新。", "success");
+          return payload;
+        },
+        successMessage: "创作台配置已刷新。",
+      });
+      bindTrackedClick("#refresh-index-btn", {
+        startMessage: "正在读取索引库状态...",
+        busyText: "读取中...",
+        errorPrefix: "读取索引库状态失败：",
+        action: async () => {
+          const payload = await loadCreateStudioIndexStatus();
+          setStatus("索引库状态已刷新。", "success");
+          return payload;
+        },
+        successMessage: (payload) => `索引库状态已刷新，当前表数 ${Object.keys(payload?.table_counts || {}).length}。`,
+      });
+      bindTrackedClick("#bootstrap-index-btn", {
+        startMessage: "正在初始化创作台独立索引库...",
+        busyText: "初始化中...",
+        errorPrefix: "初始化索引库失败：",
+        action: async () => {
+          const payload = await bootstrapCreateStudioIndex();
+          setStatus("创作台独立索引库已初始化。", "success");
+          return payload;
+        },
+        successMessage: (payload) => `索引库初始化完成，当前已就绪表 ${Object.keys(payload?.table_counts || {}).length}。`,
+      });
+      bindTrackedClick("#sync-index-btn", {
+        startMessage: "正在同步创作台索引...",
+        busyText: "同步中...",
+        errorPrefix: "同步索引失败：",
+        action: async () => {
+          const payload = await syncCreateStudioIndex();
+          setStatus("创作台索引同步已完成。", "success");
+          return payload;
+        },
+        successMessage: (payload) => `索引同步完成，新增对象 ${payload?.index_sync_summary?.totals?.new_objects || 0}，新增切块 ${payload?.index_sync_summary?.totals?.new_chunks || 0}。`,
+      });
+    }
+
+    async function bootstrap() {
+      bindEvents();
+      renderActivityFeed();
+      updateActivityHint();
+      const params = new URLSearchParams(window.location.search);
+      state.entrySource = params.get("source") || "";
+      state.entryPacketId = params.get("packet_id") || "";
+      renderEntryFlowBanner();
+      await loadWriterRegistry();
+      await loadCreateStudioConfig();
+      await loadCreateStudioIndexStatus();
+      await refreshTaskList();
+      renderTaskBundle();
+      renderRetrieval();
+      renderCitations();
+      renderOutline();
+      renderWriter();
+      const urlTaskId = params.get("task_id");
+      if (urlTaskId) {
+        try {
+          await loadTask(urlTaskId);
+          renderEntryFlowBanner();
+          if (state.entrySource === "packet") {
+            setStatus(`已从资料包进入后续编排，任务 ${urlTaskId} 已载入。`, "success");
+          }
+        } catch (error) {
+          setStatus(`自动载入任务失败：${error.message}`, "error");
+        }
+      }
+    }
+
+    bootstrap().catch((error) => {
+      setStatus(`初始化失败：${error.message}`, "error");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+wechat:
+  metadata_only: true
+  enable_body_hydration: false
+  body_fetch_via_hub: true
+  body_fetch_via_html_fallback: true

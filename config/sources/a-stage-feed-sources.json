@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "name": "TechCrunch AI",
+      "type": "rss",
+      "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "海外资讯站",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取"
+    },
+    {
+      "name": "VentureBeat AI",
+      "type": "rss",
+      "url": "https://venturebeat.com/category/ai/feed",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "海外资讯站",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取，使用 category/ai/feed"
+    },
+    {
+      "name": "The Decoder",
+      "type": "rss",
+      "url": "https://the-decoder.com/feed/",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "海外资讯站",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取"
+    },
+    {
+      "name": "OpenAI Blog",
+      "type": "rss",
+      "url": "https://openai.com/news/rss.xml",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "官方博客",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取"
+    },
+    {
+      "name": "Google DeepMind Blog",
+      "type": "rss",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "官方博客",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取"
+    },
+    {
+      "name": "Google Blog AI",
+      "type": "rss",
+      "url": "https://blog.google/technology/ai/rss/",
+      "lang": "英文",
+      "tier": "正式",
+      "group": "官方博客",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取，实际会跳转到 blog.google/innovation-and-ai/technology/ai/rss/"
+    },
+    {
+      "name": "MIT Technology Review AI",
+      "type": "rss",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+      "lang": "英文",
+      "tier": "补充",
+      "group": "技术 / 趋势",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取"
+    },
+    {
+      "name": "NVIDIA Blog",
+      "type": "rss",
+      "url": "https://blogs.nvidia.com/feed/",
+      "lang": "英文",
+      "tier": "补充",
+      "group": "官方博客",
+      "source_kind": "expansion_feed",
+      "enabled": true,
+      "verified": true,
+      "notes": "已验证可抓取，后续根据噪音情况决定是否保留"
+    }
+  ]
+}

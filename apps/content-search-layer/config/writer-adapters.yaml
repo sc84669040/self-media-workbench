@@ -1,0 +1,43 @@
+default_writer: generic-longform
+
+profiles:
+  khazix-writer:
+    skill: khazix-writer
+    display_name: Khazix Writer
+    writer_type: longform_wechat
+    description: Optional external writing skill. Configure its prompt path in config/local/local.yaml before enabling.
+    available: false
+    adapter_name: brief-first
+    skill_prompt_path: ""
+    enabled_sections:
+      - creation_intent
+      - evidence_pack
+      - narrative_plan
+      - legacy_compat
+    brief_template:
+      focus: turn evidence into a publication-ready long-form article brief
+      must_include:
+        - core_judgement
+        - hook_candidates
+        - must_use_citations
+        - writer_voice_notes
+
+  generic-longform:
+    skill: generic-longform
+    display_name: Generic Longform
+    writer_type: general_longform
+    description: Built-in generic long-form writing brief adapter.
+    available: true
+    adapter_name: balanced-brief
+    enabled_sections:
+      - creation_intent
+      - evidence_pack
+      - narrative_plan
+      - legacy_compat
+    brief_template:
+      focus: turn evidence into a reusable long-form writing brief
+      must_include:
+        - core_judgement
+        - hook_candidates
+        - must_use_citations
+        - recommended_sections

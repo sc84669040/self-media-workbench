@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创作编排台</title>
+  <style>
+    :root {
+      --bg: #f3f6f9;
+      --surface: rgba(255, 255, 255, 0.95);
+      --surface-soft: rgba(247, 250, 252, 0.96);
+      --line: rgba(23, 48, 66, 0.1);
+      --line-strong: rgba(23, 48, 66, 0.18);
+      --text: #173042;
+      --muted: #607286;
+      --accent: #1f5f88;
+      --accent-soft: rgba(31, 95, 136, 0.08);
+      --success: #2d7657;
+      --warn: #b0731d;
+      --danger: #b84b5a;
+      --shadow-lg: 0 28px 60px rgba(46, 73, 94, 0.1);
+      --shadow-md: 0 16px 32px rgba(46, 73, 94, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max-width: 1480px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(146, 184, 215, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7fafc 0%, #e9f0f5 100%);
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    button, input, textarea, select {
+      font: inherit;
+    }
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 247, 251, 0.96));
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 18px;
+    }
+    .hero h1,
+    .section-title,
+    .card h3,
+    .modal-title {
+      margin: 0;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+    .hero h1 {
+      margin-top: 14px;
+      margin-bottom: 10px;
+      font-size: 42px;
+      line-height: 1.12;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(31, 95, 136, 0.14);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+    .hero-actions a {
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text);
+    }
+    .status-bar,
+    .inline-status {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--muted);
+      white-space: pre-wrap;
+      line-height: 1.65;
+      display: none;
+    }
+    .status-bar {
+      margin-bottom: 18px;
+    }
+    .inline-status {
+      margin-top: 12px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+    .section-title {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+    .card h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .muted {
+      color: var(--muted);
+    }
+    .task-list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .workspace-main,
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+    .summary-grid,
+    .target-list,
+    .material-list {
+      display: grid;
+      gap: 12px;
+    }
+    .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, max-content));
+      gap: 10px;
+    }
+    .target-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .material-list {
+      max-height: 1000px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .summary-card,
+    .task-card,
+    .material-card,
+    .target-card,
+    .result-block {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+    }
+    .summary-card {
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .summary-card strong {
+      display: block;
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 2px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summary-card .muted {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .task-card,
+    .material-card,
+    .target-card {
+      padding: 16px;
+    }
+    .task-card {
+      padding: 12px 14px;
+      min-width: 240px;
+      max-width: 280px;
+      flex: 0 0 auto;
+    }
+    .task-card,
+    .target-card,
+    .material-card.clickable {
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    }
+    .task-card:hover,
+    .target-card:hover,
+    .material-card.clickable:hover {
+      transform: translateY(-1px);
+      border-color: rgba(31, 95, 136, 0.24);
+      box-shadow: 0 10px 22px rgba(46, 73, 94, 0.08);
+    }
+    .task-card.active,
+    .target-card.active {
+      border-color: rgba(31, 95, 136, 0.34);
+      box-shadow: inset 0 0 0 1px rgba(31, 95, 136, 0.16);
+      background: rgba(31, 95, 136, 0.06);
+    }
+    .task-card strong,
+    .material-card strong,
+    .target-card strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .task-card strong,
+    .target-card strong {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .task-card .muted,
+    .target-card .target-desc {
+      font-size: 12px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .task-card-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .task-delete-btn {
+      padding: 6px 10px;
+      min-width: 0;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      color: var(--danger);
+      background: rgba(184, 75, 90, 0.08);
+      border: 1px solid rgba(184, 75, 90, 0.16);
+      box-shadow: none;
+      flex: 0 0 auto;
+    }
+    .target-card .meta-line span {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(31, 95, 136, 0.06);
+      border: 1px solid rgba(31, 95, 136, 0.12);
+      color: var(--accent);
+    }
+    .material-card {
+      position: relative;
+    }
+    .material-card.body-missing {
+      border-color: rgba(184, 75, 90, 0.26);
+      background: rgba(184, 75, 90, 0.04);
+    }
+    .material-topline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .material-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .material-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .material-badge.warning {
+      border-color: rgba(184, 75, 90, 0.26);
+      background: rgba(184, 75, 90, 0.08);
+      color: #9b3d49;
+    }
+    .pill-row,
+    .button-row,
+    .choice-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 136, 0.16);
+      background: rgba(31, 95, 136, 0.06);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field.span-2 {
+      grid-column: 1 / -1;
+    }
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--text);
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .choice input {
+      width: auto;
+      margin: 0;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #f7fbff;
+      background: linear-gradient(135deg, #1f5f88, #184866);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(31, 95, 136, 0.18);
+    }
+    button.secondary {
+      color: var(--text);
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+    }
+    button.ghost {
+      color: var(--text);
+      background: transparent;
+      border: 1px dashed var(--line-strong);
+      box-shadow: none;
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .material-actions {
+      margin-top: 14px;
+      justify-content: flex-end;
+    }
+    .result-block {
+      padding: 16px;
+    }
+    .result-block pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(21, 47, 64, 0.06);
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.65;
+      color: var(--text);
+    }
+    .empty {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--line-strong);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.76);
+    }
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .modal-root {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(15, 27, 38, 0.42);
+      z-index: 20;
+    }
+    .modal-root.open {
+      display: flex;
+    }
+    .modal-panel {
+      width: min(920px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--shadow-lg);
+      padding: 22px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+    .modal-close {
+      padding: 10px 12px;
+      border-radius: 12px;
+      min-width: 44px;
+    }
+    @media (max-width: 1120px) {
+      .hero,
+      .layout,
+      .field-grid,
+      .target-list,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      .layout,
+      .hero {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="badge">Creation Workspace</span>
+        <h1>创作编排台</h1>
+      </div>
+      <div class="hero-actions">
+        <a href="/create">返回创作前台</a>
+        <a href="/create/topic">主题搜索台</a>
+        <a href="/create/nighthawk">正文资料池</a>
+      </div>
+    </section>
+
+    <div id="workspace-status" class="status-bar"></div>
+
+    <section class="card" style="margin-bottom: 18px;">
+      <h3>最近导入素材包</h3>
+      <div id="task-list" class="task-list"></div>
+    </section>
+
+    <div class="layout">
+      <section class="workspace-main">
+        <section class="card">
+          <div id="task-summary"></div>
+        </section>
+
+        <section class="card">
+          <h3>创作模式</h3>
+          <div id="target-list" class="target-list"></div>
+        </section>
+
+        <section class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap: 12px;">
+            <h3 style="margin:0;">模式设置</h3>
+            <div class="button-row">
+              <button id="target-autofill-btn" type="button" class="secondary" style="display:none;">智能填写</button>
+              <button id="target-save-btn" type="button" class="secondary">保存当前设置</button>
+            </div>
+          </div>
+          <div id="target-form"></div>
+          <div id="workspace-inline-status" class="inline-status"></div>
+          <div class="button-row" style="margin-top: 18px;">
+            <button id="generate-packet-btn" type="button" onclick="window.generatePacketFlow?.()">生成下游创作包</button>
+            <button id="writing-config-btn" type="button" class="secondary">配置模型</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="stack">
+        <section class="card">
+          <h3>已导入素材</h3>
+          <div id="material-list" class="material-list"></div>
+        </section>
+
+        <section class="card">
+          <h3>生成结果</h3>
+          <div id="result-panel"></div>
+        </section>
+      </section>
+    </div>
+  </div>
+
+  <div id="article-modal" class="modal-root" aria-hidden="true">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <div id="article-modal-title" class="modal-title"></div>
+          <div id="article-modal-meta" class="meta-line"></div>
+        </div>
+        <button id="article-modal-close" class="secondary modal-close" type="button">关闭</button>
+      </div>
+      <div id="article-modal-body" class="result-block"></div>
+    </div>
+  </div>
+
+  <div id="writing-config-modal" class="modal-root" aria-hidden="true">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">写作模型配置</div>
+          <div class="muted" style="margin-top: 6px;">用于“生成文章”。配置保存在本机创作台配置文件里，API Key 不会在页面回显。</div>
+        </div>
+        <button id="writing-config-close" class="secondary modal-close" type="button">关闭</button>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="writing-provider">服务类型</label>
+          <select id="writing-provider">
+            <option value="openai_compatible">OpenAI-compatible</option>
+            <option value="disabled">暂不启用</option>
+            <option value="mock">Mock 测试</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="writing-model">模型名称</label>
+          <input id="writing-model" placeholder="例如 gpt-4.1 / deepseek-chat / qwen-plus" />
+        </div>
+        <div class="field span-2">
+          <label for="writing-api-base">API Base</label>
+          <input id="writing-api-base" placeholder="https://api.openai.com/v1" />
+        </div>
+        <div class="field span-2">
+          <label for="writing-api-key">API Key</label>
+          <input id="writing-api-key" type="password" placeholder="填写后会保存到本机配置；保存成功后页面不会回显" />
+          <div id="writing-api-key-state" class="muted">正在读取 API Key 状态...</div>
+        </div>
+        <div class="field">
+          <label for="writing-timeout">超时时间（秒）</label>
+          <input id="writing-timeout" type="number" min="15" step="1" />
+        </div>
+        <div class="field">
+          <label for="writing-quality-check">
+            <input id="writing-quality-check" type="checkbox" style="width:auto; margin-right:8px;" />
+            生成后自动质检
+          </label>
+        </div>
+      </div>
+      <div id="writing-config-status" class="inline-status"></div>
+      <div class="button-row" style="margin-top: 16px; justify-content:flex-end;">
+        <button id="writing-test-btn" type="button" class="secondary">验证配置</button>
+        <button id="writing-save-btn" type="button">保存配置</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('workspace-status');
+    const inlineStatusEl = document.getElementById('workspace-inline-status');
+    const taskListEl = document.getElementById('task-list');
+    const taskSummaryEl = document.getElementById('task-summary');
+    const materialListEl = document.getElementById('material-list');
+    const targetListEl = document.getElementById('target-list');
+    const targetFormEl = document.getElementById('target-form');
+    const resultPanelEl = document.getElementById('result-panel');
+    const generatePacketBtnEl = document.getElementById('generate-packet-btn');
+    const writingConfigBtnEl = document.getElementById('writing-config-btn');
+    const targetSaveBtnEl = document.getElementById('target-save-btn');
+    const autofillBtnEl = document.getElementById('target-autofill-btn');
+    const query = new URLSearchParams(window.location.search);
+
+    const state = {
+      tasks: [],
+      targets: [],
+      activeTaskId: query.get('task_id') || '',
+      activeTargetId: '',
+      bundle: null,
+      latestPacket: null,
+      articleLookup: new Map(),
+      writingConfig: null,
+    };
+
+    async function api(path, options = {}) {
+      const init = { method: options.method || 'GET', headers: options.headers || {} };
+      if (options.body !== undefined) {
+        init.body = typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+        init.headers['Content-Type'] = 'application/json';
+      }
+      const response = await fetch(path, init);
+      const text = await response.text();
+      let payload = {};
+      try {
+        payload = text ? JSON.parse(text) : {};
+      } catch (error) {
+        throw new Error(text || '接口返回了无法解析的内容');
+      }
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || '请求失败');
+      }
+      return payload;
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function dedupe(items) {
+      return Array.from(new Set((items || []).map((item) => String(item || '').trim()).filter(Boolean)));
+    }
+
+    function splitLines(value) {
+      return String(value || '')
+        .split(/\r?\n/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function formatTime(value) {
+      if (!value) return '未记录';
+      const parsed = new Date(String(value).replace(' ', 'T'));
+      if (!Number.isNaN(parsed.getTime())) {
+        return new Intl.DateTimeFormat('zh-CN', {
+          timeZone: 'Asia/Shanghai',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).format(parsed).replace(/\//g, '-');
+      }
+      return String(value).replace('T', ' ').replace('+00:00', '');
+    }
+
+    function setStatus(message, tone = 'default') {
+      if (!message) {
+        statusEl.style.display = 'none';
+        statusEl.textContent = '';
+        return;
+      }
+      statusEl.style.display = 'block';
+      statusEl.style.borderColor = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.25)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.22)'
+          : 'rgba(23, 48, 66, 0.1)';
+      statusEl.style.background = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.08)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.08)'
+          : 'rgba(255, 255, 255, 0.84)';
+      statusEl.style.color = tone === 'error'
+        ? '#9b3d49'
+        : tone === 'success'
+          ? '#21563f'
+          : 'var(--muted)';
+      statusEl.textContent = message;
+    }
+
+    function setInlineStatus(message, tone = 'default', options = {}) {
+      if (!message) {
+        inlineStatusEl.style.display = 'none';
+        inlineStatusEl.innerHTML = '';
+        return;
+      }
+      inlineStatusEl.style.display = 'block';
+      inlineStatusEl.style.borderColor = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.25)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.22)'
+          : 'rgba(23, 48, 66, 0.1)';
+      inlineStatusEl.style.background = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.08)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.08)'
+          : 'rgba(255, 255, 255, 0.84)';
+      inlineStatusEl.style.color = tone === 'error'
+        ? '#9b3d49'
+        : tone === 'success'
+          ? '#21563f'
+          : 'var(--muted)';
+      const actionHtml = options.actionLabel
+        ? `<div class="button-row" style="margin-top: 10px;"><button id="inline-status-action-btn" type="button" class="secondary">${escapeHtml(options.actionLabel)}</button></div>`
+        : '';
+      inlineStatusEl.innerHTML = `<div>${escapeHtml(message)}</div>${actionHtml}`;
+      if (options.actionLabel && typeof options.onAction === 'function') {
+        document.getElementById('inline-status-action-btn')?.addEventListener('click', options.onAction);
+      }
+    }
+
+    function setWritingConfigStatus(message, tone = 'default') {
+      const el = document.getElementById('writing-config-status');
+      if (!message) {
+        el.style.display = 'none';
+        el.textContent = '';
+        return;
+      }
+      el.style.display = 'block';
+      el.style.borderColor = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.25)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.22)'
+          : 'rgba(23, 48, 66, 0.1)';
+      el.style.background = tone === 'error'
+        ? 'rgba(184, 75, 90, 0.08)'
+        : tone === 'success'
+          ? 'rgba(45, 118, 87, 0.08)'
+          : 'rgba(255, 255, 255, 0.84)';
+      el.style.color = tone === 'error'
+        ? '#9b3d49'
+        : tone === 'success'
+          ? '#21563f'
+          : 'var(--muted)';
+      el.textContent = message;
+    }
+
+    function setButtonBusy(button, busy, idleText, busyText) {
+      if (!button) return;
+      button.disabled = Boolean(busy);
+      button.dataset.busy = busy ? '1' : '0';
+      button.textContent = busy ? busyText : idleText;
+    }
+
+    function getGenerateButtonIdleText() {
+      const target = getActiveTarget();
+      if (target?.ui_preset === 'khazix_longform') return '生成文章';
+      if (target?.ui_preset === 'voiceover_script') return '生成口播稿';
+      return '生成下游创作包';
+    }
+
+    function updateGenerateButtonLabel() {
+      if (generatePacketBtnEl.dataset.busy === '1') return;
+      generatePacketBtnEl.textContent = getGenerateButtonIdleText();
+    }
+
+    function importedTasks(tasks) {
+      const seen = new Set();
+      const filtered = (tasks || []).filter((task) => {
+        const trigger = String(task.trigger_type || '').trim();
+        const metadata = task.metadata || {};
+        const sourcePacket = metadata.source_packet || {};
+        const packetPreview = metadata.packet_preview || {};
+        const creationPreview = metadata.creation_packet_preview || {};
+        const isImported = Boolean(
+          sourcePacket.packet_id
+          || sourcePacket.raw_item_ids
+          || sourcePacket.packet_kind
+          || ['topic_packet', 'event_packet', 'nighthawk_sources'].includes(trigger)
+        );
+        if (!isImported) return false;
+        if (sourcePacket.packet_type === 'topic' && Number(packetPreview.total_results || 0) <= 0) return false;
+        if (sourcePacket.source_type === 'nighthawk_raw_items' && Number(creationPreview.selected_count || 0) <= 0) return false;
+        const dedupeKey = sourcePacket.packet_id
+          || `${sourcePacket.source_type || trigger}:${JSON.stringify(sourcePacket.raw_item_ids || [])}`
+          || `${trigger}:${task.topic || ''}`;
+        if (seen.has(dedupeKey)) return false;
+        seen.add(dedupeKey);
+        return true;
+      });
+      return filtered.length ? filtered : (tasks || []);
+    }
+
+    function getActiveTarget() {
+      if (!state.targets.length) return null;
+      return state.targets.find((item) => item.id === state.activeTargetId) || state.targets[0];
+    }
+
+    function inferTargetId(bundle) {
+      const task = bundle?.task || {};
+      const metadata = task.metadata || {};
+      const preferredSkill = metadata.preferred_writer_skill || bundle?.writer_jobs?.[0]?.writer_skill || '';
+      if (metadata.creation_target_id) {
+        return metadata.creation_target_id;
+      }
+      const matched = state.targets.find((item) => String(item.writer_skill || '').trim() === String(preferredSkill || '').trim());
+      return matched ? matched.id : (state.targets[0]?.id || '');
+    }
+
+    function getImportedMaterials(bundle) {
+      const results = Array.isArray(bundle?.retrieval_batch?.results) ? bundle.retrieval_batch.results : [];
+      const kept = results.filter((item) => {
+        const decision = String(item.decision || '').trim().toLowerCase();
+        const classification = String(item.classification || '').trim().toLowerCase();
+        return ['keep', 'primary', 'supporting'].includes(decision) || ['primary', 'secondary', 'supporting'].includes(classification);
+      });
+      return kept.length ? kept : results;
+    }
+
+    function materialNeedsBodyFetch(item) {
+      const raw = item?.raw || {};
+      const rawBody = String(raw.content || raw.transcript_text || raw.transcript_excerpt || '').trim();
+      const resolvedText = String(item?.text || item?.summary || '').trim();
+      const recommendFullFetch = String(item?.recommend_full_fetch || '').trim().toLowerCase();
+      if (recommendFullFetch === 'yes' || recommendFullFetch === 'body_missing') {
+        return !rawBody || raw.body_fetch_ok === false;
+      }
+      return !rawBody && !resolvedText && Boolean(item?.url);
+    }
+
+    function materialCanFetchBody(item) {
+      return materialNeedsBodyFetch(item) && Boolean(String(item?.url || '').trim());
+    }
+
+    function getMaterialBody(item) {
+      return item?.raw?.content || item?.text || item?.summary || '暂无可展示正文';
+    }
+
+    function renderTaskList() {
+      const tasks = importedTasks(state.tasks);
+      if (!tasks.length) {
+        taskListEl.innerHTML = `
+          <div class="empty">
+            还没有导入好的素材。先去 <a href="/create/topic">主题搜索台</a> 或 <a href="/create/nighthawk">正文资料池</a> 选择材料，再回到这里继续编排。
+          </div>
+        `;
+        return;
+      }
+
+      taskListEl.innerHTML = tasks.map((task) => {
+        const active = task.id === state.activeTaskId;
+        const sourceType = task.metadata?.source_packet?.packet_type || task.trigger_type || 'imported';
+        return `
+          <article class="task-card ${active ? 'active' : ''}" data-task-id="${escapeHtml(task.id)}">
+            <div class="task-card-header">
+              <strong>${escapeHtml(task.topic || '未命名任务')}</strong>
+              <button class="task-delete-btn" data-task-delete="${escapeHtml(task.id)}" type="button">删除</button>
+            </div>
+            <div class="muted">${escapeHtml(task.angle || task.goal || '等待配置创作方向')}</div>
+            <div class="meta-line">
+              <span>${escapeHtml(sourceType)}</span>
+              <span>${escapeHtml(formatTime(task.updated_at || task.created_at))}</span>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      taskListEl.querySelectorAll('[data-task-id]').forEach((node) => {
+        node.addEventListener('click', () => selectTask(node.dataset.taskId || ''));
+      });
+      taskListEl.querySelectorAll('[data-task-delete]').forEach((node) => {
+        node.addEventListener('click', async (event) => {
+          event.stopPropagation();
+          await deleteTask(node.dataset.taskDelete || '');
+        });
+      });
+    }
+
+    function renderTaskSummary() {
+      const bundle = state.bundle;
+      if (!bundle?.task) {
+        taskSummaryEl.innerHTML = '<div class="empty">请先从上方选择一个素材包。</div>';
+        return;
+      }
+      const task = bundle.task;
+      const metadata = task.metadata || {};
+      const materials = getImportedMaterials(bundle);
+      const primaryCount = materials.filter((item) => String(item.classification || '').trim().toLowerCase() === 'primary').length;
+      const sourceLabel = metadata.source_packet?.packet_type || task.trigger_type || 'imported';
+
+      taskSummaryEl.innerHTML = `
+        <h2 class="section-title">${escapeHtml(task.topic || '未命名任务')}</h2>
+        <p class="muted">${escapeHtml(task.goal || '这里承接已经导入好的素材，再继续生成下游创作包。')}</p>
+        <div class="summary-grid" style="margin-top: 16px;">
+          <div class="summary-card">
+            <strong>${materials.length}</strong>
+            <div class="muted">当前导入文章数</div>
+          </div>
+          <div class="summary-card">
+            <strong>${primaryCount}</strong>
+            <div class="muted">主资料数</div>
+          </div>
+          <div class="summary-card">
+            <strong>${escapeHtml(sourceLabel)}</strong>
+            <div class="muted">导入来源</div>
+          </div>
+        </div>
+        <div class="pill-row" style="margin-top: 16px;">
+          <span class="pill">平台 ${escapeHtml(task.platform || '未设置')}</span>
+          <span class="pill">受众 ${escapeHtml(task.audience || '未设置')}</span>
+          <span class="pill">最近更新 ${escapeHtml(formatTime(task.updated_at || task.created_at))}</span>
+        </div>
+      `;
+    }
+
+    async function excludeMaterial(sourceId) {
+      if (!state.bundle?.task?.id || !state.bundle?.retrieval_batch?.id) return;
+      try {
+        setInlineStatus('正在从当前素材包移出这篇文章...', 'default');
+        await api(`/api/create/tasks/${encodeURIComponent(state.bundle.task.id)}/retrieval/${encodeURIComponent(state.bundle.retrieval_batch.id)}/exclude`, {
+          method: 'POST',
+          body: {
+            source_id: sourceId,
+            reason: '用户从编排台手动移出素材包',
+          },
+        });
+        await loadBundle(state.bundle.task.id, false);
+        setInlineStatus('已从当前素材包移出这篇文章。', 'success');
+      } catch (error) {
+        setInlineStatus(`移出素材失败：${error.message}`, 'error');
+      }
+    }
+
+    async function fetchMaterialBody(sourceId) {
+      if (!state.bundle?.task?.id || !state.bundle?.retrieval_batch?.id) return;
+      try {
+        setInlineStatus('正在为这篇素材发起抓正文任务...', 'default');
+        const payload = await api(`/api/create/tasks/${encodeURIComponent(state.bundle.task.id)}/retrieval/${encodeURIComponent(state.bundle.retrieval_batch.id)}/${encodeURIComponent(sourceId)}/fetch-body`, {
+          method: 'POST',
+          body: {
+            retry_count: 1,
+            analyze: true,
+            save_to_db: true,
+          },
+        });
+        const title = payload.title || payload.source_id || '当前素材';
+        setInlineStatus(`已发起抓正文：${title}。完成后刷新当前任务即可。`, 'success');
+      } catch (error) {
+        setInlineStatus(`抓取正文失败：${error.message}`, 'error');
+      }
+    }
+
+    function renderMaterials() {
+      const materials = getImportedMaterials(state.bundle);
+      state.articleLookup = new Map(materials.map((item) => [String(item.source_id || ''), item]));
+      if (!materials.length) {
+        materialListEl.innerHTML = '<div class="empty">当前任务还没有可直接使用的文章。</div>';
+        return;
+      }
+
+      materialListEl.innerHTML = materials.map((item) => {
+        const sourceId = String(item.source_id || '');
+        const needsBodyFetch = materialNeedsBodyFetch(item);
+        const canFetchBody = materialCanFetchBody(item);
+        return `
+          <article class="material-card clickable ${needsBodyFetch ? 'body-missing' : ''}" data-source-id="${escapeHtml(sourceId)}">
+            <div class="material-topline">
+              <strong>${escapeHtml(item.title || item.source_id || '未命名文章')}</strong>
+              <div class="material-badges">
+                ${needsBodyFetch ? '<span class="material-badge warning">正文未抓取</span>' : '<span class="material-badge">正文已就绪</span>'}
+              </div>
+            </div>
+            <div class="muted">${escapeHtml(item.summary || item.why_pick || '暂无摘要')}</div>
+            <div class="meta-line">
+              <span>${escapeHtml(item.source || item.channel || '未知来源')}</span>
+              <span>${escapeHtml(item.classification || '未分层')}</span>
+              <span>${escapeHtml(formatTime(item.published_at || item.created_at))}</span>
+            </div>
+            <div class="button-row material-actions">
+              ${needsBodyFetch ? `<button type="button" class="secondary" data-material-fetch="${escapeHtml(sourceId)}" ${canFetchBody ? '' : 'disabled'}>抓取正文</button>` : ''}
+              <button type="button" class="secondary" data-material-exclude="${escapeHtml(sourceId)}">移出素材包</button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      materialListEl.querySelectorAll('[data-source-id]').forEach((node) => {
+        node.addEventListener('click', () => openArticleModal(node.dataset.sourceId || ''));
+      });
+      materialListEl.querySelectorAll('[data-material-exclude]').forEach((node) => {
+        node.addEventListener('click', async (event) => {
+          event.stopPropagation();
+          await excludeMaterial(node.dataset.materialExclude || '');
+        });
+      });
+      materialListEl.querySelectorAll('[data-material-fetch]').forEach((node) => {
+        node.addEventListener('click', async (event) => {
+          event.stopPropagation();
+          if (node.hasAttribute('disabled')) return;
+          await fetchMaterialBody(node.dataset.materialFetch || '');
+        });
+      });
+    }
+
+    function renderTargetCards() {
+      if (!state.targets.length) {
+        targetListEl.innerHTML = '<div class="empty">创作模式配置尚未加载。</div>';
+        return;
+      }
+      targetListEl.innerHTML = state.targets.map((target) => `
+        <article class="target-card ${target.id === state.activeTargetId ? 'active' : ''}" data-target-id="${escapeHtml(target.id)}">
+          <strong>${escapeHtml(target.label || target.id)}</strong>
+          <div class="target-desc">${escapeHtml(target.description || '')}</div>
+          <div class="meta-line">
+            <span>${escapeHtml(target.writer_skill || 'generic-longform')}</span>
+            ${target.is_default ? '<span>默认</span>' : ''}
+          </div>
+        </article>
+      `).join('');
+
+      targetListEl.querySelectorAll('[data-target-id]').forEach((node) => {
+        node.addEventListener('click', () => {
+          state.activeTargetId = node.dataset.targetId || '';
+          renderTargetCards();
+          renderTargetForm();
+          updateGenerateButtonLabel();
+        });
+      });
+    }
+
+    function renderChoiceGroup(name, items, selectedItems) {
+      return `
+        <div class="choice-group">
+          ${(items || []).map((item) => {
+            const value = String(item.value || '');
+            const selected = selectedItems.includes(value);
+            return `
+              <label class="choice">
+                <input type="checkbox" name="${escapeHtml(name)}" value="${escapeHtml(value)}" ${selected ? 'checked' : ''} />
+                <span>${escapeHtml(item.label || value)}</span>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function getStoredTargetInputs(bundle) {
+      return bundle?.task?.metadata?.creation_target_inputs || {};
+    }
+
+    function renderKhazixForm(target, bundle, defaults, writerJob) {
+      const task = bundle.task;
+      const storedInputs = getStoredTargetInputs(bundle);
+      const currentArchetype = writerJob.article_archetype || defaults.article_archetype || '';
+      const voiceNotes = dedupe(writerJob.user_voice_notes || task.style_notes || []);
+      const bannedPatterns = dedupe(writerJob.banned_patterns || task.banned_patterns || []);
+      const angle = task.angle || '';
+      const topicReason = storedInputs.topic_reason || '';
+      const openingHook = storedInputs.opening_hook || '';
+      const personalObservations = storedInputs.personal_observations || '';
+      const targetWordCount = storedInputs.target_word_count || '3000';
+      const hkrFocus = dedupe(storedInputs.hkr_focus || ['happy', 'knowledge', 'resonance']);
+      const followups = dedupe(writerJob.optional_followups || defaults.optional_followups || []);
+      const articleOptions = (target.article_archetypes || []).map((item) => `
+        <option value="${escapeHtml(item.value)}" ${item.value === currentArchetype ? 'selected' : ''}>${escapeHtml(item.label || item.value)}</option>
+      `).join('');
+
+      return `
+        <div class="field-grid">
+          <div class="field">
+            <label for="field-article-archetype">文章原型</label>
+            <select id="field-article-archetype" name="article_archetype">${articleOptions}</select>
+          </div>
+          <div class="field">
+            <label for="field-target-word-count">目标字数</label>
+            <input id="field-target-word-count" name="target_word_count" type="number" min="800" max="12000" step="100" value="${escapeHtml(targetWordCount)}" />
+          </div>
+          <div class="field">
+            <label>选题质感</label>
+            ${renderChoiceGroup('hkr_focus', [
+              { value: 'happy', label: '有趣 / 有悬念' },
+              { value: 'knowledge', label: '有信息量' },
+              { value: 'resonance', label: '有共鸣' },
+            ], hkrFocus)}
+          </div>
+          <div class="field span-2">
+            <label for="field-topic-reason">这篇为什么值得写</label>
+            <textarea id="field-topic-reason" name="topic_reason" placeholder="用 2-4 句话说明这题为什么值得现在写。">${escapeHtml(topicReason)}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-angle">核心判断与切口</label>
+            <textarea id="field-angle" name="angle" placeholder="这次真正想立住的判断是什么。">${escapeHtml(angle)}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-opening-hook">开头气口</label>
+            <textarea id="field-opening-hook" name="opening_hook" placeholder="写一句想让文章开头就打到人的话。">${escapeHtml(openingHook)}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-personal-observations">真实观察 / 个人经历</label>
+            <textarea id="field-personal-observations" name="personal_observations" placeholder="这里放你自己真实看到、用过、惊讶、吐槽或想补充的东西。没有就写“暂无”，不要让模型编。">${escapeHtml(personalObservations)}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-voice-notes">表达要求</label>
+            <textarea id="field-voice-notes" name="user_voice_notes" placeholder="每行一个要求。">${escapeHtml(voiceNotes.join('\n'))}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-banned-patterns">避免写法</label>
+            <textarea id="field-banned-patterns" name="banned_patterns" placeholder="每行一个不希望出现的写法。">${escapeHtml(bannedPatterns.join('\n'))}</textarea>
+          </div>
+          <div class="field span-2">
+            <details>
+              <summary>高级设置</summary>
+              <div style="margin-top: 12px;">
+                <label>附带输出</label>
+                ${renderChoiceGroup('optional_followups', target.optional_followup_options || [], followups)}
+              </div>
+            </details>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCompactTargetForm(target, bundle, defaults, writerJob) {
+      const task = bundle.task;
+      const storedInputs = getStoredTargetInputs(bundle);
+      const currentArchetype = writerJob.article_archetype || defaults.article_archetype || '';
+      const voiceNotes = dedupe(writerJob.user_voice_notes || task.style_notes || []);
+      const bannedPatterns = dedupe(writerJob.banned_patterns || task.banned_patterns || []);
+      const angle = task.angle || '';
+      const followups = dedupe(writerJob.optional_followups || defaults.optional_followups || []);
+      const articleOptions = (target.article_archetypes || []).map((item) => `
+        <option value="${escapeHtml(item.value)}" ${item.value === currentArchetype ? 'selected' : ''}>${escapeHtml(item.label || item.value)}</option>
+      `).join('');
+
+      return `
+        <div class="field-grid">
+          <div class="field">
+            <label for="field-article-archetype">内容类型</label>
+            <select id="field-article-archetype" name="article_archetype">${articleOptions}</select>
+          </div>
+          <div class="field">
+            <label>附带输出</label>
+            ${renderChoiceGroup('optional_followups', target.optional_followup_options || [], followups)}
+          </div>
+          <div class="field span-2">
+            <label for="field-angle">核心切角</label>
+            <textarea id="field-angle" name="angle" placeholder="${escapeHtml((target.fields || []).find((item) => item.key === 'angle')?.placeholder || '这次想先讲透什么')}">${escapeHtml(angle)}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-topic-reason">为什么要做这条</label>
+            <textarea id="field-topic-reason" name="topic_reason" placeholder="一句到几句，说明这条内容为什么值得现在做。">${escapeHtml(storedInputs.topic_reason || '')}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-voice-notes">表达要求</label>
+            <textarea id="field-voice-notes" name="user_voice_notes" placeholder="每行一个表达要求。">${escapeHtml(voiceNotes.join('\n'))}</textarea>
+          </div>
+          <div class="field span-2">
+            <label for="field-banned-patterns">避免写法</label>
+            <textarea id="field-banned-patterns" name="banned_patterns" placeholder="每行一个不希望出现的写法。">${escapeHtml(bannedPatterns.join('\n'))}</textarea>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTargetForm() {
+      const target = getActiveTarget();
+      const bundle = state.bundle;
+      if (!target || !bundle?.task) {
+        targetFormEl.innerHTML = '<div class="empty">请先选择素材包，再选择创作模式。</div>';
+        return;
+      }
+
+      const writerJob = bundle.writer_jobs?.[bundle.writer_jobs.length - 1] || {};
+      const defaults = target.defaults || {};
+      const primaryLabel = ((target.primary_output_options || []).find((item) => item.value === (defaults.primary_output || [])[0]) || {}).label
+        || ((defaults.primary_output || [])[0] || '未设置');
+      const intro = target.ui_preset === 'khazix_longform'
+        ? 'Khazix 长文模式只保留真正影响出稿质量的核心输入。素材包里的文章已经加载好，你现在只需要确定文章原型、切口、开头气口和表达边界。'
+        : '当前模式只展示真正会影响下游输出的必要输入。';
+      const autofillMeta = bundle.task?.metadata?.creation_target_autofill || {};
+      const autofillEnabled = target.ui_preset === 'khazix_longform';
+      const autofillReady = autofillEnabled && autofillMeta.target_id === target.id && Boolean(autofillMeta.generated_at);
+
+      autofillBtnEl.style.display = autofillEnabled ? 'inline-flex' : 'none';
+      autofillBtnEl.disabled = !autofillEnabled;
+      autofillBtnEl.textContent = autofillReady ? '重新智能填写' : '智能填写';
+
+      const autofillNote = autofillReady
+        ? `<div class="muted" style="margin-top: 8px;">已基于 ${escapeHtml(String(autofillMeta.material_count || 0))} 篇素材生成一版建议，最近更新 ${escapeHtml(formatTime(autofillMeta.generated_at))}，来源 ${escapeHtml(autofillMeta.source || 'mock')}</div>`
+        : (autofillEnabled
+          ? '<div class="muted" style="margin-top: 8px;">点击“智能填写”，会基于当前素材包里的文章，自动生成一版建议。</div>'
+          : '');
+
+      targetFormEl.innerHTML = `
+        <div class="result-block" style="margin-bottom: 12px;">
+          <div class="pill-row">
+            <span class="pill">默认主产物：${escapeHtml(primaryLabel)}</span>
+            <span class="pill">下游技能：${escapeHtml(target.writer_skill || 'generic-longform')}</span>
+          </div>
+          <div class="muted" style="margin-top: 10px;">${escapeHtml(intro)}</div>
+          ${autofillNote}
+        </div>
+        ${target.ui_preset === 'khazix_longform'
+          ? renderKhazixForm(target, bundle, defaults, writerJob)
+          : renderCompactTargetForm(target, bundle, defaults, writerJob)}
+      `;
+      updateGenerateButtonLabel();
+    }
+
+    function collectTargetPayload() {
+      const target = getActiveTarget();
+      const readField = (name) => String(targetFormEl.querySelector(`[name="${name}"]`)?.value || '').trim();
+      const optionalFollowups = targetFormEl.querySelectorAll('input[name="optional_followups"]:checked');
+      const hkrFocus = targetFormEl.querySelectorAll('input[name="hkr_focus"]:checked');
+      const defaultPrimaryOutput = Array.isArray(target?.defaults?.primary_output) ? target.defaults.primary_output : [];
+      return {
+        creation_target_id: state.activeTargetId,
+        preferred_writer_skill: target?.writer_skill || 'generic-longform',
+        writer_skill: target?.writer_skill || 'generic-longform',
+        content_template: target?.defaults?.content_template || '',
+        angle: readField('angle'),
+        topic_reason: readField('topic_reason'),
+        opening_hook: readField('opening_hook'),
+        personal_observations: readField('personal_observations'),
+        target_word_count: readField('target_word_count'),
+        hkr_focus: Array.from(hkrFocus).map((item) => item.value),
+        article_archetype: readField('article_archetype'),
+        primary_output: defaultPrimaryOutput,
+        optional_followups: Array.from(optionalFollowups).map((item) => item.value),
+        user_voice_notes: splitLines(readField('user_voice_notes')),
+        banned_patterns: splitLines(readField('banned_patterns')),
+      };
+    }
+
+    async function saveCurrentTarget(silent = false) {
+      if (!state.bundle?.task?.id) return;
+      const task = state.bundle.task;
+      const payload = collectTargetPayload();
+      const metadata = {
+        ...(task.metadata || {}),
+        preferred_writer_skill: payload.preferred_writer_skill,
+        creation_target_id: state.activeTargetId,
+      };
+      await api(`/api/create/tasks/${encodeURIComponent(task.id)}`, {
+        method: 'POST',
+        body: {
+          angle: payload.angle,
+          topic_reason: payload.topic_reason,
+          opening_hook: payload.opening_hook,
+          personal_observations: payload.personal_observations,
+          target_word_count: payload.target_word_count,
+          hkr_focus: payload.hkr_focus,
+          creation_target_id: payload.creation_target_id,
+          preferred_writer_skill: payload.preferred_writer_skill,
+          style_notes: payload.user_voice_notes,
+          banned_patterns: payload.banned_patterns,
+          metadata,
+        },
+      });
+      if (!silent) {
+        setStatus('当前创作模式已保存。', 'success');
+      }
+      await loadBundle(task.id, false);
+    }
+
+    async function triggerPrimaryBodyFetch() {
+      if (!state.bundle?.task?.id) return;
+      const taskId = state.bundle.task.id;
+      try {
+        setInlineStatus('正在发起主资料补正文任务...', 'default');
+        const payload = await api(`/api/create/tasks/${encodeURIComponent(taskId)}/citations/fetch-primary-body`, {
+          method: 'POST',
+          body: {
+            retry_count: 1,
+            analyze: true,
+            save_to_db: true,
+          },
+        });
+        const title = payload.title || payload.source_id || '当前素材';
+        setInlineStatus(`已发起补正文：${title}。补完后再点一次“生成下游创作包”即可。`, 'success');
+      } catch (error) {
+        setInlineStatus(`补正文失败：${error.message}`, 'error');
+      }
+    }
+
+    function fillWritingConfigForm(config) {
+      const writing = config?.writing || {};
+      document.getElementById('writing-provider').value = writing.provider || 'openai_compatible';
+      document.getElementById('writing-model').value = writing.model || '';
+      document.getElementById('writing-api-base').value = writing.api_base || 'https://api.openai.com/v1';
+      document.getElementById('writing-api-key').value = '';
+      document.getElementById('writing-api-key').placeholder = writing.has_api_key
+        ? '已保存 API Key；如需更换，请输入新的 API Key'
+        : '填写后会保存到本机配置；保存成功后页面不会回显';
+      document.getElementById('writing-api-key-state').textContent = writing.has_api_key
+        ? '当前状态：API Key 已保存。为了安全，页面不会显示密钥内容。'
+        : '当前状态：还没有保存 API Key。';
+      document.getElementById('writing-timeout').value = writing.timeout_sec || 120;
+      document.getElementById('writing-quality-check').checked = writing.quality_check_enabled !== false;
+      const keyState = writing.has_api_key ? '已检测到 API Key。' : '还没有检测到 API Key。';
+      setWritingConfigStatus(`${keyState} 保存成功后密钥输入框会自动清空，这是正常的；你可以点“验证配置”确认模型能正常响应。`);
+    }
+
+    function collectWritingConfigForm() {
+      return {
+        provider: document.getElementById('writing-provider').value,
+        model: document.getElementById('writing-model').value.trim(),
+        api_base: document.getElementById('writing-api-base').value.trim(),
+        api_key_env: 'OPENAI_API_KEY',
+        api_key: document.getElementById('writing-api-key').value.trim(),
+        timeout_sec: Number(document.getElementById('writing-timeout').value || 120),
+        quality_check_enabled: document.getElementById('writing-quality-check').checked,
+      };
+    }
+
+    async function loadWritingConfig() {
+      const payload = await api('/api/create/config');
+      state.writingConfig = payload;
+      return payload;
+    }
+
+    async function openWritingConfigModal() {
+      try {
+        const payload = await loadWritingConfig();
+        fillWritingConfigForm(payload);
+        document.getElementById('writing-config-modal').classList.add('open');
+        document.getElementById('writing-config-modal').setAttribute('aria-hidden', 'false');
+      } catch (error) {
+        setInlineStatus('加载写作模型配置失败：' + error.message, 'error');
+      }
+    }
+
+    function closeWritingConfigModal() {
+      document.getElementById('writing-config-modal').classList.remove('open');
+      document.getElementById('writing-config-modal').setAttribute('aria-hidden', 'true');
+    }
+
+    async function saveWritingConfig() {
+      const button = document.getElementById('writing-save-btn');
+      setButtonBusy(button, true, '保存配置', '保存中...');
+      try {
+        const payload = await api('/api/create/writing-config', {
+          method: 'POST',
+          body: collectWritingConfigForm(),
+        });
+        state.writingConfig = payload;
+        fillWritingConfigForm(payload);
+        const savedKeyText = payload?.writing?.has_api_key ? 'API Key 已保存，页面不会回显。' : '配置已保存，但还没有检测到 API Key。';
+        setWritingConfigStatus(`${savedKeyText} 建议再点一次“验证配置”，确认模型可以正常生成。`, 'success');
+        setInlineStatus('写作模型配置已保存。', 'success');
+      } catch (error) {
+        setWritingConfigStatus('保存失败：' + error.message, 'error');
+      } finally {
+        setButtonBusy(button, false, '保存配置', '保存中...');
+      }
+    }
+
+    async function testWritingConfig() {
+      const button = document.getElementById('writing-test-btn');
+      setButtonBusy(button, true, '验证配置', '验证中...');
+      try {
+        const payload = await api('/api/create/writing-config/test', {
+          method: 'POST',
+          body: collectWritingConfigForm(),
+        });
+        setWritingConfigStatus(payload.message || '模型验证通过。', 'success');
+      } catch (error) {
+        setWritingConfigStatus('验证失败：' + error.message, 'error');
+      } finally {
+        setButtonBusy(button, false, '验证配置', '验证中...');
+      }
+    }
+
+    function renderResultPanel() {
+      const latestWriterJob = state.bundle?.writer_jobs?.[state.bundle.writer_jobs.length - 1];
+      const latestDraft = state.bundle?.article_drafts?.[0];
+      if (!state.bundle?.task) {
+        resultPanelEl.innerHTML = '<div class="empty">请先选择素材包。</div>';
+        return;
+      }
+      if (latestDraft) {
+        const drafts = Array.isArray(state.bundle?.article_drafts) ? state.bundle.article_drafts : [];
+        const draftCards = drafts.map((draft, index) => `
+          <article class="result-block" style="margin-top: ${index === 0 ? '0' : '10px'}; box-shadow:none;">
+            <div class="pill-row" style="margin-bottom: 8px;">
+              <span class="pill">${index === 0 ? '最新草稿' : '历史草稿'}</span>
+              <span class="pill">${escapeHtml(draft.writer_skill || 'writer')}</span>
+              <span class="pill">${escapeHtml(formatTime(draft.updated_at || draft.created_at))}</span>
+            </div>
+            <strong>${escapeHtml(draft.title || '未命名文章')}</strong>
+            <div class="muted" style="margin-top: 8px;">${escapeHtml(draft.quality_report?.summary || '暂无质检结果')}</div>
+            <div class="button-row" style="margin-top: 12px;">
+              <a class="secondary" href="/create/write?draft_id=${encodeURIComponent(draft.id || '')}">打开文章</a>
+            </div>
+          </article>
+        `).join('');
+        resultPanelEl.innerHTML = `
+          <div class="result-block">
+            <div class="pill-row" style="margin-bottom: 12px;">
+              <span class="pill">草稿箱</span>
+              <span class="pill">${drafts.length} 篇文章草稿</span>
+            </div>
+            <div class="muted" style="margin-bottom: 12px;">生成后的文章都会留在这里，返回编排台后也能继续打开、编辑、下载或重新生成。</div>
+            ${draftCards}
+          </div>
+        `;
+        return;
+        resultPanelEl.innerHTML = `
+          <div class="result-block">
+            <div class="pill-row" style="margin-bottom: 12px;">
+              <span class="pill">已生成文章</span>
+              <span class="pill">${escapeHtml(latestDraft.writer_skill || 'writer')}</span>
+              <span class="pill">最近更新：${escapeHtml(formatTime(latestDraft.updated_at || latestDraft.created_at))}</span>
+            </div>
+            <div class="field-grid">
+              <div class="field span-2">
+                <label>文章标题</label>
+                <div>${escapeHtml(latestDraft.title || '未命名文章')}</div>
+              </div>
+              <div class="field span-2">
+                <label>质检概览</label>
+                <div>${escapeHtml(latestDraft.quality_report?.summary || '暂无质检结果')}</div>
+              </div>
+            </div>
+            <div class="button-row" style="margin-top: 14px;">
+              <a class="secondary" href="/create/write?draft_id=${encodeURIComponent(latestDraft.id || '')}">打开文章编辑台</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      if (!latestWriterJob) {
+        resultPanelEl.innerHTML = '<div class="empty">还没有生成内容。</div>';
+        return;
+      }
+
+      const packetPayload = state.latestPacket || {};
+      const packet = packetPayload.packet || packetPayload;
+      const writerBrief = packet.writer_ready_brief || {};
+      const outputs = (latestWriterJob.primary_output || []).join('、') || '未设置';
+      const followups = (latestWriterJob.optional_followups || []).join('、') || '无';
+
+      resultPanelEl.innerHTML = `
+        <div class="result-block">
+          <div class="pill-row" style="margin-bottom: 12px;">
+            <span class="pill">主产物：${escapeHtml(outputs)}</span>
+            <span class="pill">附带输出：${escapeHtml(followups)}</span>
+            <span class="pill">最近生成：${escapeHtml(formatTime(latestWriterJob.updated_at || latestWriterJob.created_at))}</span>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label>文章原型</label>
+              <div>${escapeHtml(latestWriterJob.article_archetype || '未设置')}</div>
+            </div>
+            <div class="field">
+              <label>创作包路径</label>
+              <div>${escapeHtml(latestWriterJob.packet_path || '')}</div>
+            </div>
+            <div class="field span-2">
+              <label>为什么值得写</label>
+              <div>${escapeHtml(writerBrief.why_this_topic || state.bundle.task.metadata?.creation_target_inputs?.topic_reason || '尚未填写')}</div>
+            </div>
+            <div class="field span-2">
+              <label>核心判断</label>
+              <div>${escapeHtml(writerBrief.core_judgement || state.bundle.task.angle || '尚未填写')}</div>
+            </div>
+            <div class="field span-2">
+              <label>开头气口</label>
+              <div>${escapeHtml(writerBrief.opening_hook || state.bundle.task.metadata?.creation_target_inputs?.opening_hook || '尚未生成')}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function generatePacketFlow() {
+      if (generatePacketBtnEl.dataset.busy === '1') return;
+      if (!state.bundle?.task?.id) {
+        setInlineStatus('请先选择一个素材包，再生成。', 'error');
+        return;
+      }
+      const taskId = state.bundle.task.id;
+      const idleText = getGenerateButtonIdleText();
+      const target = getActiveTarget();
+      setButtonBusy(generatePacketBtnEl, true, idleText, '生成中...');
+      try {
+        setInlineStatus(target?.ui_preset === 'khazix_longform' ? '正在调用写作器生成文章，请稍等...' : '正在生成，请稍等...');
+        setStatus(target?.ui_preset === 'khazix_longform' ? '正在整理素材、应用 Khazix Writer 规则，并生成可编辑文章...' : '正在整理已导入素材，并生成适配当前模式的内容...');
+        const payload = collectTargetPayload();
+        await saveCurrentTarget(true);
+        if (target?.ui_preset === 'khazix_longform') {
+          const draftPayload = await api(`/api/create/tasks/${encodeURIComponent(taskId)}/article/generate`, {
+            method: 'POST',
+            body: payload,
+          });
+          const nextUrl = draftPayload.next_url || `/create/write?draft_id=${encodeURIComponent(draftPayload.article_draft?.id || '')}`;
+          setInlineStatus('文章已生成，正在打开编辑页。', 'success');
+          window.location.href = nextUrl;
+          return;
+        }
+        await api(`/api/create/tasks/${encodeURIComponent(taskId)}/bootstrap-packet-flow`, {
+          method: 'POST',
+          body: {
+            angle: payload.angle,
+            opening_hook: payload.opening_hook,
+            content_template: payload.content_template,
+          },
+        });
+        const writerJob = await api(`/api/create/tasks/${encodeURIComponent(taskId)}/writer-job/generate`, {
+          method: 'POST',
+          body: payload,
+        });
+        await loadBundle(taskId, false);
+        renderResultPanel();
+        setInlineStatus('已生成新的下游创作包。结果已经刷新到下方。', 'success');
+        setStatus('已经生成新的下游创作包，当前模式为 ' + (getActiveTarget()?.label || writerJob.writer_job?.writer_skill || '未命名模式') + '。', 'success');
+      } catch (error) {
+        const message = error.message || '生成失败';
+        if (message.includes('Gate 3')) {
+          setInlineStatus(message, 'error', {
+            actionLabel: '补主资料正文',
+            onAction: () => {
+              triggerPrimaryBodyFetch();
+            },
+          });
+        } else if (message.includes('写作模型未配置') || message.includes('API Key') || message.includes('模型名称')) {
+          setInlineStatus(message, 'error', {
+            actionLabel: '配置模型',
+            onAction: () => {
+              openWritingConfigModal();
+            },
+          });
+        } else {
+          setInlineStatus(message, 'error');
+        }
+        setStatus('生成失败：' + message, 'error');
+      } finally {
+        setButtonBusy(generatePacketBtnEl, false, getGenerateButtonIdleText(), '生成中...');
+      }
+    }
+
+    window.generatePacketFlow = generatePacketFlow;
+
+    async function runAutofill() {
+      if (autofillBtnEl.dataset.busy === '1') return;
+      if (!state.bundle?.task?.id) return;
+      const target = getActiveTarget();
+      if (!target || target.ui_preset !== 'khazix_longform') return;
+      const idleText = autofillBtnEl.textContent || '智能填写';
+      const progressTimers = [];
+      try {
+        setButtonBusy(autofillBtnEl, true, idleText, '智能填写中...');
+        setStatus('正在读取当前素材包，并让模型判断最合适的创作填写项...');
+        setInlineStatus('智能填写已开始：正在读取素材、判断切口和表达要求，请稍等。');
+        progressTimers.push(window.setTimeout(() => {
+          setInlineStatus('模型正在整理这批素材的写作切口。文章越多，等待时间会越长一点。');
+        }, 3500));
+        progressTimers.push(window.setTimeout(() => {
+          setInlineStatus('还在生成中：稍后会一次性刷新文章原型、选题质感、值得写、核心判断、开头、真实观察、表达要求和避免写法。');
+        }, 9000));
+        const payload = await api(`/api/create/tasks/${encodeURIComponent(state.bundle.task.id)}/autofill`, {
+          method: 'POST',
+          body: {
+            creation_target_id: target.id,
+          },
+        });
+        progressTimers.forEach((timer) => window.clearTimeout(timer));
+        state.bundle = payload.bundle || state.bundle;
+        state.activeTargetId = inferTargetId(state.bundle);
+        renderTaskSummary();
+        renderMaterials();
+        renderTargetCards();
+        renderTargetForm();
+        renderResultPanel();
+        const sourceLabel = payload.autofill?.source === 'llm' ? '模型' : '规则';
+        setInlineStatus('智能填写已完成，下面所有关键输入项已经刷新。', 'success');
+        setStatus('智能填写已完成，已基于 ' + (payload.autofill?.material_count || 0) + ' 篇素材由' + sourceLabel + '生成一版建议。', 'success');
+      } catch (error) {
+        progressTimers.forEach((timer) => window.clearTimeout(timer));
+        setInlineStatus('智能填写失败：' + error.message, 'error');
+        setStatus('智能填写失败：' + error.message, 'error');
+      } finally {
+        progressTimers.forEach((timer) => window.clearTimeout(timer));
+        setButtonBusy(autofillBtnEl, false, getActiveTarget()?.ui_preset === 'khazix_longform' ? '重新智能填写' : idleText, '智能填写中...');
+      }
+    }
+
+    async function loadTargets() {
+      const summary = await api('/api/create/targets');
+      state.targets = summary.targets || [];
+    }
+
+    async function loadBundle(taskId, updateHistory = true) {
+      const bundle = await api(`/api/create/tasks/${encodeURIComponent(taskId)}`);
+      state.bundle = bundle;
+      state.activeTaskId = taskId;
+      state.activeTargetId = inferTargetId(bundle);
+      setInlineStatus('');
+      if (updateHistory) {
+        const next = new URL(window.location.href);
+        next.searchParams.set('task_id', taskId);
+        window.history.replaceState({}, '', next.toString());
+      }
+      renderTaskList();
+      renderTaskSummary();
+      renderMaterials();
+      renderTargetCards();
+      renderTargetForm();
+      try {
+        const writerPacketPayload = await api(`/api/create/tasks/${encodeURIComponent(taskId)}/writer-packet`);
+        state.latestPacket = writerPacketPayload.packet || writerPacketPayload;
+      } catch (error) {
+        state.latestPacket = null;
+      }
+      renderResultPanel();
+      setStatus('');
+    }
+
+    async function selectTask(taskId, updateHistory = true) {
+      if (!taskId) return;
+      try {
+        await loadBundle(taskId, updateHistory);
+      } catch (error) {
+        state.tasks = (state.tasks || []).filter((item) => item.id !== taskId);
+        renderTaskList();
+        setStatus('加载任务失败：' + error.message, 'error');
+      }
+    }
+
+    async function loadTasks() {
+      const payload = await api('/api/create/tasks?limit=30');
+      state.tasks = payload.items || [];
+      renderTaskList();
+      const preferredTaskId = state.activeTaskId || importedTasks(state.tasks)[0]?.id || state.tasks[0]?.id || '';
+      if (preferredTaskId) {
+        await selectTask(preferredTaskId, false);
+      } else {
+        state.bundle = null;
+        renderTaskSummary();
+        renderMaterials();
+        renderTargetCards();
+        renderTargetForm();
+        renderResultPanel();
+        setStatus('还没有导入好的素材。先去主题搜索台或正文资料池选一批文章，再回到这里继续编排。');
+      }
+    }
+
+    async function deleteTask(taskId) {
+      const confirmed = window.confirm('确认删除这个素材包吗？它对应的编排数据和已生成创作包也会一起移除。');
+      if (!confirmed) return;
+      try {
+        await api(`/api/create/tasks/${encodeURIComponent(taskId)}/delete`, { method: 'POST', body: {} });
+        state.tasks = state.tasks.filter((item) => item.id !== taskId);
+        if (state.activeTaskId === taskId) {
+          state.activeTaskId = '';
+          state.bundle = null;
+          state.latestPacket = null;
+        }
+        await loadTasks();
+        setStatus('素材包已删除。', 'success');
+      } catch (error) {
+        setStatus('删除失败：' + error.message, 'error');
+      }
+    }
+
+    function openArticleModal(sourceId) {
+      const article = state.articleLookup.get(String(sourceId || ''));
+      if (!article) return;
+      document.getElementById('article-modal-title').textContent = article.title || article.source_id || '未命名文章';
+      document.getElementById('article-modal-meta').innerHTML = `
+        <span>${escapeHtml(article.source || article.channel || '未知来源')}</span>
+        <span>${escapeHtml(article.classification || '未分层')}</span>
+        <span>${escapeHtml(formatTime(article.published_at || article.created_at))}</span>
+        <span>${escapeHtml(article.url || '无外链')}</span>
+      `;
+      document.getElementById('article-modal-body').innerHTML = `<pre>${escapeHtml(getMaterialBody(article))}</pre>`;
+      document.getElementById('article-modal').classList.add('open');
+      document.getElementById('article-modal').setAttribute('aria-hidden', 'false');
+    }
+
+    function closeArticleModal() {
+      document.getElementById('article-modal').classList.remove('open');
+      document.getElementById('article-modal').setAttribute('aria-hidden', 'true');
+    }
+
+    targetSaveBtnEl.addEventListener('click', () => saveCurrentTarget(false));
+    generatePacketBtnEl.addEventListener('click', generatePacketFlow);
+    writingConfigBtnEl.addEventListener('click', openWritingConfigModal);
+    document.getElementById('writing-config-close').addEventListener('click', closeWritingConfigModal);
+    document.getElementById('writing-save-btn').addEventListener('click', saveWritingConfig);
+    document.getElementById('writing-test-btn').addEventListener('click', testWritingConfig);
+    document.getElementById('writing-config-modal').addEventListener('click', (event) => {
+      if (event.target.id === 'writing-config-modal') closeWritingConfigModal();
+    });
+    autofillBtnEl.addEventListener('click', runAutofill);
+    document.getElementById('article-modal-close').addEventListener('click', closeArticleModal);
+    document.getElementById('article-modal').addEventListener('click', (event) => {
+      if (event.target.id === 'article-modal') closeArticleModal();
+    });
+
+    (async () => {
+      try {
+        setStatus('正在加载编排台...', 'default');
+        await loadTargets();
+        await loadTasks();
+      } catch (error) {
+        setStatus('加载失败：' + error.message, 'error');
+      }
+    })();
+  </script>
+</body>
+</html>

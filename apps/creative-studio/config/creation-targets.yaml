@@ -1,0 +1,41 @@
+default_target: khazix-wechat
+
+targets:
+  khazix-wechat:
+    label: Khazix 长文
+    description: 面向 Khazix Writer 的公众号长文创作，强调判断、结构和证据组织。
+    writer_skill: khazix-writer
+    ui_preset: khazix_longform
+    defaults:
+      content_template: 判断型长文
+      article_archetype: judgement_longform
+      primary_output:
+        - long_article
+      optional_followups:
+        - title_set
+        - cover_copy
+  voiceover-script:
+    label: 口播稿
+    description: 面向后续口播或视频表达，强调节奏、段落推进和口语化表达。
+    writer_skill: generic-longform
+    ui_preset: voiceover_script
+    defaults:
+      content_template: 口播脚本
+      article_archetype: voiceover_explainer
+      primary_output:
+        - voiceover_script
+      optional_followups:
+        - short_title
+        - clip_outline
+  generic-longform:
+    label: 通用长文
+    description: 不绑定具体下游 writer，先生成一份通用的长文创作包。
+    writer_skill: generic-longform
+    ui_preset: generic_longform
+    defaults:
+      content_template: 通用长文
+      article_archetype: general_longform
+      primary_output:
+        - long_article
+      optional_followups:
+        - title_set

@@ -1,0 +1,370 @@
+version: 1
+updated_at: '2026-04-23'
+purpose: X 作者白名单，用于 content-search-layer 的定向监控与搜索降噪
+notes:
+- 当前正式接入到 content-search-layer 的 X 能力是最小可用版。
+- 严格来说，当前真正验证过并已用于搜索层测试的账号只有 OpenAI。
+- 本轮按你的要求，10 个 seed 账号已统一开启 enabled=true。
+- 手动维护时，优先改 enabled、priority、notes 三个字段。
+accounts:
+- handle: OpenAI
+  enabled: true
+  tier: active
+  lang: en
+  category: official_lab
+  priority: 10
+  source: current-validated
+  notes: 当前已实际用于 content-search-layer / twitter-cli 验证的账号。
+  username: OpenAI
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1885410181409820672/ztsaR0JW_normal.jpg
+- handle: dotey
+  enabled: true
+  tier: seed
+  lang: zh
+  category: ai_commentary
+  priority: 8
+  source: web-search + handle-verified
+  notes: 宝玉，中文 AI 圈高信噪比账号，偏 LLM / Prompt / 资讯解读。
+  username: 宝玉
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/561086911561736192/6_g58vEs_normal.jpeg
+- handle: op7418
+  enabled: true
+  tier: seed
+  lang: zh
+  category: aigc_workflow
+  priority: 8
+  source: web-search + handle-verified
+  notes: 歸藏，偏 AIGC、图像/视频生成、设计工作流。
+  username: 歸藏(guizang.ai)
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1636981205504786434/xDl77JIw_normal.jpg
+- handle: oran_ge
+  enabled: true
+  tier: seed
+  lang: zh
+  category: ai_builder
+  priority: 7
+  source: web-search + handle-verified
+  notes: 橘子，偏 AI 创业、Agent、产品与实战观察。
+  username: Orange AI
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1760074488073629696/ceSsuVCY_normal.png
+- handle: liyue_ai
+  enabled: true
+  tier: seed
+  lang: zh
+  category: ai_tools
+  priority: 7
+  source: web-search + handle-verified
+  notes: 偏 AI 工具评测、教程、资讯整合。
+  username: 李岳
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1995020278733443076/PAOgmVtW_normal.jpg
+- handle: vista8
+  enabled: true
+  tier: seed
+  lang: zh
+  category: ai_curator
+  priority: 7
+  source: web-search
+  notes: 向阳乔木，偏 AI 工具/资讯分享与中文圈信息流整理。
+  username: 向阳乔木
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1960882043249942533/h4J39ERy_normal.jpg
+- handle: claudeai
+  enabled: true
+  tier: seed
+  lang: en
+  category: official_lab
+  priority: 9
+  source: handle-verified
+  notes: Claude 官方账号，适合追 Anthropic 产品发布与能力更新。
+  username: Claude
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1950950107937185792/QOfEjFoJ_normal.jpg
+- handle: GoogleDeepMind
+  enabled: true
+  tier: seed
+  lang: en
+  category: official_lab
+  priority: 9
+  source: web-search + handle-verified
+  notes: Google DeepMind 官方账号，适合追研究与产品发布。
+  username: Google DeepMind
+  profile_image_url: https://pbs.twimg.com/profile_images/1695024885070737408/-M-HSH5P_normal.jpg
+- handle: karpathy
+  enabled: true
+  tier: seed
+  lang: en
+  category: ai_builder
+  priority: 9
+  source: handle-verified
+  notes: Andrej Karpathy，工程视角强，适合追模型理解与应用趋势。
+  username: Andrej Karpathy
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1296667294148382721/9Pr6XrPB_normal.jpg
+- handle: AndrewYNg
+  enabled: true
+  tier: seed
+  lang: en
+  category: ai_education
+  priority: 8
+  source: handle-verified
+  notes: Andrew Ng，偏行业趋势、教育、应用落地。
+  username: Andrew Ng
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/733174243714682880/oyG30NEH_normal.jpg
+- handle: AnthropicAI
+  enabled: true
+  tier: seed
+  lang: en
+  category: official_lab
+  priority: 8
+  source: assistant-curated
+  notes: Anthropic 官方品牌账号，和 claudeai 可二选一，也可都保留。
+  username: Anthropic
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1798110641414443008/XP8gyBaY_normal.jpg
+- handle: OfficialLoganK
+  enabled: true
+  tier: seed
+  lang: en
+  category: AI解读专家
+  priority: 8
+  source: manual
+  notes: ''
+  username: Logan Kilpatrick
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1943787288955084800/QOl7OJMc_normal.jpg
+- handle: yanhua1010
+  enabled: true
+  tier: seed
+  lang: zh
+  category: ''
+  priority: 8
+  source: manual
+  notes: ''
+  username: Yanhua
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1998302113592713216/jbKruapM_normal.jpg
+- handle: mnmn94253156337
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 8
+  source: manual
+  notes: ''
+  username: 撸毛吃猪脚饭
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2042784201985134593/YKTwnAuW_normal.jpg
+- handle: Xuegaogx
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 7
+  source: manual
+  notes: ''
+  username: 雪糕战神🍦
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2005277769236889600/YdJuH3Ng_normal.jpg
+- handle: MinLiBuilds
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 7
+  source: manual
+  notes: ''
+  username: 实践哥MinLi
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2011629211698577408/MWbkzwTo_normal.jpg
+- handle: hunterweb303
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 7
+  source: manual
+  notes: ''
+  username: 0x 哆啦A梦
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1980980097931776000/8fBSu27N_normal.jpg
+- platform: x
+  handle: berryxia
+  id: berryxia
+  name: Berryxia.AI
+  username: Berryxia.AI
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2016043556964605952/Tqi9KA2r_normal.jpg
+- platform: x
+  handle: GitTrend0x
+  id: GitTrend0x
+  name: GitTrend
+  username: GitTrend
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2027224265200902144/BG6LQpAG_normal.jpg
+- platform: x
+  handle: chartexpt
+  id: chartexpt
+  name: HaxKai
+  username: HaxKai
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/2044912699054891008/1oFFqeOZ_normal.jpg
+- platform: x
+  handle: ianneo_ai
+  id: ianneo_ai
+  name: Ian (伊恩)
+  username: Ian (伊恩)
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1891533502811865088/TGLd-ENY_normal.jpg
+- platform: x
+  handle: AYi_AInotes
+  id: AYi_AInotes
+  name: 阿绎 AYi
+  username: 阿绎 AYi
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 7
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1989157446829350912/pW828UwK_normal.jpg
+- platform: x
+  handle: LufzzLiz
+  id: LufzzLiz
+  name: 岚叔
+  username: 岚叔
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 9
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1680410719941165058/vWaCNg37_normal.jpg
+- platform: x
+  handle: wolfyxbt
+  id: wolfyxbt
+  name: 杀破狼 WolfyXBT
+  username: 杀破狼 WolfyXBT
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1680938637628944384/2FYk0Ft4_normal.jpg
+- platform: x
+  handle: 0xluffy_eth
+  id: 0xluffy_eth
+  name: 路飞 🏴‍☠️ AI 研究员🧐
+  username: 路飞 🏴‍☠️ AI 研究员🧐
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1612405554491850752/G2adJo0p_normal.jpg
+- platform: x
+  handle: heyBarsee
+  id: heyBarsee
+  name: Barsee 🐶
+  username: Barsee 🐶
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 5
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1665735384695992320/amRZmuSc_normal.jpg
+- platform: x
+  handle: Khazix0918
+  id: Khazix0918
+  name: 数字生命卡兹克
+  username: 数字生命卡兹克
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 8
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1756592360367259648/GXJ4Kl6w_normal.jpg
+- platform: x
+  handle: bggg_ai
+  id: bggg_ai
+  name: 饼干哥哥AGI（2.0）
+  username: 饼干哥哥AGI（2.0）
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 7
+  source: manual
+  notes: ''
+  verified: true
+  profile_image_url: https://pbs.twimg.com/profile_images/1982968532481802240/eZp14eKY_normal.jpg
+- platform: x
+  handle: lxfater
+  id: lxfater
+  name: lxfater
+  username: ''
+  enabled: true
+  tier: seed
+  lang: ''
+  category: ''
+  priority: 8
+  source: manual
+  notes: ''
+manual_add_template:
+  handle: example_handle
+  enabled: false
+  tier: seed
+  lang: zh_or_en
+  category: ai_builder
+  priority: 5
+  source: manual
+  notes: 你手动添加的新账号，写一句为什么要监控。

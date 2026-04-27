@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创作前台</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: rgba(255, 252, 247, 0.92);
+      --paper-strong: #fffaf2;
+      --line: rgba(151, 121, 88, 0.24);
+      --line-strong: rgba(126, 98, 68, 0.38);
+      --text: #261d15;
+      --muted: #6a5b4d;
+      --accent: #1f5f82;
+      --accent-strong: #174963;
+      --accent-soft: rgba(31, 95, 130, 0.1);
+      --warm: #a45b2a;
+      --ok: #2e7257;
+      --warn: #9a6a21;
+      --shadow: 0 26px 70px rgba(77, 57, 36, 0.12);
+      --shadow-soft: 0 14px 34px rgba(77, 57, 36, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(206, 172, 132, 0.28), transparent 26%),
+        radial-gradient(circle at 86% 18%, rgba(31, 95, 130, 0.14), transparent 22%),
+        linear-gradient(180deg, #fbf7ef 0%, #f1e6d8 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1180px, calc(100vw - 40px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 34px 0 46px;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+    }
+
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(31, 95, 130, 0.08);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      background: rgba(255, 250, 242, 0.78);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .nav-links a:hover {
+      border-color: rgba(31, 95, 130, 0.32);
+      background: var(--accent-soft);
+    }
+
+    .hero {
+      padding: clamp(28px, 5vw, 54px);
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(245, 236, 224, 0.9));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -90px -120px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: rgba(31, 95, 130, 0.08);
+      pointer-events: none;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 13px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .kicker-mark {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(31, 95, 130, 0.08);
+    }
+
+    h1 {
+      margin: 20px 0 12px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: clamp(46px, 7vw, 86px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 19px);
+      line-height: 1.75;
+    }
+
+    .entries {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .entries-three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .entry {
+      min-height: 190px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.58);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .entry:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 18px 38px rgba(77, 57, 36, 0.12);
+    }
+
+    .entry-label {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(164, 91, 42, 0.08);
+      color: var(--warm);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .entry h2 {
+      margin: 14px 0 8px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    .entry p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .entry-action {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 250, 242, 0.82);
+      box-shadow: var(--shadow-soft);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .status-dot {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 0 6px rgba(154, 106, 33, 0.12);
+    }
+
+    .status-dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 0 6px rgba(46, 114, 87, 0.12);
+    }
+
+    .status-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-link {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero, .status-bar {
+        animation: rise-in 0.42s ease both;
+      }
+
+      .entry {
+        animation: rise-in 0.42s ease both;
+      }
+
+      .entry:nth-child(2) { animation-delay: 0.04s; }
+      .entry:nth-child(3) { animation-delay: 0.08s; }
+      .entry:nth-child(4) { animation-delay: 0.12s; }
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .page {
+        align-content: start;
+        padding-top: 24px;
+      }
+
+      .entries {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100vw - 24px, 560px);
+      }
+
+      .top-nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        padding: 24px;
+        border-radius: 28px;
+      }
+
+      .entries {
+        grid-template-columns: 1fr;
+      }
+
+      .entry {
+        min-height: 150px;
+      }
+
+      .status-bar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav" aria-label="主导航">
+      <a class="brand-link" href="/">
+        <span class="brand-dot"></span>
+        <span>Self Media Workbench</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">入口页</a>
+        <a href="/search">内容情报台</a>
+        <a href="/config">配置中心</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <span class="kicker"><span class="kicker-mark"></span> Create Studio</span>
+      <h1>创作前台</h1>
+      <p class="subtitle">从主题、正文、热点情报或已导入素材进入创作。这里只保留入口，具体筛选、编排和生成都在对应工作台完成。</p>
+
+      <nav class="entries entries-three" aria-label="创作入口">
+        <a class="entry" href="/create/topic">
+          <div>
+            <span class="entry-label">选题</span>
+            <h2>主题搜索</h2>
+            <p>浏览已有主题，或主动搜索一个新选题。</p>
+          </div>
+          <span class="entry-action">进入主题台 <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="entry" href="/create/nighthawk">
+          <div>
+            <span class="entry-label">素材</span>
+            <h2>正文资料池</h2>
+            <p>查看 NightHawk 已抓正文，挑选创作材料。</p>
+          </div>
+          <span class="entry-action">进入正文池 <span aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="entry" href="/create/workspace">
+          <div>
+            <span class="entry-label">出稿</span>
+            <h2>创作编排台</h2>
+            <p>承接素材包，选择模式并生成文章。</p>
+          </div>
+          <span class="entry-action">进入编排台 <span aria-hidden="true">→</span></span>
+        </a>
+      </nav>
+    </section>
+
+    <section class="status-bar" aria-live="polite">
+      <div class="status-main">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="status-text" class="status-text">正在检查正文、主题和写作配置。</span>
+      </div>
+      <a class="status-link" href="/create/workspace">查看草稿与编排</a>
+    </section>
+  </main>
+
+  <script>
+    const statusDot = document.getElementById("status-dot");
+    const statusText = document.getElementById("status-text");
+
+    function formatTime(value) {
+      const text = String(value || "").trim();
+      return text || "未知";
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `Request failed: ${url}`);
+      }
+      return payload;
+    }
+
+    async function loadStatus() {
+      try {
+        const [profile, topicStatus, config] = await Promise.all([
+          fetchJson("/api/create/nighthawk/profile"),
+          fetchJson("/api/topics/sync-status"),
+          fetchJson("/api/create/config"),
+        ]);
+
+        const bodyTime = formatTime(profile.latest_published_at || profile.latest_fetched_at);
+        const localTopics = topicStatus.local_topics || {};
+        const topicReady = !!localTopics.pipeline_caught_up || !localTopics.stale;
+        const writing = config.writing || {};
+        const writingReady = !!(writing.provider && writing.model && writing.has_api_key);
+
+        statusDot.classList.toggle("ok", topicReady && writingReady);
+        statusText.textContent = [
+          `正文最新 ${bodyTime}`,
+          topicReady ? "主题已追上" : "主题待同步",
+          writingReady ? `写作模型 ${writing.model}` : "写作模型未配置",
+        ].join(" · ");
+      } catch (error) {
+        statusDot.classList.remove("ok");
+        statusText.textContent = "部分数据暂不可用，但入口仍可正常打开。";
+      }
+    }
+
+    loadStatus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "waytoagi-main",
+      "name": "WaytoAGI Wiki",
+      "enabled": true,
+      "priority": 7,
+      "category": "ai_analysis",
+      "entry_url": "https://waytoagi.feishu.cn/wiki/FZ1tw8YUlibUOWke8DWcAJRTngg",
+      "fetch_method": "jina_reader",
+      "notes": "初始样例；后续可继续追加飞书公开文档链接"
+    }
+  ]
+}

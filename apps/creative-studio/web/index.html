@@ -1,0 +1,3654 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NightHawk 内容情报台</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-2: #0b1628;
+      --panel: rgba(12, 21, 38, 0.86);
+      --panel-solid: #0e1a2d;
+      --panel-2: rgba(16, 28, 47, 0.92);
+      --line: rgba(122, 150, 214, 0.22);
+      --line-strong: rgba(122, 150, 214, 0.38);
+      --line-soft: rgba(122, 150, 214, 0.14);
+      --text: #edf3ff;
+      --text-2: #cfdaf1;
+      --muted: #95a7c8;
+      --primary: #7a8cff;
+      --primary-2: #56c2ff;
+      --accent: #7cf0c8;
+      --ok: #2ad08d;
+      --danger: #ff6b7d;
+      --warning: #ffbf69;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow: 0 18px 40px rgba(3, 8, 18, .42);
+      --shadow-soft: 0 10px 24px rgba(4, 10, 22, .24);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% -8%, rgba(122, 140, 255, .28), transparent 34%),
+        radial-gradient(circle at 88% 4%, rgba(86, 194, 255, .18), transparent 28%),
+        radial-gradient(circle at 50% 120%, rgba(124, 240, 200, .08), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+      letter-spacing: .01em;
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 28px 22px 40px; }
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: #dce7ff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(124, 240, 200, .08);
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(122, 150, 214, .22);
+      background: rgba(11, 19, 34, .72);
+      color: #dce7ff;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .nav-links a:hover {
+      text-decoration: none;
+      border-color: rgba(122, 150, 214, .4);
+      background: rgba(18, 29, 50, .9);
+    }
+    h1 { font-size: clamp(30px, 4vw, 42px); margin: 0; letter-spacing: -.03em; line-height: 1.05; }
+    h2, h3 { margin: 0; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(122, 140, 255, 0.16), rgba(11, 22, 40, 0.92) 48%, rgba(12, 42, 74, 0.86));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 26px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: auto -10% -55% auto;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(86, 194, 255, 0.18), transparent 62%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(13, 24, 43, .72);
+      border: 1px solid rgba(146, 171, 235, .22);
+      color: #dce7ff;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      color: var(--text-2);
+      font-size: 15px;
+      line-height: 1.75;
+      max-width: 760px;
+      margin-top: 14px;
+    }
+    .hero-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(12, 20, 35, 0.72);
+      border: 1px solid rgba(122, 150, 214, 0.18);
+      color: #d6e2fb;
+      font-size: 13px;
+    }
+    .hero-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-self: stretch;
+    }
+    .hero-kpis.compact .hero-kpi {
+      min-height: 96px;
+      padding: 14px;
+    }
+    .hero-kpi {
+      background: linear-gradient(180deg, rgba(12, 22, 39, .92), rgba(10, 18, 31, .88));
+      border: 1px solid rgba(122, 150, 214, .18);
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 112px;
+      box-shadow: var(--shadow-soft);
+    }
+    .hero-kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .hero-kpi .value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-bottom: 8px;
+    }
+    .hero-kpi .desc {
+      color: var(--text-2);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      padding: 6px;
+      border: 1px solid var(--line-soft);
+      background: rgba(9, 17, 31, .68);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+    }
+    .subtabs { display: flex; gap: 8px; margin: 14px 0 10px; flex-wrap: wrap; }
+    .tab, .subtab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 10px 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: .2s ease;
+      font-weight: 600;
+    }
+    .tab:hover, .subtab:hover {
+      border-color: rgba(122, 150, 214, .22);
+      color: #e6eeff;
+      background: rgba(18, 29, 50, .76);
+      transform: translateY(-1px);
+    }
+    .tab.active, .subtab.active {
+      background: linear-gradient(180deg, rgba(122, 140, 255, .22), rgba(86, 194, 255, .12));
+      color: #f4f8ff;
+      border-color: rgba(122, 150, 214, .34);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(13, 22, 39, .96), rgba(10, 18, 31, .96));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    label { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+
+    input, select, button, textarea {
+      background: rgba(11, 19, 34, 0.96);
+      color: var(--text);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 14px;
+      outline: none;
+      transition: .18s ease;
+    }
+    input::placeholder, textarea::placeholder { color: #7183a7; }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(122, 140, 255, .68);
+      box-shadow: 0 0 0 4px rgba(122, 140, 255, .12);
+      background: rgba(13, 23, 40, 1);
+    }
+    textarea { min-height: 90px; }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    button:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-1px);
+    }
+    button.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      border-color: transparent;
+      color: #f8fbff;
+      box-shadow: 0 10px 22px rgba(71, 122, 255, .22);
+    }
+    button.primary:hover { filter: brightness(1.05); }
+    button:disabled { opacity: .56; cursor: not-allowed; transform: none; }
+
+    .muted { color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .result {
+      border: 1px solid var(--line-soft);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 10px 0;
+      background: linear-gradient(180deg, rgba(11, 19, 34, .96), rgba(10, 17, 30, .92));
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    .result:hover {
+      transform: translateY(-2px);
+      border-color: rgba(122, 150, 214, .28);
+      box-shadow: 0 12px 24px rgba(4, 10, 21, .18);
+    }
+    .result-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 8px 0 12px;
+    }
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .group-col {
+      border: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(10, 17, 30, .94), rgba(8, 15, 27, .94));
+      border-radius: 16px;
+      padding: 12px;
+      min-height: 220px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    .group-col.strong { border-color: rgba(42,208,141,.36); background: linear-gradient(180deg, rgba(12, 31, 25, .92), rgba(9, 21, 19, .92)); }
+    .group-col.watch { border-color: rgba(122,140,255,.30); background: linear-gradient(180deg, rgba(17, 27, 48, .92), rgba(11, 18, 32, .92)); }
+    .group-col.skip { border-color: rgba(149,167,200,.18); background: linear-gradient(180deg, rgba(13, 19, 31, .92), rgba(10, 15, 24, .92)); }
+    .group-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .group-title strong { letter-spacing: .02em; }
+    .candidate-card {
+      border: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(11, 19, 34, .96), rgba(10, 17, 30, .94));
+      border-radius: 14px;
+      padding: 11px;
+      margin-bottom: 9px;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+    .candidate-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(122, 150, 214, .28);
+      box-shadow: 0 12px 24px rgba(4, 10, 21, .18);
+    }
+
+    a { color: #9cc7ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hidden { display: none; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 999px;
+      background: rgba(19, 30, 52, .82);
+      border: 1px solid var(--line-soft);
+      margin-right: 6px;
+      margin-bottom: 6px;
+      color: #d5e2fb;
+    }
+    .progress-wrap {
+      margin-top: 14px;
+      border: 1px solid rgba(122, 150, 214, .2);
+      background: rgba(12, 21, 38, .78);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .progress-bar-bg {
+      height: 8px;
+      background: #11192f;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #2a3552;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #5f79ff, #7aa3ff);
+      transition: width .24s ease;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .stat-card {
+      border: 1px solid var(--line-soft);
+      border-radius: 18px;
+      padding: 14px;
+      background: linear-gradient(180deg, rgba(11, 19, 34, .96), rgba(10, 17, 30, .92));
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-top: 8px;
+    }
+    .table-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .toolbar-row {
+      display:flex;
+      gap:10px;
+      align-items:end;
+      flex-wrap:wrap;
+      margin-top:14px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(9, 17, 30, .52);
+      border: 1px solid rgba(122, 150, 214, .12);
+    }
+    .checkbox-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 46px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 14px;
+      background: rgba(11, 19, 34, .96);
+    }
+    .checkbox-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #121b31;
+      border: 1px solid #273453;
+      color: #dbe6ff;
+      font-size: 13px;
+    }
+    .checkbox-item input {
+      margin: 0;
+      padding: 0;
+      accent-color: var(--primary);
+    }
+    .card-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-view-content {
+      padding: 7px 12px;
+      font-size: 12px;
+      border-radius: 10px;
+      background: rgba(16, 26, 50, .92);
+      border: 1px solid rgba(122, 150, 214, .22);
+      color: #dce8ff;
+    }
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c6d5f8;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+    }
+    .panel-shell {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.88fr) minmax(0, 1.12fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .section-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 100%;
+    }
+    .section-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .section-header strong {
+      font-size: 16px;
+      letter-spacing: -.01em;
+    }
+    .section-header .muted {
+      max-width: 560px;
+    }
+    .topics-toolbar {
+      display:grid;
+      grid-template-columns: 1fr 1.2fr .7fr auto;
+      gap: 12px;
+      align-items:end;
+    }
+    .topics-list-card {
+      max-height: calc(100vh - 250px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .topics-list-card::-webkit-scrollbar,
+    .topics-events-scroll::-webkit-scrollbar {
+      width: 10px;
+    }
+    .topics-list-card::-webkit-scrollbar-thumb,
+    .topics-events-scroll::-webkit-scrollbar-thumb {
+      background: rgba(122, 150, 214, .18);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .topics-detail-card {
+      position: sticky;
+      top: 18px;
+    }
+    .topics-events-scroll {
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .topic-list-item.active {
+      border-color: rgba(122, 140, 255, .48);
+      box-shadow: 0 0 0 1px rgba(122, 140, 255, .22), 0 14px 26px rgba(7, 14, 28, .22);
+      background: linear-gradient(180deg, rgba(19, 29, 51, .98), rgba(13, 21, 38, .96));
+    }
+    .panel-heading-block {
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .content-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 18, .72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+    .content-modal.hidden {
+      display: none !important;
+    }
+    .content-modal-box {
+      width: min(900px, 96vw);
+      max-height: 88vh;
+      background: #0b1222;
+      border: 1px solid #32456f;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .content-modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      background: #101a31;
+    }
+    .content-modal-body {
+      padding: 14px;
+      overflow: auto;
+    }
+    .content-pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+      font-size: 13px;
+      color: #dbe6ff;
+    }
+
+    @media (max-width: 1120px) {
+      .panel-shell { grid-template-columns: 1fr; }
+      .topics-detail-card { position: static; }
+      .topics-list-card,
+      .topics-events-scroll { max-height: none; overflow: visible; }
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .group-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .topics-toolbar { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 16px 14px 30px; }
+      .top-nav { align-items: flex-start; flex-direction: column; }
+      .nav-links { justify-content: flex-start; }
+      .hero { padding: 20px; border-radius: 22px; }
+      .hero-kpis { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .result-meta { gap: 6px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .tabs { gap: 8px; }
+      .topics-toolbar { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="top-nav" aria-label="主导航">
+      <a class="brand-link" href="/">
+        <span class="brand-dot"></span>
+        <span>Self Media Workbench</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">入口页</a>
+        <a href="/create">创作前台</a>
+        <a href="/config">配置中心</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-eyebrow">NightHawk / Content Intelligence Console</div>
+          <h1>NightHawk 内容情报台</h1>
+          <div class="hero-subtitle">统一管理内容搜索、数据库浏览、热点主题研判与手动抓取。把「素材、主题、信号、动作」放到一个屏幕里看清楚，别再在零散脚本和表格之间来回跳。</div>
+          <div class="hero-tags">
+            <span class="hero-tag">实时搜索候选</span>
+            <span class="hero-tag">热点主题聚合</span>
+            <span class="hero-tag">数据库浏览</span>
+            <span class="hero-tag">手动抓取与入库</span>
+          </div>
+        </div>
+        <div class="hero-kpis compact">
+          <div class="hero-kpi">
+            <div class="label">工作台定位</div>
+            <div class="value">情报中台</div>
+            <div class="desc">优先帮助你判断：现在什么值得看、值得写、值得继续跟。</div>
+          </div>
+          <div class="hero-kpi">
+            <div class="label">核心视角</div>
+            <div class="value">主题优先</div>
+            <div class="desc">不只看单篇文章，而是看它们为什么会被归并成同一波热点。</div>
+          </div>
+          <div class="hero-kpi">
+            <div class="label">当前能力</div>
+            <div class="value">搜索 + 聚合</div>
+            <div class="desc">已经打通搜索、主题汇聚、事件下钻和数据库浏览的主链路。</div>
+          </div>
+          <div class="hero-kpi">
+            <div class="label">设计目标</div>
+            <div class="value">清楚、耐看</div>
+            <div class="desc">先做专业仪表盘，不搞花架子，但也不能丑得像内部测试页。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-nighthawk">夜鹰监控</button>
+      <button class="tab" id="tab-topics">热点主题</button>
+      <button class="tab" id="tab-fetch">手动抓取</button>
+      <button class="tab" id="tab-database">数据库看板</button>
+      <button class="tab hidden" id="tab-templates">模板管理</button>
+    </div>
+
+    <div id="nighthawk-subtabs" class="subtabs" role="tablist" aria-label="夜鹰监控子页面" style="margin-top:10px;">
+      <button class="subtab active" id="nighthawk-subtab-data" type="button">数据查看</button>
+      <button class="subtab" id="nighthawk-subtab-accounts" type="button">监控账号</button>
+    </div>
+
+    <section id="panel-search">
+      <div class="card">
+        <div class="grid">
+          <div class="field hidden">
+            <label>模板（已下线）</label>
+            <select id="template_select">
+              <option value="">手动填写（不套模板）</option>
+            </select>
+          </div>
+
+          <div class="field hidden">
+            <label>&nbsp;</label>
+            <button id="btn-apply-template">一键填充模板</button>
+          </div>
+
+          <div class="field" style="grid-column: span 3;">
+            <label>渠道（可多选，默认全选）</label>
+            <div id="provider-options" class="checkbox-group"></div>
+          </div>
+
+          <div class="field" style="grid-column: span 2;">
+            <label>关键词（必填）</label>
+            <input id="query" placeholder="例如：OpenAI OR Claude OR Gemini" />
+          </div>
+
+          <div class="field">
+            <label>关键词搜索范围</label>
+            <select id="query_scope">
+              <option value="all">全部</option>
+              <option value="title">标题</option>
+              <option value="content">正文</option>
+            </select>
+          </div>
+
+          <div class="field" style="grid-column: span 2;">
+            <label>时间范围</label>
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+              <input id="since" type="date" />
+              <span class="muted" style="text-align:center;">到</span>
+              <input id="until" type="date" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>语言</label>
+            <select id="lang">
+              <option value="">全部语言</option>
+              <option value="zh">中文</option>
+              <option value="en">英文</option>
+              <option value="ja">日文</option>
+            </select>
+          </div>
+
+          <div class="field hidden">
+            <label>排序方式（固定按时间倒序）</label>
+            <select id="sort_by">
+              <option value="time" selected>按时间（最新优先）</option>
+            </select>
+          </div>
+
+          <div class="field hidden">
+            <label>搜索模式（已下线）</label>
+            <select id="mode">
+              <option value="pool_latest">监控池搜索（最新）</option>
+              <option value="pool_top">监控池搜索（热门）</option>
+              <option value="source_recent">单账号最近内容过滤</option>
+              <option value="wechat_search">公众号来源池搜索</option>
+              <option value="youtube_search">YouTube 来源池搜索</option>
+              <option value="bilibili_search">B站 来源池搜索</option>
+              <option value="feed_search">资讯源搜索</option>
+              <option value="github_trending">代码趋势搜索</option>
+            </select>
+          </div>
+
+          <div class="field hidden">
+            <label>单账号（已下线）</label>
+            <input id="target_handle" placeholder="例如：OpenAI" />
+            <div class="muted" id="target-handle-hint">当前模式下可选</div>
+          </div>
+
+          <div class="field hidden">
+            <label>每账号返回条数（已下线）</label>
+            <input id="limit_per_account" type="number" value="3" min="1" max="20" />
+          </div>
+
+          <div class="field hidden">
+            <label>最小点赞数（已下线）</label>
+            <input id="min_likes" type="number" value="0" min="0" />
+          </div>
+
+          <div class="field hidden">
+            <label>最小转发数（已下线）</label>
+            <input id="min_retweets" type="number" value="0" min="0" />
+          </div>
+        </div>
+
+        <div style="margin-top: 12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="primary" id="btn-search">执行搜索</button>
+          <button id="btn-search-cancel" disabled>取消搜索</button>
+          <span class="muted" id="search-status"></span>
+          <span class="muted hidden" id="template-status"></span>
+        </div>
+
+        <div id="search-progress" class="progress-wrap hidden" aria-live="polite">
+          <div class="progress-head">
+            <strong id="progress-title">正在准备搜索...</strong>
+            <span class="muted" id="progress-elapsed">已耗时 0 秒</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <div class="muted" id="progress-detail" style="margin-top:6px;">阶段：准备请求</div>
+        </div>
+
+        <div class="muted hidden" id="template-notes" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="card">
+        <div><strong>搜索结果</strong></div>
+        <div id="results"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div><strong>搜索历史</strong><div class="muted" style="margin-top:4px;">默认展示前 3 条，可展开到 20 条</div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button id="btn-history-toggle">展开更多</button>
+            <button id="btn-history-refresh">刷新历史</button>
+          </div>
+        </div>
+        <div id="history-list" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+    <section id="panel-accounts" class="hidden">
+      <div class="card">
+        <div>
+          <strong>监控来源</strong>
+          <div class="muted" style="margin-top:6px;">X 是账号句柄模型，公众号是来源模型，别再混着看了。</div>
+        </div>
+
+        <div class="field" style="margin-top:10px; max-width:360px;">
+          <label>监控来源（仅增量巡检渠道）</label>
+          <select id="acc-source-select">
+            <option value="x">X 账号</option>
+            <option value="wechat">公众号来源</option>
+            <option value="youtube">YouTube 频道</option>
+            <option value="douyin">抖音来源</option>
+          </select>
+        </div>
+
+        <div class="card" style="margin-top:12px; background:#0c1324;">
+          <div><strong id="acc-add-title">手动添加 X 账号</strong></div>
+          <div class="grid" style="margin-top:10px;">
+            <div class="field">
+              <label id="acc-new-handle-label">账号句柄 / 来源ID（必填）</label>
+              <input id="acc-new-handle" placeholder="例如：OpenAI（可带@）" />
+            </div>
+            <div class="field">
+              <label id="acc-new-name-label">展示名称（可选）</label>
+              <input id="acc-new-name" placeholder="例如：OpenAI" />
+            </div>
+            <div class="field">
+              <label id="acc-new-url-label">入口链接（部分渠道必填）</label>
+              <input id="acc-new-url" placeholder="例如：https://www.youtube.com/@OpenAI" />
+            </div>
+            <div class="field">
+              <label>是否启用</label>
+              <select id="acc-new-enabled">
+                <option value="true">启用</option>
+                <option value="false">禁用</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>优先级</label>
+              <input id="acc-new-priority" type="number" value="5" min="0" max="10" />
+            </div>
+            <div class="field">
+              <label>分类</label>
+              <input id="acc-new-category" placeholder="例如：AI 构建者 / 官方机构" />
+            </div>
+            <div class="field">
+              <label>语言（X可选）</label>
+              <input id="acc-new-lang" placeholder="例如：zh / en" />
+            </div>
+            <div class="field" style="grid-column: span 2;">
+              <label>备注</label>
+              <input id="acc-new-notes" placeholder="添加原因（可选）" />
+            </div>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="primary" id="acc-add-btn">添加账号</button>
+            <button id="acc-add-test-btn">测试账号</button>
+            <span class="muted" id="acc-action-status"></span>
+          </div>
+        </div>
+
+        <div id="acc-panel-x">
+          <div class="grid" style="margin-top:10px;">
+            <div class="field">
+              <label>启用状态筛选</label>
+              <select id="acc-filter-enabled">
+                <option value="all">全部</option>
+                <option value="enabled">仅已启用</option>
+                <option value="disabled">仅已禁用</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>语言筛选</label>
+              <select id="acc-filter-lang">
+                <option value="all">全部</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>分类筛选</label>
+              <select id="acc-filter-category">
+                <option value="all">全部</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>最低优先级</label>
+              <input id="acc-filter-min-priority" type="number" value="0" min="0" />
+            </div>
+
+            <div class="field" style="justify-content:flex-end;">
+              <label>&nbsp;</label>
+              <button id="acc-filter-reset">重置筛选</button>
+            </div>
+          </div>
+
+          <div class="muted" id="accounts-summary" style="margin-top:10px;"></div>
+          <div id="accounts-list"></div>
+        </div>
+
+        <div id="acc-panel-wechat" class="hidden">
+          <div class="muted" id="wechat-sources-summary" style="margin-top:10px;"></div>
+          <div id="wechat-sources-list"></div>
+        </div>
+
+        <div id="acc-panel-youtube" class="hidden">
+          <div class="muted" id="youtube-channels-summary" style="margin-top:10px;"></div>
+          <div id="youtube-channels-list"></div>
+        </div>
+
+        <div id="acc-panel-douyin" class="hidden">
+          <div class="muted" id="douyin-sources-summary" style="margin-top:10px;"></div>
+          <div id="douyin-sources-list"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="panel-templates" class="hidden" style="display:none !important;">
+      <div class="card">
+        <div><strong>模板管理</strong></div>
+        <div class="muted" id="templates-summary" style="margin-top:6px;"></div>
+
+        <div class="grid" style="margin-top:10px;">
+          <div class="field">
+            <label>模板 ID（唯一）</label>
+            <input id="tpl-id" placeholder="例如：ai-news-daily" />
+          </div>
+          <div class="field">
+            <label>模板名称</label>
+            <input id="tpl-name" placeholder="模板名称" />
+          </div>
+          <div class="field">
+            <label>是否启用</label>
+            <select id="tpl-enabled">
+              <option value="true">启用</option>
+              <option value="false">禁用</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>渠道</label>
+            <select id="tpl-provider">
+              <option value="x">X 平台</option>
+              <option value="wechat">微信公众号</option>
+              <option value="youtube">YouTube</option>
+              <option value="bilibili">B站</option>
+              <option value="feed">资讯源</option>
+              <option value="github">代码趋势</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>搜索模式</label>
+            <select id="tpl-mode">
+              <option value="pool_latest">监控池搜索（最新）</option>
+              <option value="pool_top">监控池搜索（热门）</option>
+              <option value="source_recent">单账号最近内容</option>
+              <option value="wechat_search">公众号来源池搜索</option>
+              <option value="youtube_search">YouTube 来源池搜索</option>
+              <option value="bilibili_search">B站 来源池搜索</option>
+              <option value="feed_search">资讯源搜索</option>
+              <option value="github_trending">代码趋势搜索</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>排序方式</label>
+            <select id="tpl-sort-by">
+              <option value="time">按时间</option>
+              <option value="engagement">按互动</option>
+              <option value="hybrid">按综合</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>每账号返回条数</label>
+            <input id="tpl-limit" type="number" value="3" min="1" max="20" />
+          </div>
+
+          <div class="field" style="grid-column: span 3;">
+            <label>关键词</label>
+            <input id="tpl-query" placeholder="关键词表达式" />
+          </div>
+
+          <div class="field">
+            <label>单账号（单账号模式可用）</label>
+            <input id="tpl-target-handle" placeholder="例如 OpenAI" />
+          </div>
+          <div class="field">
+            <label>开始日期</label>
+            <input id="tpl-since" type="date" />
+          </div>
+          <div class="field">
+            <label>结束日期</label>
+            <input id="tpl-until" type="date" />
+          </div>
+
+          <div class="field">
+            <label>语言</label>
+            <input id="tpl-lang" placeholder="例如：zh / en" />
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>备注</label>
+            <input id="tpl-notes" placeholder="模板说明" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="tpl-save" class="primary">保存模板（新增/更新）</button>
+          <button id="tpl-reset">清空表单</button>
+          <span id="tpl-status" class="muted"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div><strong>模板列表</strong></div>
+        <div id="templates-list"></div>
+      </div>
+    </section>
+
+    <section id="panel-database" class="hidden">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div>
+            <strong>NightHawk 数据库看板</strong>
+            <div class="muted" id="db-path" style="margin-top:6px;">数据库路径：-</div>
+          </div>
+          <button id="btn-db-refresh">刷新看板</button>
+        </div>
+        <div class="stats-grid" id="db-overview-cards"></div>
+        <div id="db-platform-stats" class="table-list"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div>
+            <strong>数据库内容浏览</strong>
+            <div class="muted" style="margin-top:6px;">把「账号视图」和「入库流视图」拆开，别再硬挤一页了。</div>
+          </div>
+        </div>
+
+        <div class="subtabs" role="tablist" aria-label="数据库内容子视图">
+          <button class="subtab" id="db-subtab-accounts" type="button">每账号最新一条</button>
+          <button class="subtab active" id="db-subtab-recent" type="button">最近入库内容</button>
+        </div>
+
+        <div id="db-panel-accounts" class="hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <strong>每账号最新一条</strong>
+            <span class="muted" id="db-account-summary"></span>
+          </div>
+          <div id="db-account-latest" class="table-list"></div>
+          <div id="db-account-pagination" class="muted" style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button id="btn-db-account-page-prev" type="button">上一页</button>
+            <span id="db-account-page-info">第 1 / 1 页</span>
+            <button id="btn-db-account-page-next" type="button">下一页</button>
+          </div>
+        </div>
+
+        <div id="db-panel-recent">
+          <div><strong>最近入库内容</strong></div>
+          <div class="toolbar-row">
+            <div class="field">
+              <label>平台</label>
+              <select id="db-filter-platform">
+                <option value="">全部</option>
+                <option value="x">X</option>
+                <option value="wechat">微信公众号</option>
+                <option value="youtube">YouTube</option>
+                <option value="bilibili">B站</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>账号</label>
+              <input id="db-filter-handle" placeholder="例如：OpenAI" />
+            </div>
+            <div class="field">
+              <label>条数</label>
+              <input id="db-filter-limit" type="number" value="50" min="1" max="200" />
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button id="btn-db-apply-filter">应用筛选</button>
+            </div>
+          </div>
+          <div id="db-recent-items" class="table-list"></div>
+          <div id="db-recent-pagination" class="muted" style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button id="btn-db-page-prev" type="button">上一页</button>
+            <span id="db-page-info">第 1 / 1 页</span>
+            <button id="btn-db-page-next" type="button">下一页</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-topics" class="hidden">
+      <div class="card section-card">
+        <div class="section-header">
+          <div class="panel-heading-block">
+            <div class="section-kicker">主题观察</div>
+            <strong>热点主题</strong>
+            <div class="muted">按主题看 NightHawk 最近 72 小时内容。支持多排序、分页、点击主题查看具体事件。</div>
+          </div>
+          <button id="btn-topics-refresh">刷新主题</button>
+        </div>
+        <div class="toolbar-row topics-toolbar">
+          <div class="field">
+            <label>排序方式</label>
+            <select id="topics-sort">
+              <option value="overall">综合分</option>
+              <option value="articles">文章数</option>
+              <option value="events">事件数</option>
+              <option value="importance">重要性</option>
+              <option value="impact">传播影响</option>
+              <option value="latest">最新出现时间</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>关键词筛选</label>
+            <input id="topics-keyword" placeholder="例如：Claude / OpenAI / DeepSeek" />
+          </div>
+          <div class="field">
+            <label>每页条数</label>
+            <select id="topics-limit">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button id="btn-topics-apply" class="primary">应用</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-shell">
+        <div class="card section-card">
+          <div class="section-header">
+            <div class="panel-heading-block">
+              <div class="section-kicker">主题列表</div>
+              <strong>本轮热点主题</strong>
+            </div>
+            <span class="muted" id="topics-summary">-</span>
+          </div>
+          <div id="topics-list" class="table-list topics-list-card"></div>
+          <div id="topics-pagination" class="muted" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button id="btn-topics-page-prev" type="button">上一页</button>
+            <span id="topics-page-info">第 1 / 1 页</span>
+            <button id="btn-topics-page-next" type="button">下一页</button>
+          </div>
+        </div>
+
+        <div class="card section-card topics-detail-card">
+          <div class="section-header">
+            <div class="panel-heading-block">
+              <div class="section-kicker">主题详情</div>
+              <strong>主题拆解</strong>
+            </div>
+            <span class="muted" id="topic-detail-summary">点击左侧主题查看详情</span>
+          </div>
+          <div id="topic-detail"></div>
+          <div class="section-header" style="margin-top:4px;">
+            <div class="panel-heading-block">
+              <div class="section-kicker">关联事件</div>
+              <strong>主题下的具体事件</strong>
+            </div>
+            <span class="muted" id="topic-events-summary">-</span>
+          </div>
+          <div id="topic-events-list" class="table-list topics-events-scroll"></div>
+          <div id="topic-events-pagination" class="muted" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button id="btn-topic-events-prev" type="button">上一页</button>
+            <span id="topic-events-page-info">第 1 / 1 页</span>
+            <button id="btn-topic-events-next" type="button">下一页</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-fetch" class="hidden">
+      <div class="card">
+        <div><strong>正文抓取</strong></div>
+        <div class="muted" style="margin-top:6px;">输入一个或多个链接后抓取正文内容。支持并行创建多个任务，结果会保存到你指定的知识库目录里。</div>
+        <div class="grid" style="margin-top:10px;">
+          <div class="field" style="grid-column: span 3;">
+            <label>链接列表（每行一个，支持 # 注释）</label>
+            <textarea id="fetch-urls" style="min-height:140px;" placeholder="https://docs.openclaw.ai
+https://waytoagi.feishu.cn/wiki/...
+# 这一行会被忽略"></textarea>
+          </div>
+          <div class="field">
+            <label>失败后重试次数</label>
+            <input id="fetch-retry" type="number" value="1" min="0" max="5" />
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>抓取结果保存到哪个知识库目录（可选）</label>
+            <input id="fetch-vault" placeholder="留空就用系统默认知识库目录" />
+          </div>
+          <div class="field" style="grid-column: span 3;">
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input id="fetch-analyze" type="checkbox" />
+              <span>抓到可用 transcript 后自动生成分析卡</span>
+            </label>
+          </div>
+          <div class="field" style="grid-column: span 3;">
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input id="fetch-save-db" type="checkbox" checked />
+              <span>抓取成功后写入数据库（raw_items）</span>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top: 12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="primary" id="btn-fetch-run">开始抓取</button>
+          <button id="btn-fetch-open-dir">打开保存目录</button>
+          <button id="btn-fetch-copy-failed" disabled>复制失败链接</button>
+          <span class="muted" id="fetch-status">可并行创建多个抓取任务</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div><strong>任务状态</strong></div>
+          <div id="fetch-summary" class="muted">尚未执行</div>
+        </div>
+        <div id="fetch-task-list" class="table-list" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <div><strong>抓取结果</strong></div>
+        <div id="fetch-list" class="table-list" style="margin-top:10px;"></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="content-modal" class="content-modal hidden" role="dialog" aria-modal="true" aria-labelledby="content-modal-title">
+    <div class="content-modal-box">
+      <div class="content-modal-head">
+        <strong id="content-modal-title">正文</strong>
+        <button id="content-modal-close" type="button">关闭</button>
+      </div>
+      <div class="content-modal-body">
+        <pre id="content-modal-text" class="content-pre"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabNighthawk = document.getElementById('tab-nighthawk');
+    const tabTemplates = document.getElementById('tab-templates');
+    const tabTopics = document.getElementById('tab-topics');
+    const tabDatabase = document.getElementById('tab-database');
+    const tabFetch = document.getElementById('tab-fetch');
+    const nighthawkSubtabs = document.getElementById('nighthawk-subtabs');
+    const nighthawkSubtabData = document.getElementById('nighthawk-subtab-data');
+    const nighthawkSubtabAccounts = document.getElementById('nighthawk-subtab-accounts');
+    const panelSearch = document.getElementById('panel-search');
+    const panelAccounts = document.getElementById('panel-accounts');
+    const panelTemplates = document.getElementById('panel-templates');
+    const panelTopics = document.getElementById('panel-topics');
+    const panelDatabase = document.getElementById('panel-database');
+    const panelFetch = document.getElementById('panel-fetch');
+    const templateSelect = document.getElementById('template_select');
+    const templateApplyBtn = document.getElementById('btn-apply-template');
+    const providerOptionsEl = document.getElementById('provider-options');
+    const modeSelect = document.getElementById('mode');
+    const targetHandleInput = document.getElementById('target_handle');
+    const targetHandleHint = document.getElementById('target-handle-hint');
+    const templateStatus = document.getElementById('template-status');
+    const templateNotes = document.getElementById('template-notes');
+    const searchBtn = document.getElementById('btn-search');
+    const searchCancelBtn = document.getElementById('btn-search-cancel');
+    const dummyActionButton = { disabled: true, addEventListener() {} };
+    const exportJsonBtn = document.getElementById('btn-export-json') || dummyActionButton;
+    const exportMdBtn = document.getElementById('btn-export-md') || dummyActionButton;
+    const historyListEl = document.getElementById('history-list');
+    const historyRefreshBtn = document.getElementById('btn-history-refresh');
+    const historyToggleBtn = document.getElementById('btn-history-toggle');
+    const searchProgressWrap = document.getElementById('search-progress');
+    const progressTitleEl = document.getElementById('progress-title');
+    const progressElapsedEl = document.getElementById('progress-elapsed');
+    const progressDetailEl = document.getElementById('progress-detail');
+    const progressBarEl = document.getElementById('progress-bar');
+
+    const accSourceSelect = document.getElementById('acc-source-select');
+    const accPanelX = document.getElementById('acc-panel-x');
+    const accPanelWechat = document.getElementById('acc-panel-wechat');
+    const accPanelYoutube = document.getElementById('acc-panel-youtube');
+    const accPanelDouyin = document.getElementById('acc-panel-douyin');
+    const accFilterEnabled = document.getElementById('acc-filter-enabled');
+    const accFilterLang = document.getElementById('acc-filter-lang');
+    const accFilterCategory = document.getElementById('acc-filter-category');
+    const accFilterMinPriority = document.getElementById('acc-filter-min-priority');
+    const accFilterReset = document.getElementById('acc-filter-reset');
+    const accAddTitle = document.getElementById('acc-add-title');
+    const accNewHandleLabel = document.getElementById('acc-new-handle-label');
+    const accNewNameLabel = document.getElementById('acc-new-name-label');
+    const accNewUrlLabel = document.getElementById('acc-new-url-label');
+    const accNewHandle = document.getElementById('acc-new-handle');
+    const accNewName = document.getElementById('acc-new-name');
+    const accNewUrl = document.getElementById('acc-new-url');
+    const accNewEnabled = document.getElementById('acc-new-enabled');
+    const accNewPriority = document.getElementById('acc-new-priority');
+    const accNewLang = document.getElementById('acc-new-lang');
+    const accNewCategory = document.getElementById('acc-new-category');
+    const accNewNotes = document.getElementById('acc-new-notes');
+    const accAddBtn = document.getElementById('acc-add-btn');
+    const accAddTestBtn = document.getElementById('acc-add-test-btn');
+    const accActionStatus = document.getElementById('acc-action-status');
+
+    const tplIdInput = document.getElementById('tpl-id');
+    const tplNameInput = document.getElementById('tpl-name');
+    const tplEnabledInput = document.getElementById('tpl-enabled');
+    const tplProviderInput = document.getElementById('tpl-provider');
+    const tplModeInput = document.getElementById('tpl-mode');
+    const tplSortByInput = document.getElementById('tpl-sort-by');
+    const tplLimitInput = document.getElementById('tpl-limit');
+    const tplQueryInput = document.getElementById('tpl-query');
+    const tplTargetHandleInput = document.getElementById('tpl-target-handle');
+    const tplSinceInput = document.getElementById('tpl-since');
+    const tplUntilInput = document.getElementById('tpl-until');
+    const tplLangInput = document.getElementById('tpl-lang');
+    const tplNotesInput = document.getElementById('tpl-notes');
+    const tplSaveBtn = document.getElementById('tpl-save');
+    const tplResetBtn = document.getElementById('tpl-reset');
+    const tplStatus = document.getElementById('tpl-status');
+
+    const topicsRefreshBtn = document.getElementById('btn-topics-refresh');
+    const topicsApplyBtn = document.getElementById('btn-topics-apply');
+    const topicsSort = document.getElementById('topics-sort');
+    const topicsKeyword = document.getElementById('topics-keyword');
+    const topicsLimit = document.getElementById('topics-limit');
+    const topicsPageInfo = document.getElementById('topics-page-info');
+    const topicsPagePrevBtn = document.getElementById('btn-topics-page-prev');
+    const topicsPageNextBtn = document.getElementById('btn-topics-page-next');
+    const topicEventsPageInfo = document.getElementById('topic-events-page-info');
+    const topicEventsPrevBtn = document.getElementById('btn-topic-events-prev');
+    const topicEventsNextBtn = document.getElementById('btn-topic-events-next');
+
+    const dbRefreshBtn = document.getElementById('btn-db-refresh');
+    const dbSubtabAccounts = document.getElementById('db-subtab-accounts');
+    const dbSubtabRecent = document.getElementById('db-subtab-recent');
+    const dbPanelAccounts = document.getElementById('db-panel-accounts');
+    const dbPanelRecent = document.getElementById('db-panel-recent');
+    const dbApplyFilterBtn = document.getElementById('btn-db-apply-filter');
+    const dbFilterPlatform = document.getElementById('db-filter-platform');
+    const dbFilterHandle = document.getElementById('db-filter-handle');
+    const dbFilterLimit = document.getElementById('db-filter-limit');
+    const dbRecentPagination = document.getElementById('db-recent-pagination');
+    const dbPageInfo = document.getElementById('db-page-info');
+    const dbPagePrevBtn = document.getElementById('btn-db-page-prev');
+    const dbPageNextBtn = document.getElementById('btn-db-page-next');
+    const dbAccountPageInfo = document.getElementById('db-account-page-info');
+    const dbAccountPagePrevBtn = document.getElementById('btn-db-account-page-prev');
+    const dbAccountPageNextBtn = document.getElementById('btn-db-account-page-next');
+
+    const fetchUrlsInput = document.getElementById('fetch-urls');
+    const fetchRetryInput = document.getElementById('fetch-retry');
+    const fetchVaultInput = document.getElementById('fetch-vault');
+    const fetchAnalyzeInput = document.getElementById('fetch-analyze');
+    const fetchSaveDbInput = document.getElementById('fetch-save-db');
+    const fetchRunBtn = document.getElementById('btn-fetch-run');
+    const fetchOpenDirBtn = document.getElementById('btn-fetch-open-dir');
+    const fetchCopyFailedBtn = document.getElementById('btn-fetch-copy-failed');
+    const fetchStatus = document.getElementById('fetch-status');
+    const fetchSummary = document.getElementById('fetch-summary');
+    const fetchTaskList = document.getElementById('fetch-task-list');
+    const fetchList = document.getElementById('fetch-list');
+
+    let templates = [];
+    let allTemplates = [];
+    let lastSearchData = null;
+    let lastSearchPayload = null;
+    let allAccounts = [];
+    let allWechatSources = [];
+    let allYoutubeChannels = [];
+    let allDouyinSources = [];
+    let accountTestState = {};
+    let sourceTestState = {};
+    let historyItems = [];
+    let historyExpanded = false;
+    let searchAbortController = null;
+    let searchStartAt = null;
+    let searchTimer = null;
+    let currentNighthawkSubtab = 'data';
+    let currentDatabaseSubtab = 'recent';
+    let topicsPage = 1;
+    let topicsTotalPages = 1;
+    let currentTopicId = null;
+    let topicEventsPage = 1;
+    let topicEventsTotalPages = 1;
+    let dbRecentPage = 1;
+    let dbRecentTotalPages = 1;
+    let dbAccountPage = 1;
+    let dbAccountTotalPages = 1;
+    const contentModalEl = document.getElementById('content-modal');
+    const contentModalTitleEl = document.getElementById('content-modal-title');
+    const contentModalTextEl = document.getElementById('content-modal-text');
+    const contentModalCloseBtn = document.getElementById('content-modal-close');
+    const contentStore = new Map();
+    let contentStoreSeq = 0;
+
+    // 页面里大部分按钮都由 JS 接管，不应触发表单默认 submit（会导致页面跳到顶部）。
+    document.querySelectorAll('button:not([type])').forEach((btn) => {
+      btn.setAttribute('type', 'button');
+    });
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest('button') : null;
+      if (!btn) return;
+      const type = String(btn.getAttribute('type') || '').trim().toLowerCase();
+      if (!type) {
+        e.preventDefault();
+      }
+    });
+
+    function registerContentForView(title, content) {
+      const safeTitle = String(title || '正文').trim() || '正文';
+      const safeContent = String(content || '').trim();
+      if (!safeContent) return '';
+      const key = `content-${++contentStoreSeq}`;
+      contentStore.set(key, { title: safeTitle, content: safeContent });
+      return key;
+    }
+
+    function openContentModalByKey(key) {
+      const payload = contentStore.get(String(key || ''));
+      if (!payload) return;
+      contentModalTitleEl.textContent = payload.title;
+      contentModalTextEl.textContent = payload.content;
+      contentModalEl.classList.remove('hidden');
+    }
+
+    function closeContentModal() {
+      contentModalEl.classList.add('hidden');
+    }
+
+    function switchNighthawkSubtab(which) {
+      const isAccounts = which === 'accounts';
+      currentNighthawkSubtab = isAccounts ? 'accounts' : 'data';
+      nighthawkSubtabData.classList.toggle('active', !isAccounts);
+      nighthawkSubtabAccounts.classList.toggle('active', isAccounts);
+      panelSearch.classList.toggle('hidden', isAccounts);
+      panelAccounts.classList.toggle('hidden', !isAccounts);
+      if (isAccounts) {
+        loadAccounts();
+        loadWechatSources();
+        loadYoutubeChannels();
+        loadDouyinSources();
+      }
+    }
+
+    function switchTab(which) {
+      const isNighthawk = which === 'nighthawk';
+      const isTopics = which === 'topics';
+      const isDatabase = which === 'database';
+      const isFetch = which === 'fetch';
+      const isTemplates = which === 'templates';
+
+      tabNighthawk.classList.toggle('active', isNighthawk);
+      tabTopics.classList.toggle('active', isTopics);
+      tabDatabase.classList.toggle('active', isDatabase);
+      tabFetch.classList.toggle('active', isFetch);
+      tabTemplates.classList.toggle('active', isTemplates);
+
+      nighthawkSubtabs.classList.toggle('hidden', !isNighthawk);
+      panelTopics.classList.toggle('hidden', !isTopics);
+      panelDatabase.classList.toggle('hidden', !isDatabase);
+      panelFetch.classList.toggle('hidden', !isFetch);
+      panelTemplates.classList.toggle('hidden', !isTemplates);
+
+      if (isNighthawk) {
+        switchNighthawkSubtab(currentNighthawkSubtab);
+      } else {
+        panelSearch.classList.add('hidden');
+        panelAccounts.classList.add('hidden');
+      }
+
+      if (isTemplates) loadTemplateAdmin();
+      if (isTopics) loadTopicsDashboard();
+      if (isDatabase) loadDatabaseDashboard();
+    }
+
+    function switchAccountSubtab(which) {
+      const selected = String(which || 'x').trim() || 'x';
+      if (accSourceSelect && accSourceSelect.value !== selected) {
+        accSourceSelect.value = selected;
+      }
+      const isX = selected === 'x';
+      const isWechat = selected === 'wechat';
+      const isYoutube = selected === 'youtube';
+      const isDouyin = selected === 'douyin';
+
+      accPanelX.classList.toggle('hidden', !isX);
+      accPanelWechat.classList.toggle('hidden', !isWechat);
+      accPanelYoutube.classList.toggle('hidden', !isYoutube);
+      accPanelDouyin.classList.toggle('hidden', !isDouyin);
+
+      updateAccountAddFormByPlatform(selected);
+    }
+
+    function switchDatabaseSubtab(which) {
+      const isAccounts = which === 'accounts';
+      currentDatabaseSubtab = isAccounts ? 'accounts' : 'recent';
+      dbSubtabAccounts.classList.toggle('active', isAccounts);
+      dbSubtabRecent.classList.toggle('active', !isAccounts);
+      dbPanelAccounts.classList.toggle('hidden', !isAccounts);
+      dbPanelRecent.classList.toggle('hidden', isAccounts);
+      if (!panelDatabase.classList.contains('hidden')) {
+        if (isAccounts) {
+          loadDbAccountLatest();
+        } else {
+          loadDbRecentItems();
+        }
+      }
+    }
+
+    tabNighthawk.addEventListener('click', () => switchTab('nighthawk'));
+    tabTemplates.addEventListener('click', () => switchTab('templates'));
+    tabTopics.addEventListener('click', () => switchTab('topics'));
+    tabDatabase.addEventListener('click', () => switchTab('database'));
+    tabFetch.addEventListener('click', () => switchTab('fetch'));
+    nighthawkSubtabData.addEventListener('click', () => switchNighthawkSubtab('data'));
+    nighthawkSubtabAccounts.addEventListener('click', () => switchNighthawkSubtab('accounts'));
+    if (accSourceSelect) {
+      accSourceSelect.addEventListener('change', () => switchAccountSubtab(accSourceSelect.value));
+    }
+    dbSubtabAccounts.addEventListener('click', () => switchDatabaseSubtab('accounts'));
+    dbSubtabRecent.addEventListener('click', () => switchDatabaseSubtab('recent'));
+
+    contentModalCloseBtn.addEventListener('click', closeContentModal);
+    contentModalEl.addEventListener('click', (e) => {
+      if (e.target === contentModalEl) closeContentModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !contentModalEl.classList.contains('hidden')) {
+        closeContentModal();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest('.btn-view-content') : null;
+      if (!btn) return;
+      const key = btn.getAttribute('data-content-key') || '';
+      openContentModalByKey(key);
+    });
+
+    async function loadTemplates() {
+      const res = await fetch('/api/templates');
+      const data = await res.json();
+      if (!data.ok) return;
+      allTemplates = data.templates || [];
+      templates = data.active_templates || allTemplates;
+      const options = ['<option value="">手动填写（不套模板）</option>'];
+      templates.forEach((tpl, idx) => {
+        options.push(`<option value="${idx}">${tpl.name || tpl.id || ('模板' + idx)}</option>`);
+      });
+      templateSelect.innerHTML = options.join('');
+    }
+
+    async function loadProviders() {
+      try {
+        const res = await fetch('/api/providers');
+        const data = await res.json();
+        if (!data.ok) return;
+        const providers = (data.providers || []).filter(p => p && p.id);
+        if (!providers.length) return;
+        providerOptionsEl.innerHTML = providers.map((p) => `
+          <label class="checkbox-item">
+            <input type="checkbox" name="provider" value="${escapeHtml(String(p.id || ''))}" checked />
+            <span>${escapeHtml(toProviderText(p.id || p.name || ''))}</span>
+          </label>
+        `).join('');
+      } catch (_) {
+        // ignore
+      }
+    }
+
+    function getSelectedProviders() {
+      const checked = Array.from(document.querySelectorAll('#provider-options input[name="provider"]:checked'))
+        .map(el => String(el.value || '').trim())
+        .filter(Boolean);
+      return checked;
+    }
+
+    function setSelectedProviders(values) {
+      const wanted = new Set((Array.isArray(values) ? values : []).map(v => String(v || '').trim()).filter(Boolean));
+      const boxes = Array.from(document.querySelectorAll('#provider-options input[name="provider"]'));
+      if (!boxes.length) return;
+      boxes.forEach((box) => {
+        box.checked = wanted.size ? wanted.has(String(box.value || '').trim()) : true;
+      });
+    }
+
+    function getDefaultModeByProvider(provider) {
+      const v = String(provider || 'x').trim().toLowerCase();
+      if (v === 'wechat') return 'wechat_search';
+      if (v === 'youtube') return 'youtube_search';
+      if (v === 'bilibili') return 'bilibili_search';
+      if (v === 'feed') return 'feed_search';
+      if (v === 'github') return 'github_trending';
+      return 'pool_latest';
+    }
+
+    function syncSearchModeWithProvider() {
+      return;
+    }
+
+    function syncTemplateModeWithProvider() {
+      const provider = tplProviderInput.value || 'x';
+      if (provider !== 'x') {
+        tplModeInput.value = getDefaultModeByProvider(provider);
+      } else if (!['pool_latest', 'pool_top', 'source_recent'].includes(tplModeInput.value)) {
+        tplModeInput.value = 'pool_latest';
+      }
+    }
+
+    function syncModeUI() {
+      document.getElementById('lang').disabled = false;
+      document.getElementById('since').disabled = false;
+      document.getElementById('until').disabled = false;
+    }
+
+    function applyTemplate() {
+      const idx = templateSelect.value;
+      if (idx === '') {
+        templateStatus.textContent = '';
+        templateNotes.textContent = '';
+        return;
+      }
+      const tpl = templates[Number(idx)] || {};
+      setSelectedProviders(tpl.providers || (tpl.provider ? [tpl.provider] : []));
+      document.getElementById('query').value = tpl.query || '';
+      document.getElementById('sort_by').value = tpl.sort_by || 'time';
+      document.getElementById('since').value = tpl.since || '';
+      document.getElementById('until').value = tpl.until || '';
+      document.getElementById('lang').value = tpl.lang || '';
+      document.getElementById('query_scope').value = tpl.query_scope || 'all';
+      syncModeUI();
+    }
+
+    if (templateApplyBtn) templateApplyBtn.addEventListener('click', applyTemplate);
+    if (modeSelect) modeSelect.addEventListener('change', syncModeUI);
+    tplProviderInput.addEventListener('change', syncTemplateModeWithProvider);
+
+    [accFilterEnabled, accFilterLang, accFilterCategory, accFilterMinPriority].forEach(el => {
+      el.addEventListener('change', renderAccounts);
+      el.addEventListener('input', renderAccounts);
+    });
+
+    accFilterReset.addEventListener('click', () => {
+      accFilterEnabled.value = 'all';
+      accFilterLang.value = 'all';
+      accFilterCategory.value = 'all';
+      accFilterMinPriority.value = 0;
+      renderAccounts();
+    });
+
+    document.getElementById('accounts-list').addEventListener('click', async (e) => {
+      const toggleBtn = e.target.closest('.account-toggle-btn');
+      if (toggleBtn) {
+        const handle = toggleBtn.getAttribute('data-handle') || '';
+        const currentEnabled = toggleBtn.getAttribute('data-enabled') === '1';
+        await toggleAccountEnabled(handle, currentEnabled, toggleBtn);
+        return;
+      }
+      const deleteBtn = e.target.closest('.account-delete-btn');
+      if (deleteBtn) {
+        const handle = deleteBtn.getAttribute('data-handle') || '';
+        await deleteAccountByHandle(handle, deleteBtn);
+        return;
+      }
+      const testBtn = e.target.closest('.account-test-btn');
+      if (testBtn) {
+        const handle = testBtn.getAttribute('data-handle') || '';
+        await testAccountByHandle(handle, testBtn);
+      }
+    });
+
+    function bindSourceListActions(listId) {
+      const el = document.getElementById(listId);
+      if (!el) return;
+      el.addEventListener('click', async (e) => {
+        const toggleBtn = e.target.closest('.source-toggle-btn');
+        if (toggleBtn) {
+          const platform = toggleBtn.getAttribute('data-platform') || '';
+          const id = toggleBtn.getAttribute('data-id') || '';
+          const currentEnabled = toggleBtn.getAttribute('data-enabled') === '1';
+          await toggleSourceEnabled(platform, id, currentEnabled, toggleBtn);
+          return;
+        }
+        const deleteBtn = e.target.closest('.source-delete-btn');
+        if (deleteBtn) {
+          const platform = deleteBtn.getAttribute('data-platform') || '';
+          const id = deleteBtn.getAttribute('data-id') || '';
+          await deleteSourceById(platform, id, deleteBtn);
+          return;
+        }
+        const testBtn = e.target.closest('.source-test-btn');
+        if (testBtn) {
+          const platform = testBtn.getAttribute('data-platform') || '';
+          const id = testBtn.getAttribute('data-id') || '';
+          await testSourceById(platform, id, testBtn);
+        }
+      });
+    }
+
+    bindSourceListActions('wechat-sources-list');
+    bindSourceListActions('youtube-channels-list');
+    bindSourceListActions('douyin-sources-list');
+
+    accAddBtn.addEventListener('click', addAccountFromForm);
+    accAddTestBtn.addEventListener('click', testAccountFromForm);
+
+    tplSaveBtn.addEventListener('click', saveTemplateFromForm);
+    tplResetBtn.addEventListener('click', resetTemplateForm);
+
+    document.getElementById('templates-list').addEventListener('click', async (e) => {
+      const editBtn = e.target.closest('.tpl-edit-btn');
+      if (editBtn) {
+        const id = editBtn.getAttribute('data-id') || '';
+        const tpl = allTemplates.find(t => String(t.id) === String(id));
+        if (tpl) fillTemplateForm(tpl);
+        return;
+      }
+
+      const toggleBtn = e.target.closest('.tpl-toggle-btn');
+      if (toggleBtn) {
+        const id = toggleBtn.getAttribute('data-id') || '';
+        const currentEnabled = toggleBtn.getAttribute('data-enabled') === '1';
+        await toggleTemplateEnabled(id, currentEnabled);
+        return;
+      }
+
+      const deleteBtn = e.target.closest('.tpl-delete-btn');
+      if (deleteBtn) {
+        const id = deleteBtn.getAttribute('data-id') || '';
+        await deleteTemplateById(id);
+      }
+    });
+
+    historyRefreshBtn.addEventListener('click', () => loadHistory());
+    historyListEl.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.history-rerun-btn');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id') || '';
+      await rerunHistory(id, btn);
+    });
+
+    function populateAccountFilterOptions(accounts) {
+      const langs = Array.from(new Set((accounts || []).map(a => String(a.lang || '').trim()).filter(Boolean))).sort();
+      const categories = Array.from(new Set((accounts || []).map(a => String(a.category || '').trim()).filter(Boolean))).sort();
+
+      accFilterLang.innerHTML = ['<option value="all">全部</option>', ...langs.map(v => `<option value="${v}">${v}</option>`)].join('');
+      accFilterCategory.innerHTML = ['<option value="all">全部</option>', ...categories.map(v => `<option value="${v}">${v}</option>`)].join('');
+    }
+
+    function applyAccountFilters(accounts) {
+      const enabledMode = accFilterEnabled.value;
+      const lang = accFilterLang.value;
+      const category = accFilterCategory.value;
+      const minPriority = Number(accFilterMinPriority.value || 0);
+
+      return (accounts || []).filter(a => {
+        if (enabledMode === 'enabled' && !a.enabled) return false;
+        if (enabledMode === 'disabled' && a.enabled) return false;
+        if (lang !== 'all' && String(a.lang || '') !== lang) return false;
+        if (category !== 'all' && String(a.category || '') !== category) return false;
+        if (Number(a.priority || 0) < minPriority) return false;
+        return true;
+      });
+    }
+
+    function renderAccounts() {
+      const summary = document.getElementById('accounts-summary');
+      const list = document.getElementById('accounts-list');
+      const filtered = applyAccountFilters(allAccounts);
+      const enabledInFiltered = filtered.filter(a => a.enabled).length;
+      summary.textContent = `筛选后 ${filtered.length}/${allAccounts.length} 个，其中已启用 ${enabledInFiltered} 个`;
+      list.innerHTML = filtered.map(a => {
+        const enabled = a.enabled ? '✅ 已启用' : '⏸ 已禁用';
+        const actionText = a.enabled ? '禁用' : '开启';
+        const testState = accountTestState[normalizeAccountHandle(a.handle)] || null;
+        const testHtml = testState ? `<div class="muted" style="margin-top:8px; white-space:pre-wrap;">${escapeHtml(testState)}</div>` : '';
+        return `<div class="result">
+          <div><span class="badge">@${a.handle}</span><span class="badge">用户名：${escapeHtml(a.username || '-')}</span><span class="badge">${enabled}</span><span class="badge">${a.lang || '-'}</span><span class="badge">${a.category || '-'}</span></div>
+          <div class="muted">优先级=${a.priority || 0} | ${a.notes || ''}</div>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="account-toggle-btn" data-handle="${a.handle}" data-enabled="${a.enabled ? '1' : '0'}">${actionText}</button>
+            <button class="account-test-btn" data-handle="${a.handle}">测试</button>
+            <button class="account-delete-btn" data-handle="${a.handle}">删除</button>
+          </div>
+          ${testHtml}
+        </div>`;
+      }).join('') || '<div class="muted">当前筛选条件下无账号</div>';
+    }
+
+    async function toggleAccountEnabled(handle, currentEnabled, triggerBtn) {
+      if (!handle) return;
+      triggerBtn.disabled = true;
+      const nextEnabled = !currentEnabled;
+      const originalText = triggerBtn.textContent;
+      triggerBtn.textContent = '更新中...';
+      try {
+        const res = await fetch('/api/accounts/toggle', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ platform: 'x', handle, enabled: nextEnabled })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          alert(`更新失败：${data.message || '未知错误'}`);
+          return;
+        }
+        const target = allAccounts.find(a => String(a.handle) === String(handle));
+        if (target) target.enabled = nextEnabled;
+        renderAccounts();
+      } catch (e) {
+        alert(`更新失败：${String(e)}`);
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = originalText;
+      }
+    }
+
+    async function reloadSourcesByPlatform(platform, options = {}) {
+      const p = String(platform || '').trim();
+      const keepScroll = options.keepScroll !== false;
+      const showLoading = options.showLoading === true;
+      const prevY = window.scrollY || window.pageYOffset || 0;
+
+      if (p === 'wechat') await loadWechatSources(showLoading);
+      else if (p === 'youtube') await loadYoutubeChannels(showLoading);
+      else if (p === 'douyin') await loadDouyinSources(showLoading);
+      else return Promise.resolve();
+
+      if (keepScroll) {
+        window.requestAnimationFrame(() => {
+          window.scrollTo(0, prevY);
+        });
+      }
+    }
+
+    async function toggleSourceEnabled(platform, id, currentEnabled, triggerBtn) {
+      if (!platform || !id) return;
+      triggerBtn.disabled = true;
+      const nextEnabled = !currentEnabled;
+      const oldText = triggerBtn.textContent;
+      triggerBtn.textContent = '更新中...';
+      try {
+        const res = await fetch('/api/accounts/toggle', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ platform, id, enabled: nextEnabled })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          alert(`更新失败：${data.message || '未知错误'}`);
+          return;
+        }
+        await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+      } catch (e) {
+        alert(`更新失败：${String(e)}`);
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = oldText;
+      }
+    }
+
+    async function deleteSourceById(platform, id, triggerBtn) {
+      if (!platform || !id) return;
+      if (!confirm(`确认删除 ${id}？`)) return;
+      const oldText = triggerBtn.textContent;
+      triggerBtn.disabled = true;
+      triggerBtn.textContent = '删除中...';
+      try {
+        const res = await fetch('/api/accounts/delete', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ platform, id })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          alert(`删除失败：${data.message || '未知错误'}`);
+          return;
+        }
+        await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+      } catch (e) {
+        alert(`删除失败：${String(e)}`);
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = oldText;
+      }
+    }
+
+    async function testSourceById(platform, id, triggerBtn) {
+      if (!platform || !id) return;
+      const key = `${String(platform).trim().toLowerCase()}:${String(id).trim()}`;
+      const oldText = triggerBtn.textContent;
+      triggerBtn.disabled = true;
+      triggerBtn.textContent = '测试中...';
+      sourceTestState[key] = `正在测试 ${platform}:${id}...`;
+      await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+      try {
+        const res = await fetch('/api/accounts/test', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ platform, id })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          sourceTestState[key] = `测试失败：${String(data.message || '未知错误')}`;
+          await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+          return;
+        }
+        const latest = data.latest || {};
+        const increment = data.increment || {};
+        const statusLine = increment.message ? String(increment.message) : (increment.has_new ? '检测到新增文章' : '最新文章已入库');
+        sourceTestState[key] = `测试通过\n${statusLine}\n最近1条时间：${latest.created_at || '-'}\n最近1条内容：${latest.text || '-'}${latest.url ? `\n链接：${latest.url}` : ''}`;
+        await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+      } catch (e) {
+        sourceTestState[key] = `测试失败：${String(e)}`;
+        await reloadSourcesByPlatform(platform, { keepScroll: true, showLoading: false });
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = oldText;
+      }
+    }
+
+    function normalizeAccountHandle(handle) {
+      return String(handle || '').trim().replace(/^@+/, '');
+    }
+
+    function getSelectedAccountPlatform() {
+      return String(accSourceSelect && accSourceSelect.value ? accSourceSelect.value : 'x').trim() || 'x';
+    }
+
+    function updateAccountAddFormByPlatform(platform) {
+      const p = String(platform || 'x').trim() || 'x';
+      const configMap = {
+        x: {
+          title: '手动添加 X 账号',
+          handleLabel: '账号句柄（必填）',
+          handlePlaceholder: '例如：OpenAI（可带@）',
+          nameLabel: '展示名称（可选）',
+          namePlaceholder: '例如：OpenAI',
+          urlLabel: '入口链接（X 不需要）',
+          urlPlaceholder: 'X 渠道可留空',
+          showTest: true,
+        },
+        wechat: {
+          title: '手动添加公众号来源',
+          handleLabel: '来源ID（必填）',
+          handlePlaceholder: '例如：qbitai / leiphone_ai',
+          nameLabel: '来源名称（可选）',
+          namePlaceholder: '例如：量子位',
+          urlLabel: 'entry_url（必填）',
+          urlPlaceholder: '例如：https://www.qbitai.com/feed',
+          showTest: false,
+        },
+        youtube: {
+          title: '手动添加 YouTube 频道',
+          handleLabel: '频道ID（必填）',
+          handlePlaceholder: '例如：openai',
+          nameLabel: '频道名称（可选）',
+          namePlaceholder: '例如：OpenAI',
+          urlLabel: 'channel_url（必填）',
+          urlPlaceholder: '例如：https://www.youtube.com/@OpenAI',
+          showTest: false,
+        },
+        douyin: {
+          title: '手动添加抖音来源',
+          handleLabel: '来源ID（必填）',
+          handlePlaceholder: '例如：my_douyin_source',
+          nameLabel: '来源名称（可选）',
+          namePlaceholder: '例如：某某抖音号',
+          urlLabel: 'profile_url（必填）',
+          urlPlaceholder: '例如：https://www.douyin.com/user/xxx',
+          showTest: false,
+        },
+      };
+      const cfg = configMap[p] || configMap.x;
+      accAddTitle.textContent = cfg.title;
+      accNewHandleLabel.textContent = cfg.handleLabel;
+      accNewHandle.placeholder = cfg.handlePlaceholder;
+      accNewNameLabel.textContent = cfg.nameLabel;
+      accNewName.placeholder = cfg.namePlaceholder;
+      accNewUrlLabel.textContent = cfg.urlLabel;
+      accNewUrl.placeholder = cfg.urlPlaceholder;
+      accAddTestBtn.classList.toggle('hidden', !cfg.showTest);
+    }
+
+    function collectAccountForm() {
+      const platform = getSelectedAccountPlatform();
+      const handle = normalizeAccountHandle(accNewHandle.value);
+      const name = String(accNewName.value || '').trim();
+      const url = String(accNewUrl.value || '').trim();
+      const account = {
+        platform,
+        handle,
+        id: handle,
+        name,
+        url,
+        enabled: accNewEnabled.value === 'true',
+        priority: Number(accNewPriority.value || 5),
+        lang: accNewLang.value.trim(),
+        category: accNewCategory.value.trim(),
+        notes: accNewNotes.value.trim()
+      };
+      if (platform === 'wechat') {
+        account.entry_url = url;
+      }
+      if (platform === 'youtube') {
+        account.channel_url = url;
+      }
+      if (platform === 'douyin') {
+        account.profile_url = url;
+      }
+      return account;
+    }
+
+    function resetAccountForm() {
+      accNewHandle.value = '';
+      accNewName.value = '';
+      accNewUrl.value = '';
+      accNewEnabled.value = 'true';
+      accNewPriority.value = 5;
+      accNewLang.value = '';
+      accNewCategory.value = '';
+      accNewNotes.value = '';
+    }
+
+    function findExistingAccountByPlatform(platform, handle) {
+      const p = String(platform || '').trim();
+      const id = normalizeAccountHandle(handle);
+      if (!p || !id) return null;
+      if (p === 'x') {
+        return (allAccounts || []).find(a => normalizeAccountHandle(a.handle) === id) || null;
+      }
+      if (p === 'wechat') {
+        return (allWechatSources || []).find(a => normalizeAccountHandle(a.id) === id) || null;
+      }
+      if (p === 'youtube') {
+        return (allYoutubeChannels || []).find(a => normalizeAccountHandle(a.id) === id) || null;
+      }
+      if (p === 'douyin') {
+        return (allDouyinSources || []).find(a => normalizeAccountHandle(a.id) === id) || null;
+      }
+      return null;
+    }
+
+    async function addAccountFromForm() {
+      const account = collectAccountForm();
+      const platform = account.platform || 'x';
+      if (!account.handle) {
+        accActionStatus.textContent = '来源ID不能为空';
+        return;
+      }
+      if (platform !== 'x' && !String(account.url || '').trim()) {
+        accActionStatus.textContent = '该渠道需要填写入口链接';
+        return;
+      }
+      const exists = findExistingAccountByPlatform(platform, account.handle);
+      if (exists) {
+        accActionStatus.textContent = `不用加，${account.handle} 已经在监控名单里了`;
+        return;
+      }
+
+      accAddBtn.disabled = true;
+      accActionStatus.textContent = '添加中...';
+      try {
+        const res = await fetch('/api/accounts/add', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ account })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          accActionStatus.textContent = `添加失败：${String(data.message || '未知错误')}`;
+          return;
+        }
+        accActionStatus.textContent = `已添加 ${data.account?.id || data.account?.handle || account.handle}`;
+        resetAccountForm();
+        await Promise.all([loadAccounts(), loadWechatSources(), loadYoutubeChannels(), loadDouyinSources()]);
+      } catch (e) {
+        accActionStatus.textContent = `添加失败：${String(e)}`;
+      } finally {
+        accAddBtn.disabled = false;
+      }
+    }
+
+    function humanizeAccountTestError(message) {
+      const raw = String(message || '未知错误').trim();
+      const lower = raw.toLowerCase();
+      if (lower.includes('dependency: unspecified') || lower.includes('http 0')) {
+        return 'X 接口临时波动（上游依赖异常），请稍后重试';
+      }
+      if (lower.includes('too many requests') || lower.includes('429')) {
+        return '请求过于频繁，当前被限流了，请稍后重试';
+      }
+      if (lower.includes('auth') || lower.includes('401') || lower.includes('unauthorized')) {
+        return 'X 认证可能失效，请检查登录态（token/ct0）';
+      }
+      return raw;
+    }
+
+    async function testAccountByHandle(handle, triggerBtn = null) {
+      const target = normalizeAccountHandle(handle);
+      if (!target) return;
+      const btn = triggerBtn;
+      const oldText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '测试中...';
+      }
+      accountTestState[target] = `正在测试 @${target}...`;
+      renderAccounts();
+      try {
+        const res = await fetch('/api/accounts/test', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ handle: target })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          accountTestState[target] = `测试失败：${humanizeAccountTestError(data.message || '未知错误')}`;
+          renderAccounts();
+          return;
+        }
+        const latest = data.latest || {};
+        const username = data.username ? `用户名：${data.username}\n` : '';
+        accountTestState[target] = `测试通过\n${username}最近1条时间：${latest.created_at || '-'}\n最近1条内容：${latest.text || '-'}`;
+        renderAccounts();
+      } catch (e) {
+        accountTestState[target] = `测试失败：${humanizeAccountTestError(String(e))}`;
+        renderAccounts();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = oldText;
+        }
+      }
+    }
+
+    async function testAccountFromForm() {
+      const account = collectAccountForm();
+      if (!account.handle) {
+        accActionStatus.textContent = '先填 handle 再测试';
+        return;
+      }
+      if (account.platform !== 'x') {
+        accActionStatus.textContent = '当前仅支持 X 账号连通性测试';
+        return;
+      }
+      accAddTestBtn.disabled = true;
+      try {
+        await testAccountByHandle(account.handle, null);
+      } finally {
+        accAddTestBtn.disabled = false;
+      }
+    }
+
+    async function deleteAccountByHandle(handle, triggerBtn) {
+      const target = normalizeAccountHandle(handle);
+      if (!target) return;
+      if (!confirm(`确认删除账号 @${target}？`)) return;
+      const oldText = triggerBtn.textContent;
+      triggerBtn.disabled = true;
+      triggerBtn.textContent = '删除中...';
+      accActionStatus.textContent = `删除 @${target}...`;
+      try {
+        const res = await fetch('/api/accounts/delete', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ platform: 'x', handle: target })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          accActionStatus.textContent = `删除失败：${data.message || '未知错误'}`;
+          return;
+        }
+        accActionStatus.textContent = `已删除 @${target}`;
+        await loadAccounts();
+      } catch (e) {
+        accActionStatus.textContent = `删除失败：${String(e)}`;
+      } finally {
+        triggerBtn.disabled = false;
+        triggerBtn.textContent = oldText;
+      }
+    }
+
+    async function loadAccounts() {
+      const list = document.getElementById('accounts-list');
+      list.innerHTML = '加载中...';
+      const res = await fetch('/api/accounts');
+      const data = await res.json();
+      if (!data.ok) {
+        list.innerHTML = '加载失败';
+        return;
+      }
+      allAccounts = data.accounts || [];
+      populateAccountFilterOptions(allAccounts);
+      renderAccounts();
+    }
+
+    function renderWechatSources() {
+      const summary = document.getElementById('wechat-sources-summary');
+      const list = document.getElementById('wechat-sources-list');
+      const sources = allWechatSources || [];
+      const enabledCount = sources.filter(s => s.enabled).length;
+      summary.textContent = `共 ${sources.length} 个公众号来源，其中正式层（enabled=true）${enabledCount} 个`;
+      list.innerHTML = sources.map(s => {
+        const actionText = s.enabled ? '禁用' : '开启';
+        const stateKey = `wechat:${String(s.id || '').trim()}`;
+        const testState = sourceTestState[stateKey] || '';
+        const testHtml = testState ? `<div class="muted" style="margin-top:8px; white-space:pre-wrap;">${escapeHtml(testState)}</div>` : '';
+        return `
+        <div class="result">
+          <div><span class="badge">${escapeHtml(s.id || '-')}</span><span class="badge">名称：${escapeHtml(s.name || '-')}</span><span class="badge">${s.enabled ? '✅ 已启用' : '⏸ 已禁用'}</span><span class="badge">优先级 ${Number(s.priority || 0)}</span></div>
+          <div class="muted">抓取方式：${escapeHtml(s.fetch_method || '-')} | 入口：${escapeHtml(s.entry_url || '-')}</div>
+          ${s.entry_url ? `<div style="margin-top:4px;"><a href="${escapeHtml(s.entry_url)}" target="_blank">${escapeHtml(s.entry_url)}</a></div>` : ''}
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="source-toggle-btn" data-platform="wechat" data-id="${escapeHtml(s.id || '')}" data-enabled="${s.enabled ? '1' : '0'}">${actionText}</button>
+            <button type="button" class="source-test-btn" data-platform="wechat" data-id="${escapeHtml(s.id || '')}">测试</button>
+            <button type="button" class="source-delete-btn" data-platform="wechat" data-id="${escapeHtml(s.id || '')}">删除</button>
+          </div>
+          ${testHtml}
+        </div>`;
+      }).join('') || '<div class="muted">暂无公众号来源</div>';
+    }
+
+    async function loadWechatSources(showLoading = true) {
+      const list = document.getElementById('wechat-sources-list');
+      if (showLoading) list.innerHTML = '加载中...';
+      const res = await fetch('/api/wechat/sources');
+      const data = await res.json();
+      if (!data.ok) {
+        list.innerHTML = '加载失败';
+        return;
+      }
+      allWechatSources = data.sources || [];
+      renderWechatSources();
+    }
+
+    function renderYoutubeChannels() {
+      const summary = document.getElementById('youtube-channels-summary');
+      const list = document.getElementById('youtube-channels-list');
+      const channels = allYoutubeChannels || [];
+      const enabledCount = channels.filter(s => s.enabled).length;
+      summary.textContent = `共 ${channels.length} 个 YouTube 频道，其中正式层（enabled=true）${enabledCount} 个`;
+      list.innerHTML = channels.map(s => {
+        const actionText = s.enabled ? '禁用' : '开启';
+        const stateKey = `youtube:${String(s.id || '').trim()}`;
+        const testState = sourceTestState[stateKey] || '';
+        const testHtml = testState ? `<div class="muted" style="margin-top:8px; white-space:pre-wrap;">${escapeHtml(testState)}</div>` : '';
+        return `
+        <div class="result">
+          <div><span class="badge">${escapeHtml(s.id || '-')}</span><span class="badge">名称：${escapeHtml(s.name || '-')}</span><span class="badge">${s.enabled ? '✅ 已启用' : '⏸ 已禁用'}</span><span class="badge">优先级 ${Number(s.priority || 0)}</span></div>
+          <div class="muted">频道ID：${escapeHtml(s.channel_id || '-')}</div>
+          <div class="muted">说明：${escapeHtml(s.description || '-')}</div>
+          ${s.url ? `<div style="margin-top:4px;"><a href="${escapeHtml(s.url)}" target="_blank">${escapeHtml(s.url)}</a></div>` : ''}
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="source-toggle-btn" data-platform="youtube" data-id="${escapeHtml(s.id || '')}" data-enabled="${s.enabled ? '1' : '0'}">${actionText}</button>
+            <button type="button" class="source-test-btn" data-platform="youtube" data-id="${escapeHtml(s.id || '')}">测试</button>
+            <button type="button" class="source-delete-btn" data-platform="youtube" data-id="${escapeHtml(s.id || '')}">删除</button>
+          </div>
+          ${testHtml}
+        </div>`;
+      }).join('') || '<div class="muted">暂无 YouTube 频道</div>';
+    }
+
+    async function loadYoutubeChannels(showLoading = true) {
+      const list = document.getElementById('youtube-channels-list');
+      if (showLoading) list.innerHTML = '加载中...';
+      const res = await fetch('/api/youtube/channels');
+      const data = await res.json();
+      if (!data.ok) {
+        list.innerHTML = '加载失败';
+        return;
+      }
+      allYoutubeChannels = data.channels || [];
+      renderYoutubeChannels();
+    }
+
+    function renderDouyinSources() {
+      const summary = document.getElementById('douyin-sources-summary');
+      const list = document.getElementById('douyin-sources-list');
+      const sources = allDouyinSources || [];
+      const enabledCount = sources.filter(s => s.enabled).length;
+      summary.textContent = `共 ${sources.length} 个抖音来源，其中启用 ${enabledCount} 个`;
+      list.innerHTML = sources.map(s => {
+        const actionText = s.enabled ? '禁用' : '开启';
+        return `
+        <div class="result">
+          <div><span class="badge">${escapeHtml(s.id || '-')}</span><span class="badge">名称：${escapeHtml(s.name || '-')}</span><span class="badge">${s.enabled ? '✅ 已启用' : '⏸ 已禁用'}</span><span class="badge">优先级 ${Number(s.priority || 0)}</span></div>
+          <div class="muted">抓取方式：${escapeHtml(s.fetch_method || '-')} | 分类：${escapeHtml(s.category || '-')}</div>
+          ${s.url ? `<div style="margin-top:4px;"><a href="${escapeHtml(s.url)}" target="_blank">${escapeHtml(s.url)}</a></div>` : ''}
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="source-toggle-btn" data-platform="douyin" data-id="${escapeHtml(s.id || '')}" data-enabled="${s.enabled ? '1' : '0'}">${actionText}</button>
+            <button class="source-delete-btn" data-platform="douyin" data-id="${escapeHtml(s.id || '')}">删除</button>
+          </div>
+        </div>`;
+      }).join('') || '<div class="muted">暂无抖音来源</div>';
+    }
+
+    async function loadDouyinSources(showLoading = true) {
+      const list = document.getElementById('douyin-sources-list');
+      if (list && showLoading) list.innerHTML = '加载中...';
+      const res = await fetch('/api/douyin/sources');
+      const data = await res.json();
+      if (!data.ok) {
+        if (list) list.innerHTML = '加载失败';
+        return;
+      }
+      allDouyinSources = data.sources || [];
+      renderDouyinSources();
+    }
+
+
+    function resetTemplateForm() {
+      tplIdInput.value = '';
+      tplNameInput.value = '';
+      tplEnabledInput.value = 'true';
+      tplProviderInput.value = 'x';
+      tplModeInput.value = getDefaultModeByProvider('x');
+      tplSortByInput.value = 'time';
+      tplLimitInput.value = 3;
+      tplQueryInput.value = '';
+      tplTargetHandleInput.value = '';
+      tplSinceInput.value = '';
+      tplUntilInput.value = '';
+      tplLangInput.value = '';
+      tplNotesInput.value = '';
+      tplStatus.textContent = '';
+    }
+
+    function fillTemplateForm(tpl) {
+      tplIdInput.value = tpl.id || '';
+      tplNameInput.value = tpl.name || '';
+      tplEnabledInput.value = String(tpl.enabled === false ? false : true);
+      tplProviderInput.value = tpl.provider || 'x';
+      tplModeInput.value = tpl.mode || getDefaultModeByProvider(tpl.provider || 'x');
+      tplSortByInput.value = tpl.sort_by || 'time';
+      tplLimitInput.value = Number(tpl.limit_per_account || 3);
+      tplQueryInput.value = tpl.query || '';
+      tplTargetHandleInput.value = tpl.target_handle || '';
+      tplSinceInput.value = tpl.since || '';
+      tplUntilInput.value = tpl.until || '';
+      tplLangInput.value = tpl.lang || '';
+      tplNotesInput.value = tpl.notes || '';
+    }
+
+    function toProviderText(provider) {
+      const v = String(provider || '').toLowerCase();
+      if (v === 'x') return 'X 平台';
+      if (v === 'wechat') return '微信公众号';
+      if (v === 'youtube') return 'YouTube';
+      if (v === 'bilibili') return 'B站';
+      if (v === 'feed') return 'Feed / 官方博客';
+      if (v === 'github') return 'GitHub Trending';
+      if (v === 'multi') return '多渠道';
+      return provider || '-';
+    }
+
+    function toModeText(mode) {
+      const v = String(mode || '').toLowerCase();
+      if (v === 'pool_latest') return '监控池（最新）';
+      if (v === 'pool_top') return '监控池（热门）';
+      if (v === 'source_recent') return '单账号最近内容';
+      if (v === 'feed_search') return 'Feed / 官方博客';
+      if (v === 'github_trending') return 'GitHub Trending';
+      if (v === 'wechat_search') return '公众号来源池搜索';
+      if (v === 'youtube_search') return 'YouTube 来源池搜索';
+      if (v === 'bilibili_search') return 'B站 来源池搜索';
+      return mode || '-';
+    }
+
+    function toSortText(sortBy) {
+      const v = String(sortBy || '').toLowerCase();
+      if (v === 'time') return '按时间';
+      if (v === 'engagement') return '按互动';
+      if (v === 'hybrid') return '按综合';
+      return sortBy || '-';
+    }
+
+    function toQueryScopeText(scope) {
+      const v = String(scope || '').toLowerCase();
+      if (v === 'title') return '标题';
+      if (v === 'content') return '正文';
+      return '全部';
+    }
+
+    function renderTemplateAdmin() {
+      const summary = document.getElementById('templates-summary');
+      const list = document.getElementById('templates-list');
+      const activeCount = allTemplates.filter(t => t.enabled !== false).length;
+      summary.textContent = `总模板 ${allTemplates.length}，启用 ${activeCount}，禁用 ${allTemplates.length - activeCount}`;
+      list.innerHTML = (allTemplates || []).map(tpl => {
+        const enabled = tpl.enabled === false ? '⏸ 已禁用' : '✅ 已启用';
+        const toggleText = tpl.enabled === false ? '启用' : '禁用';
+        return `<div class="result">
+          <div><span class="badge">${tpl.id || '-'}</span><span class="badge">${toProviderText(tpl.provider || 'x')}</span><span class="badge">${enabled}</span><span class="badge">${toModeText(tpl.mode)}</span><span class="badge">${toSortText(tpl.sort_by || 'time')}</span></div>
+          <div><strong>${tpl.name || tpl.id || ''}</strong></div>
+          <div class="muted">关键词=${tpl.query || ''}</div>
+          <div class="muted">每账号条数=${tpl.limit_per_account || 3} | 语言=${tpl.lang || '-'} | 单账号=${tpl.target_handle || '-'}</div>
+          <div class="muted">${tpl.notes || ''}</div>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="tpl-edit-btn" data-id="${tpl.id}">编辑</button>
+            <button class="tpl-toggle-btn" data-id="${tpl.id}" data-enabled="${tpl.enabled === false ? '0' : '1'}">${toggleText}</button>
+            <button class="tpl-delete-btn" data-id="${tpl.id}">删除</button>
+          </div>
+        </div>`;
+      }).join('') || '<div class="muted">暂无模板</div>';
+    }
+
+    async function loadTemplateAdmin() {
+      const res = await fetch('/api/templates');
+      const data = await res.json();
+      if (!data.ok) {
+        document.getElementById('templates-list').innerHTML = '<div class="muted">加载失败</div>';
+        return;
+      }
+      allTemplates = data.templates || [];
+      renderTemplateAdmin();
+    }
+
+    function collectTemplateForm() {
+      return {
+        id: tplIdInput.value.trim(),
+        name: tplNameInput.value.trim(),
+        enabled: tplEnabledInput.value === 'true',
+        provider: tplProviderInput.value,
+        mode: tplModeInput.value,
+        sort_by: tplSortByInput.value,
+        query: tplQueryInput.value.trim(),
+        target_handle: tplTargetHandleInput.value.trim(),
+        limit_per_account: Number(tplLimitInput.value || 3),
+        since: tplSinceInput.value.trim(),
+        until: tplUntilInput.value.trim(),
+        lang: tplLangInput.value.trim(),
+        notes: tplNotesInput.value.trim()
+      };
+    }
+
+    async function saveTemplateFromForm() {
+      const template = collectTemplateForm();
+      if (!template.id) {
+        tplStatus.textContent = '模板 id 不能为空';
+        return;
+      }
+      tplSaveBtn.disabled = true;
+      tplStatus.textContent = '保存中...';
+      try {
+        const res = await fetch('/api/templates/upsert', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ template })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          tplStatus.textContent = `保存失败：${data.message || '未知错误'}`;
+          return;
+        }
+        tplStatus.textContent = `已保存模板：${template.id}`;
+        await loadTemplates();
+        await loadTemplateAdmin();
+      } catch (e) {
+        tplStatus.textContent = `保存失败：${String(e)}`;
+      } finally {
+        tplSaveBtn.disabled = false;
+      }
+    }
+
+    async function deleteTemplateById(id) {
+      if (!id) return;
+      if (!confirm(`确认删除模板 ${id}？`)) return;
+      tplStatus.textContent = '删除中...';
+      const res = await fetch('/api/templates/delete', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        tplStatus.textContent = `删除失败：${data.message || '未知错误'}`;
+        return;
+      }
+      tplStatus.textContent = `已删除模板：${id}`;
+      await loadTemplates();
+      await loadTemplateAdmin();
+      if (tplIdInput.value.trim() === id) resetTemplateForm();
+    }
+
+    async function toggleTemplateEnabled(id, currentEnabled) {
+      if (!id) return;
+      const nextEnabled = !currentEnabled;
+      const res = await fetch('/api/templates/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id, enabled: nextEnabled })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        tplStatus.textContent = `切换失败：${data.message || '未知错误'}`;
+        return;
+      }
+      tplStatus.textContent = `模板 ${id} 已${nextEnabled ? '启用' : '禁用'}`;
+      await loadTemplates();
+      await loadTemplateAdmin();
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatDateTimeText(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return '-';
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)) return raw;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return `${raw} 00:00:00`;
+      const normalized = raw.replace('T', ' ').replace(/Z$/, '').replace(/\.\d+$/, '');
+      const match = normalized.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})/);
+      if (match) return `${match[1]} ${match[2]}`;
+      return raw;
+    }
+
+    function renderTopicsList(items) {
+      const listEl = document.getElementById('topics-list');
+      const summaryEl = document.getElementById('topics-summary');
+      const safeItems = items || [];
+      summaryEl.textContent = `当前页 ${safeItems.length} 个主题`;
+      listEl.innerHTML = safeItems.map(item => {
+        const topicId = Number(item.id || 0);
+        const isActive = topicId && topicId === Number(currentTopicId || 0);
+        const platforms = Array.isArray(item.primary_platforms) ? item.primary_platforms : [];
+        const entities = Array.isArray(item.primary_entities) ? item.primary_entities : [];
+        return `
+          <div class="result topic-list-item ${isActive ? 'active' : ''}" data-topic-id="${topicId}" style="cursor:pointer;">
+            <div>
+              <span class="badge">文章 ${Number(item.evidence_article_count || 0)}</span>
+              <span class="badge">事件 ${Number(item.evidence_event_count || 0)}</span>
+              <span class="badge">重要性 ${Number(item.importance_score || 0)}</span>
+              <span class="badge">影响 ${Number(item.impact_score || 0)}</span>
+              <span class="badge">综合 ${Number(item.overall_score || 0)}</span>
+            </div>
+            <div style="margin-top:6px;"><strong>${escapeHtml(item.title || '(无标题主题)')}</strong></div>
+            <div class="muted">${escapeHtml(item.topic_key || '-')}</div>
+            <div class="muted" style="margin-top:6px;">${escapeHtml(item.card_summary || item.summary || '暂无摘要')}</div>
+            <div style="margin-top:6px;">
+              ${platforms.slice(0, 4).map(v => `<span class="badge">平台：${escapeHtml(v)}</span>`).join('')}
+              ${entities.slice(0, 3).map(v => `<span class="badge">主体：${escapeHtml(v)}</span>`).join('')}
+            </div>
+            <div class="muted" style="margin-top:6px;">最近出现：${escapeHtml(formatDateTimeText(item.last_seen_at || '-'))}</div>
+          </div>
+        `;
+      }).join('') || '<div class="muted">当前没有可展示的主题</div>';
+    }
+
+    function updateTopicsPagination(data = {}) {
+      topicsPage = Number(data.page || 1);
+      topicsTotalPages = Number(data.total_pages || 1);
+      const total = Number(data.total || 0);
+      topicsPageInfo.textContent = `第 ${topicsPage} / ${topicsTotalPages} 页，共 ${total} 个主题`;
+      topicsPagePrevBtn.disabled = topicsPage <= 1;
+      topicsPageNextBtn.disabled = topicsPage >= topicsTotalPages;
+    }
+
+    function renderTopicDetail(data) {
+      const detailEl = document.getElementById('topic-detail');
+      const summaryEl = document.getElementById('topic-detail-summary');
+      const eventsSummaryEl = document.getElementById('topic-events-summary');
+      const eventsListEl = document.getElementById('topic-events-list');
+      if (!data || !data.topic) {
+        summaryEl.textContent = '点击左侧主题查看详情';
+        detailEl.innerHTML = '<div class="muted">还没有选中主题</div>';
+        eventsSummaryEl.textContent = '-';
+        eventsListEl.innerHTML = '<div class="muted">暂无事件</div>';
+        return;
+      }
+      const topic = data.topic || {};
+      const platforms = Array.isArray(topic.primary_platforms) ? topic.primary_platforms : [];
+      const entities = Array.isArray(topic.primary_entities) ? topic.primary_entities : [];
+      const angles = Array.isArray(topic.recommended_angles) ? topic.recommended_angles : [];
+      const formats = Array.isArray(topic.recommended_formats) ? topic.recommended_formats : [];
+      summaryEl.textContent = `${topic.title || '-'} · ${topic.topic_key || '-'}`;
+      detailEl.innerHTML = `
+        <div class="result">
+          <div>
+            <span class="badge">文章 ${Number(topic.evidence_article_count || 0)}</span>
+            <span class="badge">事件 ${Number(topic.evidence_event_count || 0)}</span>
+            <span class="badge">重要性 ${Number(topic.importance_score || 0)}</span>
+            <span class="badge">影响 ${Number(topic.impact_score || 0)}</span>
+            <span class="badge">创作潜力 ${Number(topic.creation_potential_score || 0)}</span>
+            <span class="badge">综合 ${Number(topic.overall_score || 0)}</span>
+          </div>
+          <div style="margin-top:6px;"><strong>${escapeHtml(topic.title || '(无标题主题)')}</strong></div>
+          <div class="muted">${escapeHtml(topic.summary || topic.card_summary || '暂无摘要')}</div>
+          <div style="margin-top:8px;">${platforms.map(v => `<span class="badge">平台：${escapeHtml(v)}</span>`).join('')}${entities.map(v => `<span class="badge">主体：${escapeHtml(v)}</span>`).join('')}</div>
+          <div style="margin-top:8px;">${angles.map(v => `<span class="badge">角度：${escapeHtml(v)}</span>`).join('')}${formats.map(v => `<span class="badge">形式：${escapeHtml(v)}</span>`).join('')}</div>
+          <div class="muted" style="margin-top:8px;">时间窗口：${escapeHtml(String(topic.time_window_hours || '-'))}h ｜ 首次出现：${escapeHtml(formatDateTimeText(topic.first_seen_at || '-'))} ｜ 最近出现：${escapeHtml(formatDateTimeText(topic.last_seen_at || '-'))}</div>
+        </div>
+      `;
+
+      const events = data.events || [];
+      const pagination = data.event_pagination || {};
+      eventsSummaryEl.textContent = `第 ${Number(pagination.page || 1)} / ${Number(pagination.total_pages || 1)} 页，共 ${Number(pagination.total || 0)} 个事件`;
+      eventsListEl.innerHTML = events.map(item => `
+        <div class="result">
+          <div>
+            <span class="badge">事件ID ${Number(item.id || 0)}</span>
+            <span class="badge">类型 ${escapeHtml(item.event_type || '-')}</span>
+            <span class="badge">文章 ${Number(item.article_count || 0)}</span>
+            <span class="badge">置信度 ${Number(item.confidence || 0)}</span>
+          </div>
+          <div style="margin-top:6px;"><strong>${escapeHtml(item.title || '(无标题事件)')}</strong></div>
+          <div class="muted">主体：${escapeHtml(item.subject || '-')} ${item.object ? `｜对象：${escapeHtml(item.object)}` : ''}</div>
+          <div class="muted" style="margin-top:6px;">${escapeHtml(item.summary || '暂无摘要')}</div>
+          <div class="muted" style="margin-top:6px;">首次出现：${escapeHtml(formatDateTimeText(item.first_seen_at || '-'))} ｜ 最近出现：${escapeHtml(formatDateTimeText(item.last_seen_at || '-'))}</div>
+        </div>
+      `).join('') || '<div class="muted">该主题下暂无事件</div>';
+      Array.from(eventsListEl.querySelectorAll('.result')).forEach((node, index) => {
+        const eventItem = events[index] || {};
+        if (!eventItem.id) return;
+        node.style.cursor = 'pointer';
+        node.addEventListener('click', (evt) => {
+          if (evt.target.closest('a')) return;
+          window.open(`/create/events/${Number(eventItem.id || 0)}`, '_blank', 'noopener,noreferrer');
+        });
+      });
+      topicEventsPage = Number(pagination.page || 1);
+      topicEventsTotalPages = Number(pagination.total_pages || 1);
+      topicEventsPageInfo.textContent = `第 ${topicEventsPage} / ${topicEventsTotalPages} 页`;
+      topicEventsPrevBtn.disabled = topicEventsPage <= 1;
+      topicEventsNextBtn.disabled = topicEventsPage >= topicEventsTotalPages;
+    }
+
+    async function loadTopicsList() {
+      const params = new URLSearchParams();
+      params.set('sort', String(topicsSort.value || 'overall'));
+      params.set('limit', String(Math.max(1, Math.min(Number(topicsLimit.value || 10), 50))));
+      params.set('page', String(Math.max(1, topicsPage || 1)));
+      const keyword = String(topicsKeyword.value || '').trim();
+      if (keyword) params.set('keyword', keyword);
+      const res = await fetch(`/api/topics?${params.toString()}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || '主题列表加载失败');
+      renderTopicsList(data.items || []);
+      updateTopicsPagination(data);
+      const first = (data.items || [])[0];
+      if (!currentTopicId && first && first.id) {
+        currentTopicId = Number(first.id);
+      }
+      return data;
+    }
+
+    async function loadTopicDetail() {
+      if (!currentTopicId) {
+        renderTopicDetail(null);
+        return;
+      }
+      const params = new URLSearchParams({
+        event_page: String(Math.max(1, topicEventsPage || 1)),
+        event_limit: '10',
+      });
+      const res = await fetch(`/api/topics/${currentTopicId}?${params.toString()}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || '主题详情加载失败');
+      renderTopicDetail(data);
+    }
+
+    async function loadTopicsDashboard(forceReset = false) {
+      if (forceReset) {
+        topicsPage = 1;
+        topicEventsPage = 1;
+        currentTopicId = null;
+      }
+      document.getElementById('topics-list').innerHTML = '<div class="muted">主题加载中...</div>';
+      document.getElementById('topic-detail').innerHTML = '<div class="muted">详情加载中...</div>';
+      const data = await loadTopicsList();
+      const items = data.items || [];
+      const hasCurrent = items.some(item => Number(item.id || 0) === Number(currentTopicId || 0));
+      if (!hasCurrent) {
+        currentTopicId = items.length ? Number(items[0].id || 0) : null;
+        topicEventsPage = 1;
+      }
+      await loadTopicDetail();
+    }
+
+    function renderDbOverview(data) {
+      const cards = document.getElementById('db-overview-cards');
+      const pathEl = document.getElementById('db-path');
+      const platformStatsEl = document.getElementById('db-platform-stats');
+      pathEl.textContent = `数据库路径：${data.db_path || '-'}`;
+      const stats = [
+        ['监控账号总数', data.total_accounts || 0],
+        ['启用账号数', data.enabled_accounts || 0],
+        ['raw_items 总数', data.raw_items_count || 0],
+        ['最近 24h 刷新数', data.recent_24h_count || 0],
+      ];
+      cards.innerHTML = stats.map(([label, value]) => `
+        <div class="stat-card">
+          <div class="muted">${label}</div>
+          <div class="stat-value">${value}</div>
+        </div>
+      `).join('');
+      const platformStats = data.platform_stats || [];
+      platformStatsEl.innerHTML = platformStats.length
+        ? platformStats.map(item => `
+          <div class="result">
+            <div><span class="badge">平台：${escapeHtml(item.platform || '-')}</span><span class="badge">条数：${Number(item.item_count || 0)}</span></div>
+            <div class="muted">最新抓取时间：${escapeHtml(formatDateTimeText(item.latest_fetched_at || '-'))}</div>
+          </div>
+        `).join('')
+        : '<div class="muted">当前还没有平台统计数据</div>';
+    }
+
+    function renderDbAccountLatest(items) {
+      const summaryEl = document.getElementById('db-account-summary');
+      const listEl = document.getElementById('db-account-latest');
+      const safeItems = items || [];
+      const withData = safeItems.filter(item => item.has_item).length;
+      summaryEl.textContent = `共 ${safeItems.length} 个来源，已有最近内容 ${withData} 个`;
+      listEl.innerHTML = safeItems.map(item => {
+        const latest = item.latest_item || {};
+        const platform = String((latest && latest.platform) || item.platform || '').toLowerCase();
+        const handlePrefix = platform === 'x' ? '@' : '';
+        const detailCandidates = [
+          latest.content,
+          latest.transcript_text,
+          latest.summary,
+          latest.body,
+        ];
+        const detailText = detailCandidates.map(v => String(v || '').trim()).find(Boolean) || '';
+        const viewKey = registerContentForView(`${latest.title || '(无标题)'}（${platform || '-'}/${item.handle || '-'})`, detailText);
+        return `
+          <div class="result">
+            <div><span class="badge">${handlePrefix}${escapeHtml(item.handle || '-')}</span><span class="badge">名称：${escapeHtml(item.display_name || item.handle || '-')}</span><span class="badge">平台：${escapeHtml(platform || '-')}</span><span class="badge">${item.enabled ? '已启用' : '已禁用'}</span><span class="badge">优先级 ${Number(item.priority || 0)}</span></div>
+            ${item.has_item ? `
+              <div style="margin-top:6px;"><strong>${escapeHtml(latest.title || '(无标题)')}</strong></div>
+              <div class="muted">发布时间：${escapeHtml(formatDateTimeText(latest.published_at || '-'))} | 抓取时间：${escapeHtml(formatDateTimeText(latest.fetched_at || '-'))}</div>
+              <div class="muted">item_id：${escapeHtml(latest.item_id || '-')}</div>
+              ${latest.url ? `<div style="margin-top:4px;"><a href="${escapeHtml(latest.url)}" target="_blank">${escapeHtml(latest.url)}</a></div>` : ''}
+              ${viewKey ? `<div class="card-actions"><button type="button" class="btn-view-content" data-content-key="${viewKey}">查看正文</button></div>` : '<div class="muted" style="margin-top:6px;">暂无正文内容</div>'}
+            ` : '<div class="muted" style="margin-top:6px;">还没有抓到内容</div>'}
+          </div>
+        `;
+      }).join('') || '<div class="muted">暂无来源数据</div>';
+    }
+
+    function renderDbRecentItems(items) {
+      const listEl = document.getElementById('db-recent-items');
+      const safeItems = items || [];
+      listEl.innerHTML = safeItems.map(item => {
+        const platform = String(item.platform || '').toLowerCase();
+        const handlePrefix = platform === 'x' ? '@' : '';
+        const detailCandidates = [
+          item.content,
+          item.transcript_text,
+          item.summary,
+          item.body,
+        ];
+        const detailText = detailCandidates.map(v => String(v || '').trim()).find(Boolean) || '';
+        const viewKey = registerContentForView(`${item.title || '(无标题)'}（${item.platform || '-'}/${item.source_handle || '-'})`, detailText);
+        return `
+        <div class="result">
+          <div><span class="badge">${escapeHtml(item.platform || '-')}</span><span class="badge">${handlePrefix}${escapeHtml(item.source_handle || '-')}</span><span class="badge">item_id=${escapeHtml(item.item_id || '-')}</span></div>
+          <div style="margin-top:6px;"><strong>${escapeHtml(item.title || '(无标题)')}</strong></div>
+          <div class="muted">发布时间：${escapeHtml(formatDateTimeText(item.published_at || '-'))} | 抓取时间：${escapeHtml(formatDateTimeText(item.fetched_at || '-'))}</div>
+          ${item.url ? `<div style="margin-top:4px;"><a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.url)}</a></div>` : ''}
+          ${viewKey ? `<div class="card-actions"><button type="button" class="btn-view-content" data-content-key="${viewKey}">查看正文</button></div>` : '<div class="muted" style="margin-top:6px;">暂无正文内容</div>'}
+        </div>
+      `;
+      }).join('') || '<div class="muted">当前筛选条件下没有数据</div>';
+    }
+
+    async function loadDbOverview(forceRefresh = false) {
+      const qs = forceRefresh ? '?refresh=1' : '';
+      const res = await fetch(`/api/db/overview${qs}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || '数据库概览加载失败');
+      renderDbOverview(data);
+    }
+
+    function updateDbAccountPagination(data = {}) {
+      dbAccountPage = Number(data.page || 1);
+      dbAccountTotalPages = Number(data.total_pages || 1);
+      const total = Number(data.total || 0);
+      dbAccountPageInfo.textContent = `第 ${dbAccountPage} / ${dbAccountTotalPages} 页，共 ${total} 个来源`;
+      dbAccountPagePrevBtn.disabled = dbAccountPage <= 1;
+      dbAccountPageNextBtn.disabled = dbAccountPage >= dbAccountTotalPages;
+    }
+
+    async function loadDbAccountLatest() {
+      const platform = (dbFilterPlatform.value || 'x').trim() || 'x';
+      const limit = Number(dbFilterLimit.value || 20);
+      const qs = new URLSearchParams({
+        platform,
+        limit: String(Math.max(1, Math.min(limit, 100))),
+        page: String(Math.max(1, dbAccountPage || 1)),
+      });
+      const res = await fetch(`/api/db/account-latest?${qs.toString()}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || '账号最新内容加载失败');
+      renderDbAccountLatest(data.items || []);
+      updateDbAccountPagination(data);
+    }
+
+    function updateDbRecentPagination(data = {}) {
+      dbRecentPage = Number(data.page || 1);
+      dbRecentTotalPages = Number(data.total_pages || 1);
+      const total = Number(data.total || 0);
+      dbPageInfo.textContent = `第 ${dbRecentPage} / ${dbRecentTotalPages} 页，共 ${total} 条`;
+      dbPagePrevBtn.disabled = dbRecentPage <= 1;
+      dbPageNextBtn.disabled = dbRecentPage >= dbRecentTotalPages;
+    }
+
+    async function loadDbRecentItems() {
+      const params = new URLSearchParams();
+      const platform = (dbFilterPlatform.value || '').trim();
+      const handle = (dbFilterHandle.value || '').trim();
+      const limit = Number(dbFilterLimit.value || 20);
+      if (platform) params.set('platform', platform);
+      if (handle) params.set('handle', handle);
+      params.set('limit', String(Math.max(1, Math.min(limit, 100))));
+      params.set('page', String(Math.max(1, dbRecentPage || 1)));
+      const res = await fetch(`/api/db/recent-items?${params.toString()}`);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || '最近内容加载失败');
+      renderDbRecentItems(data.items || []);
+      updateDbRecentPagination(data);
+    }
+
+    async function loadDatabaseDashboard(forceRefresh = false) {
+      document.getElementById('db-overview-cards').innerHTML = '<div class="muted">统计加载中...</div>';
+      if (currentDatabaseSubtab === 'recent') {
+        document.getElementById('db-recent-items').innerHTML = '<div class="muted">最近入库内容加载中...</div>';
+      } else {
+        document.getElementById('db-account-latest').innerHTML = '<div class="muted">每账号最新一条加载中...</div>';
+      }
+
+      const jobs = [
+        loadDbOverview(forceRefresh).catch((e) => {
+          document.getElementById('db-overview-cards').innerHTML = `<div class="muted">统计加载失败：${escapeHtml(String(e))}</div>`;
+        }),
+      ];
+
+      if (currentDatabaseSubtab === 'recent') {
+        jobs.push(
+          loadDbRecentItems().catch((e) => {
+            document.getElementById('db-recent-items').innerHTML = `<div class="muted">最近内容加载失败：${escapeHtml(String(e))}</div>`;
+          })
+        );
+      } else {
+        jobs.push(
+          loadDbAccountLatest().catch((e) => {
+            document.getElementById('db-account-latest').innerHTML = `<div class="muted">账号最新内容加载失败：${escapeHtml(String(e))}</div>`;
+          })
+        );
+      }
+
+      await Promise.allSettled(jobs);
+    }
+
+    topicsRefreshBtn.addEventListener('click', () => loadTopicsDashboard(true));
+    topicsApplyBtn.addEventListener('click', () => loadTopicsDashboard(true));
+    topicsPagePrevBtn.addEventListener('click', async () => {
+      if (topicsPage <= 1) return;
+      topicsPage -= 1;
+      currentTopicId = null;
+      topicEventsPage = 1;
+      await loadTopicsDashboard();
+    });
+    topicsPageNextBtn.addEventListener('click', async () => {
+      if (topicsPage >= topicsTotalPages) return;
+      topicsPage += 1;
+      currentTopicId = null;
+      topicEventsPage = 1;
+      await loadTopicsDashboard();
+    });
+    topicEventsPrevBtn.addEventListener('click', async () => {
+      if (topicEventsPage <= 1 || !currentTopicId) return;
+      topicEventsPage -= 1;
+      await loadTopicDetail();
+    });
+    topicEventsNextBtn.addEventListener('click', async () => {
+      if (topicEventsPage >= topicEventsTotalPages || !currentTopicId) return;
+      topicEventsPage += 1;
+      await loadTopicDetail();
+    });
+    document.getElementById('topics-list').addEventListener('click', async (e) => {
+      const row = e.target && e.target.closest ? e.target.closest('[data-topic-id]') : null;
+      if (!row) return;
+      const nextId = Number(row.getAttribute('data-topic-id') || 0);
+      if (!nextId) return;
+      currentTopicId = nextId;
+      topicEventsPage = 1;
+      await loadTopicDetail();
+    });
+
+    dbRefreshBtn.addEventListener('click', () => loadDatabaseDashboard(true));
+    dbApplyFilterBtn.addEventListener('click', async () => {
+      dbRecentPage = 1;
+      dbAccountPage = 1;
+      if (currentDatabaseSubtab === 'recent') {
+        await loadDbRecentItems();
+      } else {
+        await loadDbAccountLatest();
+      }
+    });
+    dbPagePrevBtn.addEventListener('click', async () => {
+      if (dbRecentPage <= 1) return;
+      dbRecentPage -= 1;
+      await loadDbRecentItems();
+    });
+    dbPageNextBtn.addEventListener('click', async () => {
+      if (dbRecentPage >= dbRecentTotalPages) return;
+      dbRecentPage += 1;
+      await loadDbRecentItems();
+    });
+    dbAccountPagePrevBtn.addEventListener('click', async () => {
+      if (dbAccountPage <= 1) return;
+      dbAccountPage -= 1;
+      await loadDbAccountLatest();
+    });
+    dbAccountPageNextBtn.addEventListener('click', async () => {
+      if (dbAccountPage >= dbAccountTotalPages) return;
+      dbAccountPage += 1;
+      await loadDbAccountLatest();
+    });
+
+    function mapExportItem(item) {
+      return {
+        title: item.title || '',
+        url: item.url || '',
+        channel: item.channel || 'x',
+        source: item.source || '',
+        published_at: item.published_at || item.created_at || '',
+        summary: item.summary || '',
+        why_pick: item.why_pick || '',
+        recommend_full_fetch: item.recommend_full_fetch || 'no'
+      };
+    }
+
+    function buildExportPackage() {
+      if (!lastSearchData) return null;
+      const grouped = lastSearchData.grouped || { strong: [], watch: [], skip: [] };
+      return {
+        schema_version: 'candidate-pack/v1',
+        generated_at: new Date().toISOString(),
+        provider: lastSearchData.provider || 'x',
+        query: lastSearchData.query || '',
+        mode: lastSearchData.mode || '',
+        filters: lastSearchData.filters || {},
+        sort_by: (lastSearchData.filters || {}).sort_by || 'time',
+        searched_handles: lastSearchData.searched_handles || [],
+        counts: lastSearchData.counts || {},
+        groups: {
+          strong: (grouped.strong || []).map(mapExportItem),
+          watch: (grouped.watch || []).map(mapExportItem),
+          skip: (grouped.skip || []).map(mapExportItem)
+        },
+        candidates: (lastSearchData.results || []).map(mapExportItem),
+        request_payload: lastSearchPayload || {}
+      };
+    }
+
+    function downloadText(filename, text, mimeType) {
+      const blob = new Blob([text], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function toMarkdown(pkg) {
+      const lines = [];
+      lines.push(`# 候选素材包`);
+      lines.push('');
+      lines.push(`- 生成时间：${pkg.generated_at}`);
+      lines.push(`- 渠道：${toProviderText(pkg.provider || 'x')}`);
+      lines.push(`- 关键词：${pkg.query}`);
+      lines.push(`- 模式：${toModeText(pkg.mode)}`);
+      lines.push(`- 排序：${toSortText(pkg.sort_by)}`);
+      lines.push(`- 过滤：语言=${pkg.filters?.lang || '-'}，开始日期=${pkg.filters?.since || '-'}，结束日期=${pkg.filters?.until || '-'}，最小点赞=${pkg.filters?.min_likes ?? 0}，最小转发=${pkg.filters?.min_retweets ?? 0}`);
+      lines.push('');
+
+      function pushGroup(title, items) {
+        lines.push(`## ${title}`);
+        if (!items || !items.length) {
+          lines.push('- 暂无');
+          lines.push('');
+          return;
+        }
+        items.forEach((it) => {
+          lines.push(`- ${it.title}｜${it.channel}｜${it.published_at}`);
+          lines.push(`  - 推荐理由：${it.why_pick}`);
+          lines.push(`  - 建议抓全文：${it.recommend_full_fetch}`);
+          lines.push(`  - 链接：${it.url}`);
+        });
+        lines.push('');
+      }
+
+      pushGroup('强推荐', pkg.groups.strong || []);
+      pushGroup('可观察', pkg.groups.watch || []);
+      pushGroup('略过', pkg.groups.skip || []);
+      return lines.join('\n');
+    }
+
+    exportJsonBtn.addEventListener('click', () => {
+      const pkg = buildExportPackage();
+      if (!pkg) return;
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      downloadText(`candidate-pack-${stamp}.json`, JSON.stringify(pkg, null, 2), 'application/json;charset=utf-8');
+    });
+
+    exportMdBtn.addEventListener('click', () => {
+      const pkg = buildExportPackage();
+      if (!pkg) return;
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      downloadText(`candidate-pack-${stamp}.md`, toMarkdown(pkg), 'text/markdown;charset=utf-8');
+    });
+
+    function renderItemPlatformMeta(item) {
+      const channel = String(item.channel || '').toLowerCase();
+      if (channel === 'wechat') {
+        const raw = item.raw || {};
+        return `来源类型：${raw.source_kind || '-'} · 正文抓取：${raw.body_fetch_ok ? '成功' : '未抓到'} · 发布时间：${item.published_at || item.created_at || '-'}`;
+      }
+      if (channel === 'youtube' || channel === 'bilibili') {
+        const raw = item.raw || {};
+        return `推荐级别：${raw.recommendation || '-'} · 置信度：${raw.confidence || '-'} · 路由：${raw.route_bucket || '-'} · 字幕语言：${raw.transcript_language || '-'}`;
+      }
+      return `❤ ${item.metrics?.likes || 0} · 🔁 ${item.metrics?.retweets || 0} · 💬 ${item.metrics?.replies || 0} · 引用 ${item.metrics?.quotes || 0} · 分数 ${item.metrics?.engagement_score || 0}`;
+    }
+
+    function renderFilterSummary(data) {
+      const providers = Array.isArray(data.providers) && data.providers.length
+        ? data.providers.map(toProviderText).join('、')
+        : toProviderText(data.provider || 'x');
+      return `过滤条件：渠道=${providers}，语言=${data.filters?.lang || '全部'}，关键词范围=${toQueryScopeText(data.filters?.query_scope || 'all')}，时间范围=${data.filters?.since || '-'} ~ ${data.filters?.until || '-'}`;
+    }
+
+    function renderSection(title, items, key) {
+      const safeItems = items || [];
+      const head = `
+        <div class="group-title">
+          <strong>${title}</strong>
+          <span class="badge">${safeItems.length}</span>
+        </div>
+      `;
+      if (!safeItems.length) {
+        return `<div class="group-col ${key}">${head}<div class="muted">暂无</div></div>`;
+      }
+      return `
+        <div class="group-col ${key}">
+          ${head}
+          ${safeItems.map(item => {
+            const raw = item.raw || {};
+            const detailCandidates = [
+              item.content,
+              raw.content,
+              raw.transcript_text,
+              raw.transcript_excerpt,
+              item.summary,
+            ];
+            const detailText = detailCandidates.map(v => String(v || '').trim()).find(Boolean) || '';
+            const viewKey = registerContentForView(`${item.title || '(无标题)'}（${item.channel || 'x'}/${item.source || '-'})`, detailText);
+            return `
+            <div class="candidate-card">
+              <div><span class="badge">${item.channel || 'x'}</span><span class="badge">来源：${item.source || '-'}</span>${(item.channel === 'wechat' || item.channel === 'youtube' || item.channel === 'bilibili') ? `<span class="badge">来源ID：${item.matched_handle || item.author || '-'}</span>` : `<span class="badge">匹配账号：@${item.matched_handle || '-'}</span>`}</div>
+              <div style="margin-top:6px;"><strong>${item.title || ''}</strong></div>
+              <div style="margin: 6px 0;" class="muted">${item.summary || ''}</div>
+              <div class="muted">时间：${item.published_at || item.created_at || ''}</div>
+              <div class="muted">推荐理由：${item.why_pick || ''}</div>
+              <div class="muted">建议抓全文：${item.recommend_full_fetch || 'no'}</div>
+              <div class="muted">${renderItemPlatformMeta(item)}</div>
+              <div style="margin-top:4px;"><a href="${item.url}" target="_blank">${item.url}</a></div>
+              ${viewKey ? `<div class="card-actions"><button type="button" class="btn-view-content" data-content-key="${viewKey}">查看正文</button></div>` : '<div class="muted" style="margin-top:6px;">暂无正文内容</div>'}
+            </div>
+          `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderSearchResponse(data, payloadUsed) {
+      const status = document.getElementById('search-status');
+      const box = document.getElementById('results');
+      if (!data.ok) {
+        status.textContent = '失败';
+        box.innerHTML = `<div class="result">❌ ${data.message || '未知错误'}</div>`;
+        return;
+      }
+
+      status.textContent = `完成：${data.count} 条`;
+      lastSearchData = data;
+      lastSearchPayload = payloadUsed || null;
+      exportJsonBtn.disabled = true;
+      exportMdBtn.disabled = true;
+
+      const errorList = data.errors || [];
+      const errorPanel = errorList.length
+        ? `
+          <div class="result" style="border-color:#7f1d1d;background:#1f1111;">
+            <div><strong>错误观测区</strong>（失败 ${data.observability?.error_count || errorList.length} / 搜索 ${data.observability?.searched_count || (data.searched_handles || []).length}）</div>
+            <div class="muted">失败账号：${(data.observability?.failed_handles || errorList.map(e => e.handle)).filter(Boolean).join(', ') || '-'}</div>
+            <div style="margin-top:6px;">
+              ${errorList.map(e => `<div class="muted">@${e.handle || '-'}：${e.error || '未知错误'}</div>`).join('')}
+            </div>
+          </div>
+        `
+        : `<div class="result" style="border-color:#14532d;background:#0f1f16;"><strong>错误观测区</strong><div class="muted">本次无账号失败</div></div>`;
+
+      const grouped = data.grouped || {strong: [], watch: [], skip: []};
+      box.innerHTML = `
+        <div class="result-meta">
+          <span class="badge">渠道：${(Array.isArray(data.providers) && data.providers.length ? data.providers : [data.provider || 'x']).map(toProviderText).join('、')}</span>
+          <span class="badge">历史记录：${data.history_id || '-'}</span>
+          <span class="badge">强推荐 ${data.counts?.strong || 0}</span>
+          <span class="badge">可观察 ${data.counts?.watch || 0}</span>
+          <span class="badge">略过 ${data.counts?.skip || 0}</span>
+        </div>
+        ${data.message ? `<div class="muted">提示：${data.message}</div>` : ''}
+        <div class="muted">已搜索账号：${(data.searched_handles || []).join(', ')}</div>
+        <div class="muted">成功账号：${(data.success_handles || []).join(', ') || '-'}</div>
+        <div class="muted">${renderFilterSummary(data)}</div>
+        ${errorPanel}
+        <div class="group-grid">
+          ${renderSection('强推荐', grouped.strong || [], 'strong')}
+          ${renderSection('可观察', grouped.watch || [], 'watch')}
+          ${renderSection('略过', grouped.skip || [], 'skip')}
+        </div>
+      `;
+    }
+
+    function renderHistory() {
+      const visibleItems = historyExpanded ? historyItems.slice(0, 20) : historyItems.slice(0, 3);
+      if (historyToggleBtn) {
+        historyToggleBtn.textContent = historyExpanded ? '收起' : '展开更多';
+        historyToggleBtn.disabled = historyItems.length <= 3;
+      }
+      historyListEl.innerHTML = visibleItems.map(item => {
+        const providers = Array.isArray(item.providers) && item.providers.length
+          ? item.providers.map(toProviderText).join('、')
+          : toProviderText(item.provider || '-');
+        return `<div class="result">
+          <div><span class="badge">${providers}</span><span class="badge">${toModeText(item.mode || '-')}</span><span class="badge">结果数=${item.count || 0}</span><span class="badge">错误数=${item.error_count || 0}</span></div>
+          <div><strong>${item.query || '-'}</strong></div>
+          <div class="muted">${item.created_at || ''} | 记录ID=${item.id || ''}${item.rerun_from ? ` | 复跑来源=${item.rerun_from}` : ''}</div>
+          <div style="margin-top:8px;"><button class="history-rerun-btn" data-id="${item.id || ''}">复跑</button></div>
+        </div>`;
+      }).join('') || '<div class="muted">暂无历史记录</div>';
+    }
+
+    async function loadHistory() {
+      try {
+        historyRefreshBtn.disabled = true;
+        historyListEl.innerHTML = '<div class="muted">加载中...</div>';
+        const res = await fetch('/api/history?limit=20');
+        const data = await res.json();
+        if (!data.ok) {
+          historyListEl.innerHTML = `<div class="muted">加载失败：${data.message || '未知错误'}</div>`;
+          return;
+        }
+        historyItems = data.items || [];
+        renderHistory();
+      } catch (e) {
+        historyListEl.innerHTML = `<div class="muted">加载失败：${String(e)}</div>`;
+      } finally {
+        historyRefreshBtn.disabled = false;
+      }
+    }
+
+    if (historyToggleBtn) {
+      historyToggleBtn.addEventListener('click', () => {
+        historyExpanded = !historyExpanded;
+        renderHistory();
+      });
+    }
+
+    async function rerunHistory(id, btn) {
+      if (!id) return;
+      const status = document.getElementById('search-status');
+      const box = document.getElementById('results');
+      const oldText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '复跑中...';
+      status.textContent = '复跑中...';
+      box.innerHTML = '';
+      exportJsonBtn.disabled = true;
+      exportMdBtn.disabled = true;
+      try {
+        const res = await fetch('/api/history/rerun', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          status.textContent = '失败';
+          box.innerHTML = `<div class="result">❌ ${data.message || '未知错误'}</div>`;
+          return;
+        }
+        renderSearchResponse(data, null);
+        await loadHistory();
+      } catch (e) {
+        status.textContent = '失败';
+        box.innerHTML = `<div class="result">❌ ${String(e)}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
+    }
+
+    function startSearchProgress() {
+      searchProgressWrap.classList.remove('hidden');
+      searchStartAt = Date.now();
+      if (searchTimer) clearInterval(searchTimer);
+      searchTimer = setInterval(() => {
+        const elapsed = Math.max(0, Math.floor((Date.now() - (searchStartAt || Date.now())) / 1000));
+        progressElapsedEl.textContent = `已耗时 ${elapsed} 秒`;
+      }, 1000);
+      progressElapsedEl.textContent = '已耗时 0 秒';
+      updateSearchProgress({ percent: 8, title: '正在准备搜索...', detail: '阶段：准备请求' });
+    }
+
+    function stopSearchProgress() {
+      if (searchTimer) {
+        clearInterval(searchTimer);
+        searchTimer = null;
+      }
+      searchAbortController = null;
+      searchBtn.disabled = false;
+      searchCancelBtn.disabled = true;
+    }
+
+    function updateSearchProgress({ percent, title, detail }) {
+      if (typeof percent === 'number') {
+        progressBarEl.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+      }
+      if (title) progressTitleEl.textContent = title;
+      if (detail) progressDetailEl.textContent = detail;
+    }
+
+    searchCancelBtn.addEventListener('click', () => {
+      if (searchAbortController) {
+        searchAbortController.abort();
+        updateSearchProgress({
+          percent: 0,
+          title: '已取消当前搜索',
+          detail: '阶段：已取消，可重新发起搜索'
+        });
+        document.getElementById('search-status').textContent = '已取消';
+      }
+      stopSearchProgress();
+    });
+
+    async function executeSearch() {
+      const status = document.getElementById('search-status');
+      const box = document.getElementById('results');
+      box.innerHTML = '';
+      status.textContent = '搜索中...';
+      exportJsonBtn.disabled = true;
+      exportMdBtn.disabled = true;
+      searchBtn.disabled = true;
+      searchCancelBtn.disabled = false;
+      startSearchProgress();
+
+      const providers = getSelectedProviders();
+      const payload = {
+        provider: providers[0] || 'x',
+        providers,
+        query: document.getElementById('query').value.trim(),
+        since: document.getElementById('since').value.trim(),
+        until: document.getElementById('until').value.trim(),
+        lang: document.getElementById('lang').value.trim(),
+        query_scope: document.getElementById('query_scope').value || 'all',
+        sort_by: 'time',
+      };
+
+      if (!payload.providers.length) {
+        status.textContent = '请选择至少一个渠道';
+        box.innerHTML = '<div class="result">⚠️ 请至少勾选一个渠道</div>';
+        searchBtn.disabled = false;
+        searchCancelBtn.disabled = true;
+        return;
+      }
+
+      searchAbortController = new AbortController();
+      updateSearchProgress({
+        percent: 20,
+        title: '已发起搜索请求',
+        detail: `阶段：正在查询数据（渠道：${payload.providers.map(toProviderText).join('、')}）`
+      });
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+          signal: searchAbortController.signal
+        });
+        updateSearchProgress({ percent: 68, title: '数据已返回，正在解析...', detail: '阶段：解析服务端响应' });
+
+        const data = await res.json();
+        updateSearchProgress({ percent: 86, title: '正在整理结果...', detail: '阶段：分组与渲染结果' });
+
+        renderSearchResponse(data, payload);
+        await loadHistory();
+
+        updateSearchProgress({ percent: 100, title: '搜索完成', detail: '阶段：已完成，可继续下一次搜索' });
+      } catch (e) {
+        const isAbort = e && (e.name === 'AbortError' || String(e).includes('AbortError'));
+        if (isAbort) {
+          status.textContent = '已取消';
+          box.innerHTML = '<div class="result">⚠️ 已取消本次搜索</div>';
+          updateSearchProgress({ percent: 0, title: '已取消当前搜索', detail: '阶段：已取消，可重新发起搜索' });
+          return;
+        }
+
+        status.textContent = '失败';
+        lastSearchData = null;
+        lastSearchPayload = null;
+        exportJsonBtn.disabled = true;
+        exportMdBtn.disabled = true;
+        box.innerHTML = `<div class="result">❌ ${String(e)}</div>`;
+        updateSearchProgress({ percent: 100, title: '搜索失败', detail: `阶段：请求失败（${String(e)}）` });
+      } finally {
+        stopSearchProgress();
+      }
+    }
+
+    searchBtn.addEventListener('click', executeSearch);
+
+    let lastFetchData = null;
+    const fetchTaskState = new Map();
+    const fetchTaskPollers = new Map();
+    const fetchResultHistory = [];
+
+    function getFetchUrls() {
+      return (fetchUrlsInput.value || '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line && !line.startsWith('#'));
+    }
+
+    function getAllFailedFetchUrls() {
+      const urls = [];
+      for (const entry of fetchResultHistory) {
+        const items = (entry && entry.results) || [];
+        for (const item of items) {
+          if (item.status === 'failed' && item.url) urls.push(item.url);
+        }
+      }
+      return [...new Set(urls)];
+    }
+
+    function updateFetchSummary() {
+      const tasks = Array.from(fetchTaskState.values());
+      const running = tasks.filter(task => task.status === 'running').length;
+      const queued = tasks.filter(task => task.status === 'queued').length;
+      const completed = tasks.filter(task => task.status === 'completed').length;
+      const failed = tasks.filter(task => task.status === 'failed').length;
+      const cancelled = tasks.filter(task => task.status === 'cancelled').length;
+      fetchSummary.textContent = `运行中 ${running}，排队中 ${queued}，已完成 ${completed}，失败 ${failed}，已取消 ${cancelled}`;
+      fetchCopyFailedBtn.disabled = getAllFailedFetchUrls().length === 0;
+    }
+
+    function renderFetchTaskCards() {
+      const tasks = Array.from(fetchTaskState.values()).sort((a, b) => {
+        const at = Date.parse(a.created_at || '') || 0;
+        const bt = Date.parse(b.created_at || '') || 0;
+        return bt - at;
+      });
+      fetchTaskList.innerHTML = tasks.map(task => {
+        const startedAt = task._clientStartedAt || (Date.parse(task.started_at || '') || Date.now());
+        const elapsed = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+        const statusColor = task.status === 'completed'
+          ? '#23b26d'
+          : (task.status === 'failed' || task.status === 'cancelled' ? '#dc4c64' : '#9ba8c7');
+        const logs = ((task.logs || []).slice(-3)).join('\n');
+        const canCancel = task.status === 'running' || task.status === 'queued';
+        return `
+          <div class="result">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                <span class="badge" style="border-color:${statusColor};color:${statusColor};">${task.status || '-'}</span>
+                <span class="badge">任务ID：${task.task_id || '-'}</span>
+                <span class="badge">阶段：${task.phase || '-'}</span>
+                <span class="badge">耗时：${elapsed}s</span>
+              </div>
+              ${canCancel ? `<button type="button" class="btn-fetch-task-cancel" data-task-id="${task.task_id}">取消</button>` : ''}
+            </div>
+            <div style="margin-top:8px;"><strong>${task.message || '执行中'}</strong></div>
+            <div class="muted" style="margin-top:4px;word-break:break-all;">链接数：${(task.urls || []).length}；保存目录：${task.vault || '默认知识库目录'}；入库：${task.save_to_db ? '开启' : '关闭'}</div>
+            ${logs ? `<div class="muted" style="margin-top:8px;white-space:pre-wrap;">${logs}</div>` : ''}
+          </div>
+        `;
+      }).join('') || '<div class="muted">暂无任务</div>';
+      updateFetchSummary();
+    }
+
+    function renderFetchResults() {
+      const blocks = fetchResultHistory.map((data, index) => {
+        const items = data.results || [];
+        const dbSummary = data.db_summary || {};
+        const dbPart = dbSummary && dbSummary.enabled
+          ? `；入库 新增 ${dbSummary.inserted || 0}，刷新 ${dbSummary.refreshed || 0}，失败 ${dbSummary.failed || 0}`
+          : '';
+        const header = `任务结果 #${fetchResultHistory.length - index}：总数 ${data.total || 0}，成功 ${data.success || 0}，跳过 ${data.skipped || 0}，失败 ${data.failed || 0}${dbPart}`;
+        const itemHtml = items.map(item => {
+          const statusText = item.status === 'success' ? '成功' : (item.status === 'skipped' ? '已存在，未重复保存' : '失败');
+          const statusColor = item.status === 'success' ? '#23b26d' : (item.status === 'skipped' ? '#9ba8c7' : '#dc4c64');
+          const viewKey = registerContentForView(item.title || '正文', item.content_markdown || '');
+          const reasonLabel = item.status === 'skipped' ? '说明' : '错误原因';
+          return `
+            <div class="result" style="margin-top:10px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                <span class="badge" style="border-color:${statusColor};color:${statusColor};">${statusText}</span>
+                <span class="badge">渠道：${item.channel || '-'}</span>
+                ${item.db_status ? `<span class="badge">入库：${item.db_status}${item.db_saved === false ? '（失败）' : ''}</span>` : ''}
+              </div>
+              <div style="margin-top:8px;"><strong>${item.title || '(无标题)'}</strong></div>
+              <div class="muted" style="margin-top:4px;word-break:break-all;">链接：${item.url || '-'}</div>
+              <div class="muted" style="margin-top:4px;word-break:break-all;">保存路径：${item.saved_path || '-'}</div>
+              ${item.db_error ? `<div class="muted" style="margin-top:4px;word-break:break-all;">入库错误：${item.db_error}</div>` : ''}
+              <div class="muted" style="margin-top:4px;word-break:break-all;">${reasonLabel}：${item.error || '-'}</div>
+              ${viewKey ? `<div class="card-actions"><button type="button" class="btn-view-content" data-content-key="${viewKey}">查看正文</button></div>` : ''}
+            </div>
+          `;
+        }).join('') || '<div class="muted" style="margin-top:10px;">暂无结果</div>';
+        return `<div class="result"><strong>${header}</strong>${itemHtml}</div>`;
+      }).join('');
+      fetchList.innerHTML = blocks || '<div class="muted">暂无结果</div>';
+      lastFetchData = fetchResultHistory[0] || null;
+      updateFetchSummary();
+    }
+
+    async function copyFailedFetchUrls() {
+      const failedUrls = getAllFailedFetchUrls();
+      if (!failedUrls.length) return;
+      const text = failedUrls.join('\n');
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        fetchStatus.textContent = `已复制失败链接 ${failedUrls.length} 条`;
+        fetchStatus.style.color = '#9ba8c7';
+      } catch (e) {
+        fetchStatus.textContent = `复制失败：${String(e)}`;
+        fetchStatus.style.color = '#dc4c64';
+      }
+    }
+
+    async function openFetchOutputDir() {
+      const vault = (fetchVaultInput.value || '').trim();
+      fetchOpenDirBtn.disabled = true;
+      try {
+        const res = await fetch('/api/fetch/open-dir', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({vault}),
+        });
+        const data = await res.json();
+        if (!res.ok || data.ok === false) {
+          fetchStatus.textContent = `打开目录失败：${data.message || data.error || 'unknown'}`;
+          fetchStatus.style.color = '#dc4c64';
+          return;
+        }
+        fetchStatus.textContent = `已打开目录：${data.path || '-'}`;
+        fetchStatus.style.color = '#23b26d';
+      } catch (e) {
+        fetchStatus.textContent = `打开目录失败：${String(e)}`;
+        fetchStatus.style.color = '#dc4c64';
+      } finally {
+        fetchOpenDirBtn.disabled = false;
+      }
+    }
+
+    function stopFetchTaskPolling(taskId) {
+      const timer = fetchTaskPollers.get(taskId);
+      if (timer) {
+        clearInterval(timer);
+        fetchTaskPollers.delete(taskId);
+      }
+    }
+
+    async function pollFetchTask(taskId) {
+      if (!taskId) return;
+      try {
+        const res = await fetch(`/api/fetch/tasks/${taskId}`);
+        const task = await res.json();
+        if (!res.ok || task.ok === false) {
+          stopFetchTaskPolling(taskId);
+          fetchStatus.textContent = `任务查询失败：${task.message || task.error || 'unknown'}`;
+          fetchStatus.style.color = '#dc4c64';
+          return;
+        }
+
+        const prev = fetchTaskState.get(taskId) || {};
+        const merged = { ...prev, ...task, _clientStartedAt: prev._clientStartedAt || Date.now() };
+        fetchTaskState.set(taskId, merged);
+        renderFetchTaskCards();
+
+        if (task.status === 'completed') {
+          stopFetchTaskPolling(taskId);
+          if (!prev._resultHandled) {
+            fetchResultHistory.unshift(task.result || {});
+            if (fetchResultHistory.length > 10) fetchResultHistory.length = 10;
+            fetchTaskState.set(taskId, { ...merged, _resultHandled: true });
+            renderFetchResults();
+          }
+          fetchStatus.textContent = `任务 ${taskId} 抓取完成`;
+          fetchStatus.style.color = '#23b26d';
+          return;
+        }
+
+        if (task.status === 'failed') {
+          stopFetchTaskPolling(taskId);
+          fetchStatus.textContent = `任务 ${taskId} 抓取失败：${task.error || task.message || 'unknown'}`;
+          fetchStatus.style.color = '#dc4c64';
+          renderFetchTaskCards();
+          return;
+        }
+
+        if (task.status === 'cancelled') {
+          stopFetchTaskPolling(taskId);
+          fetchStatus.textContent = `任务 ${taskId} 已取消`;
+          fetchStatus.style.color = '#dc4c64';
+          renderFetchTaskCards();
+        }
+      } catch (e) {
+        stopFetchTaskPolling(taskId);
+        fetchStatus.textContent = `任务轮询失败：${String(e)}`;
+        fetchStatus.style.color = '#dc4c64';
+      }
+    }
+
+    async function cancelFetchTask(taskId) {
+      if (!taskId) return;
+      try {
+        await fetch(`/api/fetch/tasks/${taskId}/cancel`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: '{}'
+        });
+        fetchStatus.textContent = `正在取消任务 ${taskId}...`;
+        fetchStatus.style.color = '#dc4c64';
+      } catch (e) {
+        fetchStatus.textContent = `取消失败：${String(e)}`;
+        fetchStatus.style.color = '#dc4c64';
+      }
+    }
+
+    async function executeContentFetch() {
+      const urls = getFetchUrls();
+      const retryCount = Number(fetchRetryInput.value || 1);
+      const vault = (fetchVaultInput.value || '').trim();
+      const analyze = Boolean(fetchAnalyzeInput && fetchAnalyzeInput.checked);
+      const saveToDb = Boolean(fetchSaveDbInput && fetchSaveDbInput.checked);
+
+      if (!urls.length) {
+        fetchStatus.textContent = '请先输入至少一条链接';
+        fetchStatus.style.color = '#dc4c64';
+        return;
+      }
+
+      fetchStatus.textContent = '正在创建抓取任务...';
+      fetchStatus.style.color = '#9ba8c7';
+
+      const isSingleVideoOnly = urls.length === 1 && /youtu\.be\/|youtube\.com\/|b23\.tv\/|bilibili\.com\//i.test(urls[0] || '');
+      const effectiveRetryCount = isSingleVideoOnly ? 0 : (Number.isFinite(retryCount) ? retryCount : 1);
+
+      try {
+        const res = await fetch('/api/fetch/tasks', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            urls,
+            retry_count: effectiveRetryCount,
+            vault,
+            analyze,
+            save_to_db: saveToDb,
+          })
+        });
+        const task = await res.json();
+        if (!res.ok || task.ok === false) {
+          fetchStatus.textContent = `任务创建失败：${task.message || task.error || 'unknown'}`;
+          fetchStatus.style.color = '#dc4c64';
+          return;
+        }
+
+        const taskId = task.task_id || '';
+        fetchTaskState.set(taskId, { ...task, _clientStartedAt: Date.now() });
+        renderFetchTaskCards();
+        fetchStatus.textContent = `任务 ${taskId} 已创建，可继续发起新任务`;
+        fetchStatus.style.color = '#23b26d';
+        const timer = setInterval(() => pollFetchTask(taskId), 1000);
+        fetchTaskPollers.set(taskId, timer);
+        await pollFetchTask(taskId);
+      } catch (e) {
+        fetchStatus.textContent = `请求失败：${String(e)}`;
+        fetchStatus.style.color = '#dc4c64';
+      }
+    }
+
+    fetchTaskList.addEventListener('click', (event) => {
+      const btn = event.target.closest('.btn-fetch-task-cancel');
+      if (!btn) return;
+      cancelFetchTask(btn.getAttribute('data-task-id') || '');
+    });
+
+    fetchRunBtn.addEventListener('click', executeContentFetch);
+    fetchOpenDirBtn.addEventListener('click', openFetchOutputDir);
+    fetchCopyFailedBtn.addEventListener('click', copyFailedFetchUrls);
+
+    switchTab('nighthawk');
+    loadProviders();
+    loadTemplates();
+    loadHistory();
+    syncModeUI();
+    switchAccountSubtab('x');
+    switchDatabaseSubtab('recent');
+    resetTemplateForm();
+  </script>
+</body>
+</html>

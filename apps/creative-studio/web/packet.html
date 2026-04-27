@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>资料包详情页</title>
+  <style>
+    :root {
+      --bg: #eef4f1;
+      --panel: rgba(249, 252, 250, 0.96);
+      --panel-soft: rgba(241, 247, 243, 0.95);
+      --line: #bfd2c5;
+      --text: #203229;
+      --muted: #63766b;
+      --accent: #2f7a55;
+      --accent-soft: #ddefe3;
+      --warn: #b7791f;
+      --danger: #b23a48;
+      --shadow: 0 24px 60px rgba(31, 64, 48, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(79, 143, 102, 0.14), transparent 28%),
+        linear-gradient(180deg, #edf5f0 0%, #dde9e1 100%);
+    }
+    a { color: var(--accent); }
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 420px);
+      gap: 18px;
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(191, 210, 197, 0.92);
+      background: linear-gradient(135deg, rgba(249, 252, 250, 0.97), rgba(231, 241, 236, 0.94));
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(47, 122, 85, 0.2);
+      background: rgba(47, 122, 85, 0.08);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 {
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 40px;
+      line-height: 1.15;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+    .hero-links a {
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(191, 210, 197, 0.95);
+      color: var(--text);
+    }
+    .status-banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(191, 210, 197, 0.92);
+      background: rgba(249, 252, 250, 0.92);
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(191, 210, 197, 0.85);
+      background: rgba(255, 255, 255, 0.68);
+    }
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(191, 210, 197, 0.92);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 18px 40px rgba(47, 90, 66, 0.08);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #f6fff9;
+      background: linear-gradient(135deg, #2f7a55, #205a3d);
+      box-shadow: 0 10px 24px rgba(45, 106, 79, 0.18);
+    }
+    button.secondary {
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--text);
+      border: 1px solid rgba(191, 210, 197, 0.95);
+      box-shadow: none;
+    }
+    button.ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px dashed rgba(191, 210, 197, 1);
+      box-shadow: none;
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .muted { color: var(--muted); }
+    .empty {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px dashed rgba(191, 210, 197, 1);
+      background: rgba(248, 251, 249, 0.78);
+      color: var(--muted);
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .kv strong { color: var(--text); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(47, 122, 85, 0.2);
+      background: rgba(47, 122, 85, 0.08);
+      color: var(--text);
+      font-size: 12px;
+    }
+    .article-list {
+      display: grid;
+      gap: 10px;
+      max-height: 760px;
+      overflow: auto;
+    }
+    .article-item {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(191, 210, 197, 0.9);
+      background: rgba(250, 253, 251, 0.96);
+      cursor: pointer;
+    }
+    .article-item.active {
+      border-color: rgba(47, 122, 85, 0.58);
+      box-shadow: inset 0 0 0 1px rgba(47, 122, 85, 0.16);
+      background: rgba(221, 239, 227, 0.42);
+    }
+    .article-item h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .article-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(320px, 0.94fr);
+      gap: 18px;
+    }
+    .body-panel {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(191, 210, 197, 0.92);
+      background: var(--panel-soft);
+    }
+    .body-text {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      font-size: 14px;
+      color: #2d3f35;
+      max-height: 560px;
+      overflow: auto;
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .score-box {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(191, 210, 197, 0.84);
+      background: rgba(255, 255, 255, 0.68);
+      font-size: 12px;
+    }
+    .score-box strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+    .tab-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .tab-row button.active {
+      background: linear-gradient(135deg, #5a7e5a, #40603f);
+    }
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(191, 210, 197, 0.92);
+      background: rgba(248, 251, 249, 0.9);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #45604f;
+      max-height: 340px;
+      overflow: auto;
+    }
+    @media (max-width: 1180px) {
+      .hero, .layout, .article-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-links {
+        justify-content: flex-start;
+      }
+    }
+    @media (max-width: 720px) {
+      .page { padding: 18px 14px 28px; }
+      .overview, .score-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 34px; }
+      .kv { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Packet Detail / Reusable Material</span>
+        <h1 id="packet-title">资料包详情页</h1>
+        <p id="packet-subtitle">这里会把一次主题搜索沉淀下来的资料包完整展开。你不用去数据库里翻，就能直接看到这次创作真正依赖的原始资料、排序依据和导出内容。</p>
+        <div class="overview">
+          <div class="metric">
+            <strong id="metric-total">0</strong>
+            <span>当前资料包收进来的资料条数</span>
+          </div>
+          <div class="metric">
+            <strong id="metric-strong">0</strong>
+            <span>强相关资料规模</span>
+          </div>
+          <div class="metric">
+            <strong id="metric-entities">0</strong>
+            <span>这次主题里识别出的核心实体数</span>
+          </div>
+        </div>
+        <div id="status-banner" class="status-banner">正在读取资料包...</div>
+      </div>
+      <div class="hero-links">
+        <a href="/create/studio">进入创作前台</a>
+        <a href="/create/topic">返回主题搜索页</a>
+        <a href="/create/nighthawk">进入 NightHawk 正文池</a>
+        <a href="/create/workspace">进入后续编排工作台</a>
+        <a href="/index.html">返回搜索工作台</a>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">资料包标题与摘要</h2>
+              <p>先看这份资料包到底是围绕什么主题，以及它收了多少有效材料。</p>
+            </div>
+          </div>
+          <div id="packet-summary" class="empty">还没读到资料包。</div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">进入后续编排</h2>
+              <p>这一段先预留位置。现在可以直接打开后续工作台，后面再接“一键转 CreationTask”。</p>
+            </div>
+          </div>
+          <div class="button-row">
+            <a id="open-create-link" href="/create/workspace" style="text-decoration: none;"><button type="button">打开后续编排工作台</button></a>
+            <button id="packet-to-task-btn" type="button" class="secondary" disabled>下一阶段接一键转任务</button>
+          </div>
+          <div class="muted" style="margin-top: 10px; font-size: 13px;">这一步还没正式接回 `CreationTask`，但入口位已经预留好，后面会接成从 Packet 直接进入编排。</div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">导出 JSON / Markdown</h2>
+              <p>这里直接看资料包导出，不用再去接口里翻响应。</p>
+            </div>
+          </div>
+          <div class="tab-row">
+            <button id="markdown-tab" type="button" class="secondary active">Markdown 导出</button>
+            <button id="json-tab" type="button" class="secondary">JSON 导出</button>
+          </div>
+          <pre id="export-preview">还没读到导出内容。</pre>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">文章列表与正文展开</h2>
+              <p>左边看资料条目，右边直接展开正文和这条资料为什么被留下。</p>
+            </div>
+          </div>
+          <div class="article-grid">
+            <div>
+              <div id="article-list" class="article-list"></div>
+            </div>
+            <div class="stack">
+              <section class="body-panel">
+                <h3>正文展开</h3>
+                <div id="article-detail" class="empty">选择左侧任意一条资料，这里会展开正文和相关解释。</div>
+              </section>
+              <section class="body-panel">
+                <h3>搜索解释</h3>
+                <div id="article-explain" class="empty">这里会展示这条资料为什么会进入资料包。</div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      packetId: "",
+      packetResponse: null,
+      selectedIndex: 0,
+      exportTab: "markdown",
+      taskCreation: null,
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...options,
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.message || `请求失败：${response.status}`);
+      }
+      return payload;
+    }
+
+    function setBanner(message, tone = "info") {
+      const banner = $("#status-banner");
+      banner.textContent = message;
+      banner.style.color = tone === "error" ? "var(--danger)" : tone === "warn" ? "var(--warn)" : "var(--muted)";
+    }
+
+    function renderSummary() {
+      const packet = state.packetResponse?.topic_packet;
+      if (!packet) {
+        $("#packet-summary").innerHTML = '<div class="empty">还没读到资料包。</div>';
+        return;
+      }
+      $("#packet-title").textContent = packet.topic || packet.packet_id || "资料包详情页";
+      $("#metric-total").textContent = String(packet.summary?.total_results || packet.articles?.length || 0);
+      $("#metric-strong").textContent = String(packet.summary?.strong_results || 0);
+      $("#metric-entities").textContent = String((packet.summary?.entities || []).length);
+      $("#packet-summary").innerHTML = `
+        <div class="kv"><strong>Packet ID</strong><span>${escapeHtml(packet.packet_id || "-")}</span></div>
+        <div class="kv"><strong>主题</strong><span>${escapeHtml(packet.topic || "-")}</span></div>
+        <div class="kv"><strong>状态</strong><span>${escapeHtml(packet.status || "-")}</span></div>
+        <div class="kv"><strong>生成时间</strong><span>${escapeHtml(packet.generated_at || packet.created_at || "-")}</span></div>
+        <div class="kv"><strong>查询语句</strong><span>${escapeHtml(packet.query_text || "-")}</span></div>
+        <div class="kv"><strong>实体</strong><span>${(packet.summary?.entities || []).length ? `<div class="pill-row">${(packet.summary.entities || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>主题角度</strong><span>${(packet.summary?.facets || []).length ? `<div class="pill-row">${(packet.summary.facets || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>最值得看</strong><span>${escapeHtml((packet.summary?.top_titles || []).join(" / ") || "-")}</span></div>
+      `;
+    }
+
+    function renderExport() {
+      const exports = state.packetResponse?.exports || {};
+      $("#export-preview").textContent = state.exportTab === "json" ? (exports.json || "") : (exports.markdown || "");
+      $("#markdown-tab").classList.toggle("active", state.exportTab === "markdown");
+      $("#json-tab").classList.toggle("active", state.exportTab === "json");
+    }
+
+    function renderTaskEntry() {
+      const button = $("#packet-to-task-btn");
+      const openLink = $("#open-create-link");
+      let summary = $("#task-convert-summary");
+      if (!summary) {
+        summary = document.createElement("div");
+        summary.id = "task-convert-summary";
+        summary.className = "muted";
+        summary.style.marginTop = "10px";
+        summary.style.fontSize = "13px";
+        button?.closest(".card")?.appendChild(summary);
+      }
+      const packet = state.packetResponse?.topic_packet;
+      const createdTask = state.taskCreation?.creation_task;
+      if (button) {
+        button.disabled = !packet?.packet_id;
+        button.textContent = createdTask?.id ? "重新生成任务" : "一键转成 CreationTask";
+      }
+      if (!openLink || !summary) {
+        return;
+      }
+      if (createdTask?.id) {
+        const nextUrl = state.taskCreation?.next_url || `/create/workspace?task_id=${encodeURIComponent(createdTask.id)}`;
+        openLink.setAttribute("href", nextUrl);
+        summary.textContent = `已从资料包生成任务 ${createdTask.id}，现在打开后续编排工作台会直接带上这条任务。`;
+        return;
+      }
+      openLink.setAttribute("href", "/create/workspace");
+      summary.textContent = "先把资料包转成正式任务，再顺着现有编排链路继续往下走。";
+    }
+
+    function renderArticleList() {
+      const root = $("#article-list");
+      const articles = state.packetResponse?.topic_packet?.articles || [];
+      if (!articles.length) {
+        root.innerHTML = '<div class="empty">这份资料包里暂时没有可展开的正文资料。</div>';
+        return;
+      }
+      root.innerHTML = articles.map((article, index) => `
+        <article class="article-item ${index === state.selectedIndex ? "active" : ""}" data-index="${index}">
+          <h4>${escapeHtml(article.title || article.source_id || "未命名资料")}</h4>
+          <div class="meta-line">
+            <span>${escapeHtml(article.source || "-")}</span>
+            <span>${escapeHtml(article.content_type || "-")}</span>
+            <span>${escapeHtml(article.published_at || "时间未知")}</span>
+          </div>
+          <div>${escapeHtml(article.why_pick || article.summary || "暂无说明")}</div>
+        </article>
+      `).join("");
+      $$("#article-list .article-item").forEach((node) => {
+        node.addEventListener("click", () => {
+          state.selectedIndex = Number.parseInt(node.dataset.index, 10) || 0;
+          renderArticleList();
+          renderArticleDetail();
+        });
+      });
+    }
+
+    function renderArticleDetail() {
+      const articles = state.packetResponse?.topic_packet?.articles || [];
+      const article = articles[state.selectedIndex];
+      if (!article) {
+        $("#article-detail").innerHTML = '<div class="empty">选择左侧任意一条资料，这里会展开正文和相关解释。</div>';
+        $("#article-explain").innerHTML = '<div class="empty">这里会展示这条资料为什么会进入资料包。</div>';
+        return;
+      }
+
+      $("#article-detail").innerHTML = `
+        <div class="kv"><strong>标题</strong><span>${escapeHtml(article.title || article.source_id || "-")}</span></div>
+        <div class="kv"><strong>来源</strong><span>${escapeHtml(article.source || "-")} / ${escapeHtml(article.channel || "-")}</span></div>
+        <div class="kv"><strong>发布时间</strong><span>${escapeHtml(article.published_at || "-")}</span></div>
+        <div class="kv"><strong>摘要</strong><span>${escapeHtml(article.summary || "-")}</span></div>
+        <div class="kv"><strong>标签</strong><span>${(article.tags || []).length ? `<div class="pill-row">${(article.tags || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>相关主题</strong><span>${(article.related_topics || []).length ? `<div class="pill-row">${(article.related_topics || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>链接</strong><span>${article.url ? `<a href="${escapeHtml(article.url)}" target="_blank" rel="noreferrer">${escapeHtml(article.url)}</a>` : '<span class="muted">无</span>'}</span></div>
+        <div style="margin-top: 14px;">
+          <div class="muted" style="margin-bottom: 8px; font-size: 13px;">正文</div>
+          <div class="body-text">${escapeHtml(article.body_text || article.summary || "这条资料暂时没有可展开正文。")}</div>
+        </div>
+      `;
+
+      const explain = article.search_explain || {};
+      const structured = explain.structured || {};
+      const embedding = explain.embedding || {};
+      $("#article-explain").innerHTML = `
+        <div class="kv"><strong>留下原因</strong><span>${escapeHtml(article.why_pick || "-")}</span></div>
+        <div class="kv"><strong>命中实体</strong><span>${(structured.matched_entities || []).length ? `<div class="pill-row">${(structured.matched_entities || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="kv"><strong>命中角度</strong><span>${(structured.matched_facets || []).length ? `<div class="pill-row">${(structured.matched_facets || []).map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : '<span class="muted">无</span>'}</span></div>
+        <div class="score-grid">
+          <div class="score-box">
+            <strong>${escapeHtml(String(structured.source_quality ?? "-"))}</strong>
+            <span>来源质量</span>
+          </div>
+          <div class="score-box">
+            <strong>${escapeHtml(String(structured.freshness ?? "-"))}</strong>
+            <span>新鲜度</span>
+          </div>
+          <div class="score-box">
+            <strong>${escapeHtml(String(embedding.token_overlap_score ?? "-"))}</strong>
+            <span>语义 token 重合</span>
+          </div>
+          <div class="score-box">
+            <strong>${escapeHtml(String(embedding.phrase_score ?? "-"))}</strong>
+            <span>短语命中</span>
+          </div>
+        </div>
+        <div class="kv"><strong>语义 provider</strong><span>${escapeHtml(embedding.provider || "disabled")}</span></div>
+        <div class="kv"><strong>事件预留</strong><span>${escapeHtml((article.event_packet_refs || []).join(", ") || "暂时没有")}</span></div>
+      `;
+    }
+
+    async function loadPacket() {
+      state.packetId = window.location.pathname.split("/").filter(Boolean).pop() || "";
+      if (!state.packetId) {
+        setBanner("当前 URL 里没有 packet_id。", "error");
+        return;
+      }
+      try {
+        const payload = await api(`/api/create/topic-packets/${state.packetId}`);
+        state.packetResponse = payload;
+        state.selectedIndex = 0;
+        renderSummary();
+        renderExport();
+        renderTaskEntry();
+        renderArticleList();
+        renderArticleDetail();
+        setBanner(`资料包 ${state.packetId} 已加载。`);
+      } catch (error) {
+        setBanner(`读取资料包失败：${error.message}`, "error");
+      }
+    }
+
+    async function convertPacketToTask() {
+      if (!state.packetId) {
+        setBanner("当前没有可转换的资料包。", "warn");
+        return;
+      }
+      const button = $("#packet-to-task-btn");
+      const previousText = button ? button.textContent : "";
+      if (button) {
+        button.disabled = true;
+        button.textContent = "转换中...";
+      }
+      setBanner("正在把资料包接回创作任务...", "info");
+      try {
+        const payload = await api(`/api/create/packets/${encodeURIComponent(state.packetId)}/to-task`, {
+          method: "POST",
+          body: JSON.stringify({}),
+        });
+        state.taskCreation = payload;
+        renderTaskEntry();
+        setBanner(`资料包已转成任务 ${payload.creation_task?.id || "-"}，现在可以直接进入后续编排。`, "success");
+      } catch (error) {
+        if (button) {
+          button.textContent = previousText || "一键转成 CreationTask";
+          button.disabled = false;
+        }
+        setBanner(`资料包转任务失败：${error.message}`, "error");
+      }
+    }
+
+    function bindEvents() {
+      $("#markdown-tab").addEventListener("click", () => {
+        state.exportTab = "markdown";
+        renderExport();
+      });
+      $("#json-tab").addEventListener("click", () => {
+        state.exportTab = "json";
+        renderExport();
+      });
+      $("#packet-to-task-btn").addEventListener("click", convertPacketToTask);
+    }
+
+    bindEvents();
+    loadPacket();
+  </script>
+</body>
+</html>

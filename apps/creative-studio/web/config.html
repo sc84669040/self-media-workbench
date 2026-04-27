@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配置向导</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: rgba(255, 252, 247, 0.94);
+      --paper-strong: #fffaf2;
+      --line: rgba(151, 121, 88, 0.24);
+      --line-strong: rgba(126, 98, 68, 0.38);
+      --text: #261d15;
+      --muted: #6a5b4d;
+      --faint: #8b7a69;
+      --accent: #1f5f82;
+      --accent-strong: #174963;
+      --accent-soft: rgba(31, 95, 130, 0.1);
+      --warm: #a45b2a;
+      --ok: #2e7257;
+      --warn: #9a6a21;
+      --bad: #9b3f30;
+      --shadow: 0 22px 58px rgba(77, 57, 36, 0.1);
+      --shadow-soft: 0 12px 28px rgba(77, 57, 36, 0.07);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(206, 172, 132, 0.25), transparent 24%),
+        radial-gradient(circle at 88% 14%, rgba(31, 95, 130, 0.12), transparent 22%),
+        linear-gradient(180deg, #fbf7ef 0%, #f1e6d8 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1280px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 22px 0 46px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0 12px;
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(31, 95, 130, 0.08);
+    }
+
+    .nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav-actions a,
+    .ghost-button,
+    .primary-button,
+    .quiet-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      background: rgba(255, 250, 242, 0.78);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .nav-actions a:hover,
+    .ghost-button:hover,
+    .quiet-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(31, 95, 130, 0.32);
+      background: var(--accent-soft);
+    }
+
+    .primary-button {
+      border-color: rgba(31, 95, 130, 0.28);
+      background: var(--accent);
+      color: #fffaf2;
+      box-shadow: 0 12px 24px rgba(31, 95, 130, 0.18);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+      background: var(--accent-strong);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(245, 236, 224, 0.9));
+      box-shadow: var(--shadow);
+    }
+
+    .hero > div,
+    .panel,
+    .side-nav,
+    .topbar {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(164, 91, 42, 0.08);
+      color: var(--warm);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    h1 {
+      margin: 10px 0 8px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.72;
+      overflow-wrap: anywhere;
+      word-break: break-all;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .side-nav {
+      position: sticky;
+      top: 74px;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 250, 242, 0.82);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .side-nav a {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 11px;
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .side-nav a:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content {
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel {
+      scroll-margin-top: 92px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+      word-break: break-all;
+    }
+
+    .pill {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.16);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .metric-grid,
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field-grid.one {
+      grid-template-columns: 1fr;
+    }
+
+    .advanced-details {
+      margin-top: 12px;
+      border: 1px solid rgba(151, 121, 88, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.48);
+      overflow: hidden;
+    }
+
+    .advanced-details summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 52px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-weight: 900;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .advanced-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .advanced-details summary::after {
+      content: "+";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .advanced-details[open] summary::after {
+      content: "-";
+    }
+
+    .advanced-body {
+      display: grid;
+      gap: 10px;
+      padding: 0 12px 12px;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      min-height: 112px;
+      padding: 12px;
+      border: 1px solid rgba(151, 121, 88, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .choice-card:hover {
+      border-color: rgba(31, 95, 130, 0.28);
+      background: rgba(255, 253, 249, 0.86);
+    }
+
+    .choice-card input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+
+    .choice-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .choice-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .metric,
+    .field,
+    .check-card,
+    .source-card,
+    .job-card {
+      border: 1px solid rgba(151, 121, 88, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .metric {
+      padding: 13px 14px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--accent);
+      font-size: 22px;
+      line-height: 1.1;
+      margin-bottom: 5px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .field label,
+    .source-card label,
+    .job-title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .hint {
+      color: var(--faint);
+      font-size: 12px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+      word-break: break-all;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid rgba(126, 98, 68, 0.26);
+      border-radius: 12px;
+      background: rgba(255, 253, 249, 0.88);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    input,
+    select {
+      height: 40px;
+      padding: 8px 11px;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+      padding: 10px 11px;
+      line-height: 1.55;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(31, 95, 130, 0.46);
+      box-shadow: 0 0 0 4px rgba(31, 95, 130, 0.11);
+      background: #fffdf8;
+    }
+
+    .toggle-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(151, 121, 88, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .toggle-field input,
+    .job-card input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .source-card {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .job-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .job-card {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .job-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .job-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .job-fields.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .check-list,
+    .service-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .check-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 0 5px rgba(154, 106, 33, 0.1);
+    }
+
+    .dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 0 5px rgba(46, 114, 87, 0.1);
+    }
+
+    .dot.bad {
+      background: var(--bad);
+      box-shadow: 0 0 0 5px rgba(155, 63, 48, 0.1);
+    }
+
+    .check-title {
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .check-value {
+      overflow: hidden;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .backup-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .backup-box {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(151, 121, 88, 0.2);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      width: min(420px, calc(100vw - 36px));
+      padding: 13px 14px;
+      border: 1px solid rgba(31, 95, 130, 0.2);
+      border-radius: 18px;
+      background: rgba(255, 250, 242, 0.96);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      line-height: 1.55;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero,
+      .panel,
+      .side-nav {
+        animation: rise-in 0.34s ease both;
+      }
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1020px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .side-nav {
+        position: static;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .side-nav a {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: calc(100vw - 24px);
+        padding-top: 12px;
+      }
+
+      .topbar,
+      .hero,
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        display: flex;
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .subtitle,
+      .section-head p {
+        max-width: calc(100vw - 72px);
+      }
+
+      .hero-actions,
+      .nav-actions {
+        justify-content: flex-start;
+      }
+
+      .side-nav,
+      .metric-grid,
+      .field-grid,
+      .field-grid.two,
+      .choice-grid,
+      .source-grid,
+      .job-grid,
+      .backup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .job-fields,
+      .job-fields.three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark"></span>
+        <span>Self Media Workbench</span>
+      </a>
+      <nav class="nav-actions" aria-label="主导航">
+        <a href="/">入口页</a>
+        <a href="/search">内容情报台</a>
+        <a href="/create">创作前台</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">小白配置</span>
+        <h1>配置向导</h1>
+        <p class="subtitle">先填写作模型，路径默认可用；自动采集、定时运行和工具路径都可以以后再开。</p>
+      </div>
+      <div class="hero-actions">
+        <button class="ghost-button" type="button" id="reloadButton">重新读取</button>
+        <button class="primary-button" type="button" id="saveButton">保存配置</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="side-nav" aria-label="配置分组">
+        <a href="#overview">总览 <span>01</span></a>
+        <a href="#paths">本地路径 <span>02</span></a>
+        <a href="#models">写作模型 <span>03</span></a>
+        <a href="#optional">可选功能 <span>04</span></a>
+        <a href="#backup">备份迁移 <span>05</span></a>
+      </aside>
+
+      <form class="content" id="configForm">
+        <section class="panel" id="overview">
+          <div class="section-head">
+            <div>
+              <h2>总览</h2>
+              <p>保存前先看当前服务地址、任务数量和检查结果；保存后这里会自动刷新。</p>
+            </div>
+            <span class="pill" id="localState">正在读取</span>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><strong id="metricServices">-</strong><span>本地服务地址</span></div>
+            <div class="metric"><strong id="metricJobs">-</strong><span>已启用定时任务</span></div>
+            <div class="metric"><strong id="metricKeys">-</strong><span>已保存私有值</span></div>
+          </div>
+          <details class="advanced-details">
+            <summary>查看服务地址和检查结果</summary>
+            <div class="advanced-body">
+              <div class="service-list" id="serviceList"></div>
+              <div class="check-list" id="checkList"></div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" id="paths">
+          <div class="section-head">
+            <div>
+              <h2>本地路径</h2>
+              <p>默认路径已经能跑。第一次只需要确认运行数据放哪里，以及要不要接入自己的知识库。</p>
+            </div>
+            <span class="pill">通常不用改</span>
+          </div>
+          <div class="field-grid two">
+            <div class="field">
+              <label for="runtimeDir">运行数据文件夹</label>
+              <span class="hint">示例：runtime。数据库、缓存和生成内容会放在这里。</span>
+              <input id="runtimeDir" data-path="paths.runtime_dir" placeholder="runtime" />
+            </div>
+            <div class="field">
+              <label for="vaultRoot">知识库文件夹</label>
+              <span class="hint">示例：D:\KnowledgeVault。创作前台会从这里检索资料。</span>
+              <input id="vaultRoot" data-path="creative_studio.knowledge_sources.vault_roots[0]" placeholder="D:\KnowledgeVault" />
+            </div>
+          </div>
+
+          <details class="advanced-details">
+            <summary>更多路径和本地端口</summary>
+            <div class="advanced-body">
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="fetchOutput">抓取输出文件夹</label>
+                  <span class="hint">保存网页、视频字幕和正文的位置。</span>
+                  <input id="fetchOutput" data-path="paths.fetch_output_dir" placeholder="runtime/fetched" />
+                </div>
+                <div class="field">
+                  <label for="creationData">创作数据文件夹</label>
+                  <span class="hint">草稿、素材包、引用和任务数据会写到这里。</span>
+                  <input id="creationData" data-path="paths.creation_data_root" placeholder="runtime/creation" />
+                </div>
+                <div class="field">
+                  <label for="eventRadarDb">夜鹰抓取与主题库</label>
+                  <span class="hint">夜鹰抓取数据、主题聚类和主题文章都在这个库里。</span>
+                  <input id="eventRadarDb" data-path="paths.event_radar_db_path" placeholder="D:\path\to\event_radar.windows-shadow.db" />
+                </div>
+                <div class="field">
+                  <label for="createStudioDb">创作台索引库</label>
+                  <span class="hint">创作前台检索、素材索引和全文检索使用这个库。</span>
+                  <input id="createStudioDb" data-path="paths.create_studio_db_path" placeholder="D:\path\to\create_studio.db" />
+                </div>
+                <div class="field">
+                  <label for="eventRadarMirrorDb">旧版兼容镜像库</label>
+                  <span class="hint">给旧脚本或手动排查用；日常以“夜鹰抓取与主题库”为准。</span>
+                  <input id="eventRadarMirrorDb" data-path="paths.event_radar_mirror_db_path" placeholder="D:\path\to\event_radar.db" />
+                </div>
+                <div class="field">
+                  <label for="analysisCardGlob">分析卡片位置</label>
+                  <span class="hint">创作台同步知识库时会优先识别这些分析卡片。</span>
+                  <input id="analysisCardGlob" data-path="creative_studio.knowledge_sources.analysis_card_globs[0]" placeholder="D:\KnowledgeVault\分析卡片\**\*.md" />
+                </div>
+                <div class="field">
+                  <label for="creativePort">创作前台端口</label>
+                  <span class="hint">默认 8791；被占用时再改。</span>
+                  <input id="creativePort" data-path="services.creative_studio.port" data-type="number" inputmode="numeric" placeholder="8791" />
+                </div>
+                <div class="field">
+                  <label for="searchPort">内容情报台端口</label>
+                  <span class="hint">默认 8787；被占用时再改。</span>
+                  <input id="searchPort" data-path="services.content_search_layer.port" data-type="number" inputmode="numeric" placeholder="8787" />
+                </div>
+                <div class="field">
+                  <label for="fetchPort">Fetch Hub 端口</label>
+                  <span class="hint">默认 8788；被占用时再改。</span>
+                  <input id="fetchPort" data-path="services.content_fetch_hub.port" data-type="number" inputmode="numeric" placeholder="8788" />
+                </div>
+                <div class="field">
+                  <label for="rsshubUrl">RSSHub 地址</label>
+                  <span class="hint">需要 RSSHub 时填写，本机常用 http://127.0.0.1:1200。</span>
+                  <input id="rsshubUrl" data-path="services.rsshub.base_url" placeholder="http://127.0.0.1:1200" />
+                </div>
+              </div>
+              <label class="toggle-field" for="rsshubEnabled">
+                <span>
+                  <span class="job-title">启用 RSSHub</span>
+                  <span class="hint">需要本机已经启动 RSSHub；不确定就先关闭。</span>
+                </span>
+                <input id="rsshubEnabled" type="checkbox" data-path="services.rsshub.enabled" data-type="boolean" />
+              </label>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" id="models">
+          <div class="section-head">
+            <div>
+              <h2>写作模型</h2>
+              <p>这是唯一建议第一次就填写的部分。自动填充和语义检索会默认跟着写作模型走，想分开再展开高级设置。</p>
+            </div>
+            <span class="pill">必填</span>
+          </div>
+          <div class="field-grid two">
+            <div class="field">
+              <label for="writingProvider">模型提供商</label>
+              <span class="hint">示例：openai、azure、openrouter。不接模型可保持 disabled；只想先试页面可填 mock。</span>
+              <input id="writingProvider" data-path="creative_studio.writing.provider" placeholder="openai" />
+            </div>
+            <div class="field">
+              <label for="writingModel">模型名</label>
+              <span class="hint">示例：gpt-4.1、gpt-4.1-mini，或你的兼容模型名。</span>
+              <input id="writingModel" data-path="creative_studio.writing.model" placeholder="gpt-4.1" />
+            </div>
+            <div class="field">
+              <label for="writingKey">API Key</label>
+              <span class="hint">本机保存；留空表示不修改已保存的 Key。</span>
+              <input id="writingKey" type="password" autocomplete="off" data-secret="CREATE_STUDIO_WRITING_API_KEY" placeholder="留空表示不修改" />
+            </div>
+            <div class="field">
+              <label for="writingBase">API 地址</label>
+              <span class="hint">OpenAI 官方可保持默认；兼容服务通常以 /v1 结尾。</span>
+              <input id="writingBase" data-path="creative_studio.writing.api_base" placeholder="https://api.openai.com/v1" />
+            </div>
+          </div>
+          <label class="toggle-field" for="sameAutofill" style="margin-top: 10px;">
+            <span>
+              <span class="job-title">自动填充也使用同一个模型</span>
+              <span class="hint">推荐开启。标题、摘要、引用说明等辅助动作会沿用上面的模型配置。</span>
+            </span>
+            <input id="sameAutofill" type="checkbox" checked />
+          </label>
+
+          <details class="advanced-details">
+            <summary>高级：分开设置自动填充和语义检索</summary>
+            <div class="advanced-body">
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="autofillProvider">自动填充模型提供商</label>
+                  <span class="hint">不想沿用写作模型时再填。</span>
+                  <input id="autofillProvider" data-path="creative_studio.autofill.provider" placeholder="openai" />
+                </div>
+                <div class="field">
+                  <label for="autofillModel">自动填充模型名</label>
+                  <span class="hint">可以使用更便宜、更快的模型。</span>
+                  <input id="autofillModel" data-path="creative_studio.autofill.model" placeholder="gpt-4.1-mini" />
+                </div>
+                <div class="field">
+                  <label for="autofillBase">自动填充 API 地址</label>
+                  <span class="hint">为空时会使用默认兼容地址。</span>
+                  <input id="autofillBase" data-path="creative_studio.autofill.api_base" placeholder="https://api.openai.com/v1" />
+                </div>
+                <div class="field">
+                  <label for="autofillKey">自动填充 API Key</label>
+                  <span class="hint">本机保存；留空表示不修改。</span>
+                  <input id="autofillKey" type="password" autocomplete="off" data-secret="CREATE_STUDIO_AUTOFILL_API_KEY" placeholder="留空表示不修改" />
+                </div>
+              </div>
+              <div class="field-grid two">
+                <label class="toggle-field" for="embeddingEnabled">
+                  <span>
+                    <span class="job-title">启用语义检索</span>
+                    <span class="hint">需要 embedding 模型；不确定就先关闭。</span>
+                  </span>
+                  <input id="embeddingEnabled" type="checkbox" data-path="creative_studio.semantic_search.enable_embedding" data-type="boolean" />
+                </label>
+                <div class="field">
+                  <label for="embeddingProvider">Embedding 提供商</label>
+                  <span class="hint">示例：openai；关闭时可保持 disabled。</span>
+                  <input id="embeddingProvider" data-path="creative_studio.semantic_search.embedding_provider" placeholder="disabled" />
+                </div>
+                <div class="field">
+                  <label for="embeddingModel">Embedding 模型名</label>
+                  <span class="hint">示例：text-embedding-3-small。</span>
+                  <input id="embeddingModel" data-path="creative_studio.semantic_search.embedding_model" placeholder="text-embedding-3-small" />
+                </div>
+                <label class="toggle-field" for="rawSync">
+                  <span>
+                    <span class="job-title">自动同步正文池</span>
+                    <span class="hint">启动内容情报台后，允许创作前台自动同步正文池。</span>
+                  </span>
+                  <input id="rawSync" type="checkbox" data-path="creative_studio.nighthawk.enable_upstream_raw_sync" data-type="boolean" />
+                </label>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" id="optional">
+          <div class="section-head">
+            <div>
+              <h2>可选功能</h2>
+              <p>这些都不是第一次运行的必填项。需要自动抓内容、定时后台跑、或处理视频平台时再展开。</p>
+            </div>
+            <span class="pill">以后再配也可以</span>
+          </div>
+
+          <details class="advanced-details">
+            <summary>自动采集来源：想让系统自己抓内容时再填</summary>
+            <div class="advanced-body">
+              <div class="source-grid">
+                <div class="source-card">
+                  <label for="feedsSource">RSS 来源</label>
+                  <span class="hint">每行：名称 | RSS 链接 | 分类 | on/off。也可以只填链接。</span>
+                  <textarea id="feedsSource" data-source="feeds" placeholder="OpenAI Blog | https://openai.com/blog/rss.xml | official_blog | on"></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="youtubeSource">YouTube 频道</label>
+                  <span class="hint">每行一个频道链接、@handle 或频道 ID。</span>
+                  <textarea id="youtubeSource" data-source="youtube_channels" placeholder="https://www.youtube.com/@OpenAI"></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="xSource">X 账号</label>
+                  <span class="hint">每行一个账号名，例如 openai；不要带密码。</span>
+                  <textarea id="xSource" data-source="x_accounts" placeholder="openai"></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="wechatSource">微信公众号来源</label>
+                  <span class="hint">每行：名称 | 链接或标识。复杂来源可粘贴 JSON 数组。</span>
+                  <textarea id="wechatSource" data-source="wechat_sources" placeholder="公众号名 | https://example.com/source"></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="feishuSource">飞书来源</label>
+                  <span class="hint">每行：名称 | 文档链接或来源标识。</span>
+                  <textarea id="feishuSource" data-source="feishu_sources" placeholder="选题表 | https://example.feishu.cn/wiki/..."></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="douyinSource">抖音来源</label>
+                  <span class="hint">每行：名称 | 主页链接或账号标识。</span>
+                  <textarea id="douyinSource" data-source="douyin_sources" placeholder="账号名 | https://www.douyin.com/user/..."></textarea>
+                </div>
+                <div class="source-card">
+                  <label for="bilibiliSource">Bilibili 来源</label>
+                  <span class="hint">每行：名称 | UP 主空间链接或 UID。</span>
+                  <textarea id="bilibiliSource" data-source="bilibili_sources" placeholder="账号名 | https://space.bilibili.com/..."></textarea>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="advanced-details">
+            <summary>平台登录凭证：抓取受限平台时再填</summary>
+            <div class="advanced-body">
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="youtubeCookie">YouTube cookies 文件路径</label>
+                  <span class="hint">示例：D:\cookies\youtube.txt。</span>
+                  <input id="youtubeCookie" data-path="content_fetch_hub.youtube_cookies_path" data-secret="YT_DLP_COOKIES_PATH" placeholder="D:\cookies\youtube.txt" />
+                </div>
+                <div class="field">
+                  <label for="bilibiliCookie">Bilibili cookies 文件路径</label>
+                  <span class="hint">示例：D:\cookies\bilibili.txt。</span>
+                  <input id="bilibiliCookie" data-path="content_fetch_hub.bilibili_cookies_path" data-secret="BILIBILI_COOKIES_PATH" placeholder="D:\cookies\bilibili.txt" />
+                </div>
+                <div class="field">
+                  <label for="xToken">X auth token</label>
+                  <span class="hint">从已登录浏览器复制；留空表示不修改。</span>
+                  <input id="xToken" type="password" autocomplete="off" data-secret="TWITTER_AUTH_TOKEN" placeholder="留空表示不修改" />
+                </div>
+                <div class="field">
+                  <label for="xCt0">X ct0</label>
+                  <span class="hint">与 auth token 配套使用；留空表示不修改。</span>
+                  <input id="xCt0" type="password" autocomplete="off" data-secret="TWITTER_CT0" placeholder="留空表示不修改" />
+                </div>
+                <div class="field">
+                  <label for="telegramToken">Telegram bot token</label>
+                  <span class="hint">用于推送通知；留空表示不修改。</span>
+                  <input id="telegramToken" type="password" autocomplete="off" data-secret="NIGHTHAWK_TELEGRAM_BOT_TOKEN" placeholder="留空表示不修改" />
+                </div>
+                <div class="field">
+                  <label for="telegramChat">Telegram chat id</label>
+                  <span class="hint">把通知发送到哪个聊天窗口。</span>
+                  <input id="telegramChat" data-path="notifications.telegram.chat_id" placeholder="123456789" />
+                </div>
+              </div>
+              <label class="toggle-field" for="telegramEnabled">
+                <span>
+                  <span class="job-title">启用 Telegram 通知</span>
+                  <span class="hint">需要先填 bot token 和 chat id。</span>
+                </span>
+                <input id="telegramEnabled" type="checkbox" data-path="notifications.telegram.enabled" data-type="boolean" />
+              </label>
+            </div>
+          </details>
+
+          <details class="advanced-details">
+            <summary>自动运行模式：不想后台自动跑就保持手动</summary>
+            <div class="advanced-body">
+              <div class="choice-grid" role="radiogroup" aria-label="自动运行模式">
+                <label class="choice-card">
+                  <input type="radio" name="schedulerPreset" value="manual" checked />
+                  <span><strong>只手动使用</strong>不会自动采集和推送，适合第一次安装。</span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="schedulerPreset" value="daily" />
+                  <span><strong>每天整理一次</strong>适合轻量关注，资源占用低。</span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="schedulerPreset" value="hourly" />
+                  <span><strong>每小时整理</strong>适合日常使用，定期采集和聚类。</span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="schedulerPreset" value="active" />
+                  <span><strong>高频跟进</strong>适合热点期，采集和正文处理更频繁。</span>
+                </label>
+              </div>
+
+              <details class="advanced-details">
+                <summary>精细调整每个任务</summary>
+                <div class="advanced-body">
+                  <div class="job-grid">
+                    <div class="job-card">
+                      <header>
+                        <span class="job-title">采集新内容</span>
+                        <input type="checkbox" data-path="scheduler.jobs.collector.enabled" data-type="boolean" aria-label="启用采集新内容" />
+                      </header>
+                      <div class="job-fields three">
+                        <input data-path="scheduler.jobs.collector.interval_minutes" data-type="number" inputmode="numeric" aria-label="采集间隔分钟" placeholder="间隔分钟" />
+                        <input data-path="scheduler.jobs.collector.lookback_hours" data-type="number" inputmode="numeric" aria-label="采集回看小时" placeholder="回看小时" />
+                        <input data-path="scheduler.jobs.collector.retry_count" data-type="number" inputmode="numeric" aria-label="采集重试次数" placeholder="重试" />
+                      </div>
+                    </div>
+                    <div class="job-card">
+                      <header>
+                        <span class="job-title">抓取正文</span>
+                        <input type="checkbox" data-path="scheduler.jobs.body_worker.enabled" data-type="boolean" aria-label="启用抓取正文" />
+                      </header>
+                      <div class="job-fields">
+                        <input data-path="scheduler.jobs.body_worker.interval_minutes" data-type="number" inputmode="numeric" aria-label="正文抓取间隔分钟" placeholder="间隔分钟" />
+                        <input data-path="scheduler.jobs.body_worker.retry_count" data-type="number" inputmode="numeric" aria-label="正文抓取重试次数" placeholder="重试" />
+                      </div>
+                    </div>
+                    <div class="job-card">
+                      <header>
+                        <span class="job-title">主题聚类</span>
+                        <input type="checkbox" data-path="scheduler.jobs.topic_pipeline.enabled" data-type="boolean" aria-label="启用主题聚类" />
+                      </header>
+                      <div class="job-fields three">
+                        <input data-path="scheduler.jobs.topic_pipeline.interval_minutes" data-type="number" inputmode="numeric" aria-label="主题聚类间隔分钟" placeholder="间隔分钟" />
+                        <input data-path="scheduler.jobs.topic_pipeline.lookback_hours" data-type="number" inputmode="numeric" aria-label="主题聚类回看小时" placeholder="回看小时" />
+                        <input data-path="scheduler.jobs.topic_pipeline.retry_count" data-type="number" inputmode="numeric" aria-label="主题聚类重试次数" placeholder="重试" />
+                      </div>
+                    </div>
+                    <div class="job-card">
+                      <header>
+                        <span class="job-title">同步索引</span>
+                        <input type="checkbox" data-path="scheduler.jobs.index_sync.enabled" data-type="boolean" aria-label="启用同步索引" />
+                      </header>
+                      <div class="job-fields">
+                        <input data-path="scheduler.jobs.index_sync.interval_minutes" data-type="number" inputmode="numeric" aria-label="索引同步间隔分钟" placeholder="间隔分钟" />
+                        <input data-path="scheduler.jobs.index_sync.retry_count" data-type="number" inputmode="numeric" aria-label="索引同步重试次数" placeholder="重试" />
+                      </div>
+                    </div>
+                    <div class="job-card">
+                      <header>
+                        <span class="job-title">推送通知</span>
+                        <input type="checkbox" data-path="scheduler.jobs.notifier.enabled" data-type="boolean" aria-label="启用推送通知" />
+                      </header>
+                      <div class="job-fields">
+                        <input data-path="scheduler.jobs.notifier.interval_minutes" data-type="number" inputmode="numeric" aria-label="通知间隔分钟" placeholder="间隔分钟" />
+                        <input data-path="scheduler.jobs.notifier.retry_count" data-type="number" inputmode="numeric" aria-label="通知重试次数" placeholder="重试" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </details>
+
+          <details class="advanced-details">
+            <summary>外部工具：系统找不到命令时再填路径</summary>
+            <div class="advanced-body">
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="ytDlpBin">yt-dlp 路径</label>
+                  <span class="hint">用于下载视频字幕和正文；能自动找到时不用填。</span>
+                  <input id="ytDlpBin" data-path="external_tools.yt_dlp_bin" placeholder="yt-dlp" />
+                </div>
+                <div class="field">
+                  <label for="ffmpegBin">ffmpeg 路径</label>
+                  <span class="hint">处理音视频时才需要；能自动找到时不用填。</span>
+                  <input id="ffmpegBin" data-path="external_tools.ffmpeg_bin" placeholder="ffmpeg" />
+                </div>
+                <div class="field">
+                  <label for="twitterBin">twitter CLI 路径</label>
+                  <span class="hint">用于抓取 X 数据；不用 X 抓取就不用填。</span>
+                  <input id="twitterBin" data-path="external_tools.twitter_bin" placeholder="twitter" />
+                </div>
+                <div class="field">
+                  <label for="funasrScript">FunASR 转写脚本</label>
+                  <span class="hint">需要语音转写时填写脚本路径。</span>
+                  <input id="funasrScript" data-path="external_tools.funasr_transcribe_script" placeholder="D:\tools\transcribe.py" />
+                </div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" id="backup">
+          <div class="section-head">
+            <div>
+              <h2>备份与迁移</h2>
+              <p>下载当前配置用于备份；导入入口适合迁移到另一台电脑前后使用。</p>
+            </div>
+            <span class="pill">备份</span>
+          </div>
+          <div class="backup-grid">
+            <div class="backup-box">
+              <label class="job-title">下载</label>
+              <span class="hint">导出当前配置，或下载一份可参考的示例模板。</span>
+              <div class="button-row">
+                <button class="ghost-button" type="button" id="exportButton">下载当前配置</button>
+                <button class="quiet-button" type="button" id="templateButton">下载示例模板</button>
+              </div>
+            </div>
+            <div class="backup-box">
+              <label class="job-title" for="importText">导入配置文本</label>
+              <span class="hint">选择文件或粘贴文本后点击导入。导入会覆盖当前本地配置。</span>
+              <input type="file" id="importFile" accept=".yaml,.yml,.txt" />
+              <textarea id="importText" placeholder="把备份配置文本粘贴到这里"></textarea>
+              <button class="primary-button" type="button" id="importButton">导入配置</button>
+            </div>
+          </div>
+        </section>
+      </form>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const appState = {
+      config: null,
+      sourceText: {},
+      latestPayload: null,
+      schedulerPreset: "manual",
+    };
+
+    const sourceKeys = [
+      "feeds",
+      "youtube_channels",
+      "x_accounts",
+      "wechat_sources",
+      "feishu_sources",
+      "douyin_sources",
+      "bilibili_sources",
+    ];
+
+    const secretLabels = {
+      CREATE_STUDIO_WRITING_API_KEY: "写作模型 API Key",
+      CREATE_STUDIO_AUTOFILL_API_KEY: "自动填充模型 API Key",
+      YT_DLP_COOKIES_PATH: "YouTube cookies 文件路径",
+      BILIBILI_COOKIES_PATH: "Bilibili cookies 文件路径",
+      TWITTER_AUTH_TOKEN: "X auth token",
+      TWITTER_CT0: "X ct0",
+      NIGHTHAWK_TELEGRAM_BOT_TOKEN: "Telegram bot token",
+    };
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value || {}));
+    }
+
+    function tokens(path) {
+      return String(path || "").replace(/\[(\d+)\]/g, ".$1").split(".").filter(Boolean);
+    }
+
+    function getValue(target, path) {
+      return tokens(path).reduce((current, key) => {
+        if (current == null) return undefined;
+        return current[key];
+      }, target);
+    }
+
+    function setValue(target, path, value) {
+      const parts = tokens(path);
+      let current = target;
+      parts.forEach((key, index) => {
+        const isLast = index === parts.length - 1;
+        const nextKey = parts[index + 1];
+        if (isLast) {
+          current[key] = value;
+          return;
+        }
+        if (current[key] == null) {
+          current[key] = /^\d+$/.test(nextKey) ? [] : {};
+        }
+        current = current[key];
+      });
+    }
+
+    function slug(text) {
+      return String(text || "source")
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, "")
+        .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 64) || "source";
+    }
+
+    function sourceLineFromItem(item, key) {
+      if (typeof item === "string") return item;
+      if (!item || typeof item !== "object") return String(item || "");
+      if (key === "feeds") {
+        return [
+          item.name || item.id || item.url || "",
+          item.url || "",
+          item.category || "",
+          item.enabled === false ? "off" : "on",
+        ].filter(Boolean).join(" | ");
+      }
+      const title = item.name || item.title || item.handle || item.id || item.channel_id || item.uid || "";
+      const address = item.url || item.channel_url || item.link || item.handle || item.id || item.channel_id || item.uid || "";
+      if (title && address && title !== address) return `${title} | ${address}`;
+      return title || address || JSON.stringify(item);
+    }
+
+    function sourceTextFromList(list, key) {
+      return (Array.isArray(list) ? list : [])
+        .map((item) => sourceLineFromItem(item, key))
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function parseGenericSource(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+        const parsed = JSON.parse(trimmed);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      }
+      return trimmed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+        const parts = line.split("|").map((part) => part.trim()).filter(Boolean);
+        if (parts.length === 1) return parts[0];
+        return {
+          id: slug(parts[0] || parts[1]),
+          name: parts[0],
+          url: parts[1] || "",
+          enabled: true,
+        };
+      });
+    }
+
+    function parseFeedSource(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+        const parsed = JSON.parse(trimmed);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      }
+      return trimmed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+        const parts = line.split("|").map((part) => part.trim());
+        const onlyUrl = parts.length === 1;
+        const name = onlyUrl ? parts[0] : (parts[0] || parts[1] || "RSS");
+        const url = onlyUrl ? parts[0] : (parts[1] || parts[0] || "");
+        const enabledText = String(parts[3] || "on").toLowerCase();
+        return {
+          id: slug(name || url),
+          name,
+          url,
+          category: parts[2] || "custom",
+          enabled: !["0", "false", "off", "no", "停用", "否"].includes(enabledText),
+        };
+      });
+    }
+
+    function showToast(title, body) {
+      const toast = document.getElementById("toast");
+      toast.innerHTML = `<strong>${title}</strong><span>${body}</span>`;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 3800);
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, { cache: "no-store", ...options });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `请求失败：${url}`);
+      }
+      return payload;
+    }
+
+    function renderFields(config) {
+      document.querySelectorAll("[data-path]").forEach((field) => {
+        const value = getValue(config, field.dataset.path);
+        if (field.type === "checkbox") {
+          field.checked = Boolean(value);
+        } else {
+          field.value = value == null ? "" : String(value);
+        }
+      });
+
+      const sources = config.sources || {};
+      sourceKeys.forEach((key) => {
+        const textarea = document.querySelector(`[data-source="${key}"]`);
+        if (!textarea) return;
+        const text = sourceTextFromList(sources[key], key);
+        textarea.value = text;
+        appState.sourceText[key] = text;
+      });
+      renderSameAutofill(config);
+      renderSchedulerPreset(config);
+    }
+
+    function renderSameAutofill(config) {
+      const checkbox = document.getElementById("sameAutofill");
+      if (!checkbox) return;
+      const writing = getValue(config, "creative_studio.writing") || {};
+      const autofill = getValue(config, "creative_studio.autofill") || {};
+      const hasWritingModel = Boolean(String(writing.model || "").trim());
+      checkbox.checked = !hasWritingModel || (
+        String(writing.provider || "") === String(autofill.provider || "") &&
+        String(writing.model || "") === String(autofill.model || "") &&
+        String(writing.api_base || "") === String(autofill.api_base || "")
+      );
+    }
+
+    function inferSchedulerPreset(config) {
+      const jobs = getValue(config, "scheduler.jobs") || {};
+      const collector = jobs.collector || {};
+      const bodyWorker = jobs.body_worker || {};
+      const topicPipeline = jobs.topic_pipeline || {};
+      const notifier = jobs.notifier || {};
+      const enabled = [collector, bodyWorker, topicPipeline, notifier].some((job) => Boolean(job.enabled));
+      if (!enabled) return "manual";
+      const interval = Number(collector.interval_minutes || topicPipeline.interval_minutes || bodyWorker.interval_minutes || 0);
+      if (interval >= 720) return "daily";
+      if (interval >= 45) return "hourly";
+      return "active";
+    }
+
+    function renderSchedulerPreset(config) {
+      const preset = inferSchedulerPreset(config);
+      appState.schedulerPreset = preset;
+      const radio = document.querySelector(`input[name="schedulerPreset"][value="${preset}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    function renderSecrets(payload) {
+      const saved = new Set((payload.env || []).filter((item) => item.set).map((item) => item.name));
+      document.querySelectorAll("[data-secret]").forEach((field) => {
+        const name = field.dataset.secret;
+        if (!field.dataset.path) field.value = "";
+        if (saved.has(name)) {
+          field.placeholder = `${secretLabels[name] || "私有值"} 已保存，留空表示不修改`;
+        }
+      });
+    }
+
+    function renderOverview(payload) {
+      const urls = payload.service_urls || {};
+      const envItems = payload.env || [];
+      const enabledJobs = (payload.scheduler && payload.scheduler.enabled) || [];
+      document.getElementById("localState").textContent = payload.local_exists ? "已使用本地配置" : "使用默认示例";
+      document.getElementById("metricServices").textContent = Object.keys(urls).filter((key) => urls[key]).length;
+      document.getElementById("metricJobs").textContent = enabledJobs.length;
+      document.getElementById("metricKeys").textContent = envItems.filter((item) => item.set).length;
+
+      const serviceList = document.getElementById("serviceList");
+      serviceList.innerHTML = "";
+      Object.entries(urls).forEach(([name, url]) => {
+        const card = document.createElement("div");
+        card.className = "check-card";
+        card.innerHTML = `<span class="dot ok"></span><div><div class="check-title">${name}</div><div class="check-value">${url || "未设置"}</div></div>`;
+        serviceList.appendChild(card);
+      });
+
+      const checkList = document.getElementById("checkList");
+      checkList.innerHTML = "";
+      (payload.checks || []).slice(0, 12).forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "check-card";
+        card.innerHTML = [
+          `<span class="dot ${item.ok ? "ok" : "bad"}"></span>`,
+          "<div>",
+          `<div class="check-title">${item.name || "检查项"} · ${item.ok ? "正常" : "待补充"}</div>`,
+          `<div class="check-value">${item.value || item.message || ""}</div>`,
+          "</div>",
+        ].join("");
+        checkList.appendChild(card);
+      });
+    }
+
+    function collectFieldValue(field) {
+      if (field.type === "checkbox") return field.checked;
+      const raw = field.value.trim();
+      if (field.dataset.type === "number") {
+        if (raw === "") return undefined;
+        const value = Number(raw);
+        return Number.isFinite(value) ? value : undefined;
+      }
+      return raw;
+    }
+
+    function collectPayload() {
+      const config = clone(appState.config);
+      document.querySelectorAll("[data-path]").forEach((field) => {
+        const value = collectFieldValue(field);
+        if (value === undefined) return;
+        setValue(config, field.dataset.path, value);
+      });
+      applySameAutofill(config);
+      applySchedulerPresetIfChanged(config);
+
+      if (!config.sources || typeof config.sources !== "object") config.sources = {};
+      sourceKeys.forEach((key) => {
+        const textarea = document.querySelector(`[data-source="${key}"]`);
+        if (!textarea) return;
+        const currentText = textarea.value.trim();
+        if (currentText === (appState.sourceText[key] || "").trim()) return;
+        config.sources[key] = key === "feeds" ? parseFeedSource(currentText) : parseGenericSource(currentText);
+      });
+
+      const envValues = {};
+      document.querySelectorAll("[data-secret]").forEach((field) => {
+        const value = field.value.trim();
+        if (value) envValues[field.dataset.secret] = value;
+      });
+      return { config, env_values: envValues };
+    }
+
+    function applySameAutofill(config) {
+      const checkbox = document.getElementById("sameAutofill");
+      if (!checkbox || !checkbox.checked) return;
+      const writing = getValue(config, "creative_studio.writing") || {};
+      const provider = String(writing.provider || "").trim();
+      const model = String(writing.model || "").trim();
+      if ((!provider || provider === "disabled") && !model) return;
+      setValue(config, "creative_studio.autofill.provider", provider);
+      setValue(config, "creative_studio.autofill.model", model);
+      setValue(config, "creative_studio.autofill.api_base", String(writing.api_base || "").trim());
+    }
+
+    function ensureJob(config, name) {
+      const jobsPath = "scheduler.jobs";
+      const jobs = getValue(config, jobsPath) || {};
+      setValue(config, jobsPath, jobs);
+      if (!jobs[name] || typeof jobs[name] !== "object") jobs[name] = {};
+      return jobs[name];
+    }
+
+    function setJob(config, name, values) {
+      Object.assign(ensureJob(config, name), values);
+    }
+
+    function applySchedulerPresetIfChanged(config) {
+      const selected = document.querySelector('input[name="schedulerPreset"]:checked')?.value || "manual";
+      if (selected === appState.schedulerPreset) return;
+      const presets = {
+        manual: {
+          collector: { enabled: false },
+          body_worker: { enabled: false },
+          topic_pipeline: { enabled: false },
+          index_sync: { enabled: true, interval_minutes: 60, retry_count: 0 },
+          notifier: { enabled: false },
+        },
+        daily: {
+          collector: { enabled: true, interval_minutes: 1440, lookback_hours: 48, retry_count: 1 },
+          body_worker: { enabled: true, interval_minutes: 1440, retry_count: 1 },
+          topic_pipeline: { enabled: true, interval_minutes: 1440, lookback_hours: 48, retry_count: 1 },
+          index_sync: { enabled: true, interval_minutes: 1440, retry_count: 0 },
+          notifier: { enabled: false },
+        },
+        hourly: {
+          collector: { enabled: true, interval_minutes: 60, lookback_hours: 48, retry_count: 1 },
+          body_worker: { enabled: true, interval_minutes: 30, retry_count: 1 },
+          topic_pipeline: { enabled: true, interval_minutes: 60, lookback_hours: 48, retry_count: 1 },
+          index_sync: { enabled: true, interval_minutes: 60, retry_count: 0 },
+          notifier: { enabled: false },
+        },
+        active: {
+          collector: { enabled: true, interval_minutes: 20, lookback_hours: 48, retry_count: 1 },
+          body_worker: { enabled: true, interval_minutes: 10, retry_count: 1 },
+          topic_pipeline: { enabled: true, interval_minutes: 20, lookback_hours: 48, retry_count: 1 },
+          index_sync: { enabled: true, interval_minutes: 30, retry_count: 0 },
+          notifier: { enabled: false },
+        },
+      };
+      Object.entries(presets[selected] || presets.manual).forEach(([name, values]) => setJob(config, name, values));
+    }
+
+    async function loadConfig() {
+      const payload = await fetchJson("/api/config/local");
+      appState.latestPayload = payload;
+      appState.config = clone(payload.config || {});
+      renderFields(appState.config);
+      renderSecrets(payload);
+      renderOverview(payload);
+      showToast("配置已读取", "当前页面已经填入本机配置。");
+    }
+
+    async function saveConfig() {
+      if (!appState.config) return;
+      const button = document.getElementById("saveButton");
+      button.disabled = true;
+      button.textContent = "保存中...";
+      try {
+        const payload = collectPayload();
+        const saved = await fetchJson("/api/config/local", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        appState.latestPayload = saved;
+        appState.config = clone(saved.config || {});
+        renderFields(appState.config);
+        renderSecrets(saved);
+        renderOverview(saved);
+        showToast("保存成功", "配置已经写入本机，内容来源文件也已同步。");
+      } catch (error) {
+        showToast("保存失败", error.message || "请检查填写内容。");
+      } finally {
+        button.disabled = false;
+        button.textContent = "保存配置";
+      }
+    }
+
+    async function importConfig() {
+      const text = document.getElementById("importText").value.trim();
+      if (!text) {
+        showToast("还没有可导入内容", "请选择文件或粘贴配置文本。");
+        return;
+      }
+      const button = document.getElementById("importButton");
+      button.disabled = true;
+      button.textContent = "导入中...";
+      try {
+        const payload = await fetchJson("/api/config/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ yaml: text }),
+        });
+        appState.latestPayload = payload;
+        appState.config = clone(payload.config || {});
+        renderFields(appState.config);
+        renderSecrets(payload);
+        renderOverview(payload);
+        showToast("导入成功", "配置文本已经应用到本机。");
+      } catch (error) {
+        showToast("导入失败", error.message || "请检查文本格式。");
+      } finally {
+        button.disabled = false;
+        button.textContent = "导入配置";
+      }
+    }
+
+    document.getElementById("reloadButton").addEventListener("click", () => {
+      loadConfig().catch((error) => showToast("读取失败", error.message || "服务暂不可用。"));
+    });
+    document.getElementById("saveButton").addEventListener("click", saveConfig);
+    document.getElementById("exportButton").addEventListener("click", () => {
+      window.location.href = "/api/config/export";
+    });
+    document.getElementById("templateButton").addEventListener("click", () => {
+      window.location.href = "/api/config/template";
+    });
+    document.getElementById("importButton").addEventListener("click", importConfig);
+    document.getElementById("importFile").addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      document.getElementById("importText").value = await file.text();
+      showToast("文件已读取", "确认内容后点击导入配置。");
+    });
+
+    loadConfig().catch((error) => showToast("读取失败", error.message || "服务暂不可用。"));
+  </script>
+</body>
+</html>

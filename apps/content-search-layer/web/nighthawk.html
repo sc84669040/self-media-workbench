@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NightHawk 正文资料池</title>
+  <style>
+    :root {
+      --bg: #f3f6f9;
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-soft: rgba(247, 250, 252, 0.96);
+      --line: rgba(23, 48, 66, 0.1);
+      --line-strong: rgba(23, 48, 66, 0.18);
+      --text: #173042;
+      --muted: #607286;
+      --accent: #1f5f88;
+      --accent-soft: rgba(31, 95, 136, 0.08);
+      --success: #2d7657;
+      --warn: #b0731d;
+      --shadow-lg: 0 28px 60px rgba(46, 73, 94, 0.1);
+      --shadow-md: 0 16px 32px rgba(46, 73, 94, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(146, 184, 215, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7fafc 0%, #e9f0f5 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 380px);
+      gap: 18px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 247, 251, 0.96));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(31, 95, 136, 0.14);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin-top: 16px;
+      margin-bottom: 10px;
+      font-size: 40px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+
+    .hero-links a {
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text);
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 24px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status-banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-header p,
+    .hint,
+    .empty,
+    .field-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #f7fbff;
+      background: linear-gradient(135deg, #1f5f88, #184866);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(31, 95, 136, 0.18);
+    }
+
+    button.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    button.ghost {
+      color: var(--text);
+      background: transparent;
+      border: 1px dashed var(--line-strong);
+      box-shadow: none;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 136, 0.16);
+      background: var(--accent-soft);
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .selection-note,
+    .packet-block {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .results-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .results-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .article-list {
+      display: grid;
+      gap: 12px;
+      min-height: 320px;
+    }
+
+    .article-item {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .article-item:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      box-shadow: var(--shadow-md);
+    }
+
+    .article-item h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.45;
+      cursor: pointer;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .article-preview {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+
+    .article-select {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .article-select input {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+      margin: 0;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .dialog-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(12, 25, 35, 0.46);
+      backdrop-filter: blur(3px);
+      z-index: 50;
+    }
+
+    .dialog-mask.open {
+      display: flex;
+    }
+
+    .dialog {
+      width: min(980px, 100%);
+      max-height: min(88vh, 920px);
+      overflow: auto;
+      padding: 20px;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 24px 80px rgba(16, 32, 44, 0.22);
+    }
+
+    .dialog-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .dialog-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .dialog-close {
+      min-width: 44px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .detail-body {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--text);
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding: 18px 14px 32px;
+      }
+
+      .overview {
+        grid-template-columns: 1fr;
+      }
+
+      .results-head,
+      .pagination,
+      .dialog-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">NightHawk Source Desk</span>
+        <h1>NightHawk 正文资料池</h1>
+        <p>这里只保留已经抓到完整正文的条目。你先在列表里判断哪些材料值得进入创作，再决定生成创作包，或者直接进入后续编排。</p>
+        <div class="overview">
+          <article class="metric"><strong id="metric-total">-</strong><span>NightHawk 当前资料总量</span></article>
+          <article class="metric"><strong id="metric-body-ready">-</strong><span>已抓到完整正文的条目</span></article>
+          <article class="metric"><strong id="metric-event-linked">-</strong><span>已挂上事件线索的正文</span></article>
+          <article class="metric"><strong id="metric-selected">0</strong><span>当前选入创作材料的条数</span></article>
+        </div>
+        <div class="status-banner" id="status-banner">正在读取 NightHawk 资料池...</div>
+      </div>
+      <div class="hero-links">
+        <a href="/create/studio">创作前台</a>
+        <a href="/create/topic">主题搜索</a>
+        <a href="/create/workspace">后续编排</a>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="stack">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>筛选</h2>
+              <p>正文池默认只显示完整正文。你现在可以按平台、关键词和排序方式缩小范围。</p>
+            </div>
+          </div>
+          <form id="filter-form">
+            <label>
+              平台
+              <select id="platform-select">
+                <option value="">全部平台</option>
+                <option value="wechat">wechat</option>
+                <option value="youtube">youtube</option>
+                <option value="bilibili">bilibili</option>
+                <option value="x">x</option>
+                <option value="feed">feed</option>
+              </select>
+            </label>
+            <label>
+              关键词
+              <input id="keyword-input" type="text" placeholder="标题、正文、来源名" />
+            </label>
+            <label>
+              排序
+              <select id="sort-select">
+                <option value="time" selected>按时间顺序</option>
+                <option value="heat">按热度顺序</option>
+              </select>
+            </label>
+            <label>
+              每页数量
+              <select id="limit-select">
+                <option value="12">12</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+              </select>
+            </label>
+            <p class="field-note">正文池固定只展示已有完整正文的材料，不再把 metadata-only 项混进来。</p>
+            <div class="button-row">
+              <button type="submit" class="secondary">刷新列表</button>
+              <button type="button" class="ghost" id="clear-selection-btn">清空已选</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>创作动作</h2>
+              <p>把选中的正文整理成 source-driven 创作包，再决定是先预览还是直接进入编排。</p>
+            </div>
+          </div>
+          <form id="creation-form">
+            <label>
+              创作主题
+              <input id="topic-input" type="text" placeholder="比如：这批 NightHawk 正文适合写什么" />
+            </label>
+            <label>
+              进入创作的平台
+              <select id="creation-platform">
+                <option value="wechat" selected>wechat</option>
+                <option value="x">x</option>
+                <option value="youtube">youtube</option>
+              </select>
+            </label>
+            <label>
+              风格提醒
+              <textarea id="style-notes-input" placeholder="一行一个，比如：讲人话&#10;先给判断，再给细节"></textarea>
+            </label>
+            <div class="selection-note" id="selection-summary">还没有选中正文。先从右侧列表里勾几条，再生成创作包。</div>
+            <div class="button-row">
+              <button type="button" id="build-packet-btn">生成创作包预览</button>
+              <button type="button" class="secondary" id="to-task-btn">直接进入编排</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>创作包预览</h2>
+              <p>这里提前告诉你，这批正文会被整理成什么样的创作入口。</p>
+            </div>
+          </div>
+          <div id="packet-preview">
+            <div class="empty">先选正文，再生成一次创作包预览。</div>
+          </div>
+        </article>
+      </aside>
+
+      <main class="stack">
+        <article class="card">
+          <div class="results-head">
+            <div>
+              <h2>正文列表</h2>
+              <p class="results-meta" id="results-summary">正在加载正文列表...</p>
+            </div>
+            <div class="pill-row" id="active-filters"></div>
+          </div>
+          <div class="article-list" id="article-list"></div>
+          <div class="pagination">
+            <span id="page-indicator">第 1 / 1 页</span>
+            <div class="button-row">
+              <button type="button" class="secondary" id="prev-page-btn">上一页</button>
+              <button type="button" class="secondary" id="next-page-btn">下一页</button>
+            </div>
+          </div>
+        </article>
+      </main>
+    </section>
+  </div>
+
+  <div class="dialog-mask" id="detail-modal">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <div>
+          <h3 id="detail-title">正文详情</h3>
+          <p>点击列表卡片后，在这里查看原文、标签、主题和事件线索。</p>
+        </div>
+        <button type="button" class="dialog-close" id="close-detail-btn">关闭</button>
+      </div>
+      <div class="meta-line" id="detail-meta"></div>
+      <div class="pill-row" id="detail-pills"></div>
+      <div class="detail-body" id="detail-body">请选择一条正文查看。</div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      profile: null,
+      items: [],
+      selectedIds: new Set(),
+      packetPreview: null,
+      activeItem: null,
+      page: 1,
+      totalPages: 1,
+      total: 0,
+      limit: 20,
+      focusItemId: Number(new URLSearchParams(window.location.search).get("highlight_item") || 0) || null,
+      focusEventId: Number(new URLSearchParams(window.location.search).get("event_id") || 0) || null,
+    };
+
+    const statusBanner = document.getElementById("status-banner");
+    const articleList = document.getElementById("article-list");
+    const activeFilters = document.getElementById("active-filters");
+    const pageIndicator = document.getElementById("page-indicator");
+    const resultsSummary = document.getElementById("results-summary");
+    const packetPreview = document.getElementById("packet-preview");
+    const selectionSummary = document.getElementById("selection-summary");
+    const topicInput = document.getElementById("topic-input");
+    const platformSelect = document.getElementById("platform-select");
+    const keywordInput = document.getElementById("keyword-input");
+    const limitSelect = document.getElementById("limit-select");
+    const sortSelect = document.getElementById("sort-select");
+    const creationPlatform = document.getElementById("creation-platform");
+    const styleNotesInput = document.getElementById("style-notes-input");
+    const detailModal = document.getElementById("detail-modal");
+    const detailTitle = document.getElementById("detail-title");
+    const detailMeta = document.getElementById("detail-meta");
+    const detailPills = document.getElementById("detail-pills");
+    const detailBody = document.getElementById("detail-body");
+
+    function setStatus(message) {
+      statusBanner.textContent = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    async function requestJson(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        ...options,
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || `请求失败：${response.status}`);
+      }
+      return payload;
+    }
+
+    function currentFilterQuery() {
+      const params = new URLSearchParams();
+      params.set("page", String(state.page));
+      params.set("limit", String(Number(limitSelect.value) || 20));
+      params.set("body_ready_only", "1");
+      params.set("sort_by", sortSelect.value || "time");
+      if (platformSelect.value) params.set("platform", platformSelect.value);
+      if (keywordInput.value.trim()) params.set("keyword", keywordInput.value.trim());
+      return params.toString();
+    }
+
+    function updateMetrics() {
+      document.getElementById("metric-total").textContent = state.profile ? state.profile.raw_items_count : "-";
+      document.getElementById("metric-body-ready").textContent = state.profile ? state.profile.body_ready_count : "-";
+      document.getElementById("metric-event-linked").textContent = state.profile ? state.profile.event_linked_count : "-";
+      document.getElementById("metric-selected").textContent = String(state.selectedIds.size);
+    }
+
+    function renderSelectionSummary() {
+      if (!state.selectedIds.size) {
+        selectionSummary.textContent = "还没有选中正文。先从右侧列表里勾几条，再生成创作包。";
+        return;
+      }
+      const selectedItems = state.items.filter((item) => state.selectedIds.has(item.raw_item_id));
+      const eventLinkedCount = selectedItems.filter((item) => (item.event_links || []).length).length;
+      selectionSummary.textContent = `当前选中 ${selectedItems.length} 条正文，全部都是完整正文，其中 ${eventLinkedCount} 条带事件线索。`;
+    }
+
+    function renderActiveFilters() {
+      const pills = [];
+      if (platformSelect.value) pills.push(`平台：${platformSelect.value}`);
+      if (keywordInput.value.trim()) pills.push(`关键词：${keywordInput.value.trim()}`);
+      pills.push(sortSelect.value === "heat" ? "排序：热度优先" : "排序：时间优先");
+      pills.push("只看完整正文");
+      activeFilters.innerHTML = pills.map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("");
+    }
+
+    function renderResultsSummary() {
+      const sortLabel = sortSelect.value === "heat" ? "热度优先" : "时间优先";
+      resultsSummary.textContent = `当前共命中 ${state.total} 条完整正文，本页展示 ${state.items.length} 条，按${sortLabel}排列。`;
+    }
+
+    async function loadProfile() {
+      const payload = await requestJson("/api/create/nighthawk/profile");
+      state.profile = payload;
+      updateMetrics();
+      setStatus(`NightHawk 当前共 ${payload.raw_items_count} 条资料，其中 ${payload.body_ready_count} 条已经抓到完整正文。`);
+    }
+
+    async function loadItems() {
+      renderActiveFilters();
+      const payload = await requestJson(`/api/create/nighthawk/items?${currentFilterQuery()}`);
+      state.items = payload.items || [];
+      state.page = payload.page || 1;
+      state.totalPages = payload.total_pages || 1;
+      state.total = payload.total || 0;
+      state.limit = payload.page_size || 20;
+      pageIndicator.textContent = `第 ${state.page} / ${state.totalPages} 页`;
+      renderResultsSummary();
+
+      if (!state.items.length) {
+        articleList.innerHTML = '<div class="empty">当前筛选条件下没有可用正文。</div>';
+        return;
+      }
+
+      renderItemList();
+      if (state.focusItemId && state.items.some((item) => item.raw_item_id === state.focusItemId)) {
+        await openDetail(state.focusItemId);
+        state.focusItemId = null;
+      }
+    }
+
+    function renderItemList() {
+      articleList.innerHTML = state.items.map((item) => {
+        const checked = state.selectedIds.has(item.raw_item_id);
+        const tags = (item.tags || []).slice(0, 3).map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("");
+        const heatText = Number(item.heat_score || 0) > 0 ? `热度 ${Number(item.heat_score || 0).toFixed(1)}` : "热度待补";
+        return `
+          <article class="article-item" data-id="${item.raw_item_id}">
+            <label class="article-select">
+              <input type="checkbox" data-select-id="${item.raw_item_id}" ${checked ? "checked" : ""} />
+              <span>选入创作材料</span>
+            </label>
+            <h4 data-open-id="${item.raw_item_id}">${escapeHtml(item.title)}</h4>
+            <div class="meta-line">
+              <span>${escapeHtml(item.platform || "unknown")}</span>
+              <span>${escapeHtml(item.source_name || "NightHawk")}</span>
+              <span>${escapeHtml(item.published_at || "时间未知")}</span>
+              <span>${escapeHtml(heatText)}</span>
+              <span>${(item.event_links || []).length ? "带事件线索" : "暂无事件线索"}</span>
+            </div>
+            <div class="article-preview">${escapeHtml(item.summary || item.content_preview || "暂无摘要")}</div>
+            <div class="pill-row">${tags || '<span class="pill">暂无标签</span>'}</div>
+          </article>
+        `;
+      }).join("");
+
+      articleList.querySelectorAll("input[data-select-id]").forEach((checkbox) => {
+        checkbox.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const id = Number(checkbox.dataset.selectId);
+          if (checkbox.checked) state.selectedIds.add(id);
+          else state.selectedIds.delete(id);
+          updateMetrics();
+          renderSelectionSummary();
+        });
+      });
+
+      articleList.querySelectorAll(".article-item").forEach((node) => {
+        node.addEventListener("click", async (event) => {
+          if (event.target.closest('input[type="checkbox"]')) return;
+          await openDetail(Number(node.dataset.id));
+        });
+      });
+
+      updateMetrics();
+      renderSelectionSummary();
+    }
+
+    async function openDetail(rawItemId) {
+      const payload = await requestJson(`/api/create/nighthawk/items/${rawItemId}`);
+      state.activeItem = payload.item;
+      renderDetail(payload.item);
+      detailModal.classList.add("open");
+      if (!topicInput.value.trim()) {
+        topicInput.value = payload.item.title || "";
+      }
+      if (state.focusEventId) {
+        setStatus(`当前是从事件 ${state.focusEventId} 跳转过来的，你可以直接看正文，也可以带着这批材料进入创作。`);
+      }
+    }
+
+    function closeDetail() {
+      detailModal.classList.remove("open");
+    }
+
+    function renderDetail(item) {
+      detailTitle.textContent = item.title || "正文详情";
+      detailMeta.innerHTML = `
+        <span>${escapeHtml(item.platform || "unknown")}</span>
+        <span>${escapeHtml(item.source_name || "NightHawk")}</span>
+        <span>${escapeHtml(item.published_at || "时间未知")}</span>
+        <span>${escapeHtml(Number(item.heat_score || 0) > 0 ? `热度 ${Number(item.heat_score || 0).toFixed(1)}` : "热度待补")}</span>
+      `;
+      const pills = [];
+      (item.tags || []).forEach((tag) => pills.push(`<span class="pill">标签：${escapeHtml(tag)}</span>`));
+      (item.related_topics || []).forEach((topic) => pills.push(`<span class="pill">主题：${escapeHtml(topic)}</span>`));
+      (item.event_links || []).forEach((eventLink) => pills.push(`<a class="pill" href="/create/events/${Number(eventLink.event_id || 0)}">事件：${escapeHtml(eventLink.title || `#${eventLink.event_id}`)}</a>`));
+      if (item.canonical_url) pills.push(`<a class="pill" href="${escapeHtml(item.canonical_url)}" target="_blank" rel="noreferrer">打开原文</a>`);
+      detailPills.innerHTML = pills.join("") || '<span class="pill">暂无额外线索</span>';
+      detailBody.textContent = item.body_text || item.summary || "这条正文暂时没有可显示内容。";
+    }
+
+    function styleNotesAsList() {
+      return styleNotesInput.value
+        .split(/\r?\n/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function currentPayload() {
+      return {
+        raw_item_ids: Array.from(state.selectedIds),
+        topic: topicInput.value.trim(),
+        platform: creationPlatform.value,
+        style_notes: styleNotesAsList(),
+      };
+    }
+
+    function renderPacketPreview(payload) {
+      const packet = payload.creation_packet;
+      const intent = packet.creation_intent || {};
+      const evidence = packet.evidence_pack || {};
+      const narrative = packet.narrative_plan || {};
+      const selected = payload.selected_items || [];
+      packetPreview.innerHTML = `
+        <div class="packet-block">
+          <h4>创作方向</h4>
+          <div class="kv">
+            <strong>主题</strong><span>${escapeHtml(intent.topic || "未设置")}</span>
+            <strong>模式</strong><span>${escapeHtml(intent.creation_mode || "source_driven")}</span>
+            <strong>角度</strong><span>${escapeHtml(intent.angle || "未设置")}</span>
+            <strong>目标</strong><span>${escapeHtml(intent.goal || "未设置")}</span>
+          </div>
+        </div>
+        <div class="packet-block">
+          <h4>证据层</h4>
+          <div class="kv">
+            <strong>选中材料</strong><span>${selected.length} 条</span>
+            <strong>完整正文</strong><span>${escapeHtml(String((evidence.summary || {}).body_ready_count || 0))} 条</span>
+            <strong>主资料</strong><span>${escapeHtml(String((evidence.summary || {}).primary_count || 0))} 条</span>
+            <strong>事件线索</strong><span>${escapeHtml(String((payload.profile_hint || {}).event_linked_count || 0))} 条</span>
+          </div>
+        </div>
+        <div class="packet-block">
+          <h4>第一版判断</h4>
+          <p class="hint">${escapeHtml(narrative.core_judgement || "暂时还没有判断。")}</p>
+          <div class="pill-row" style="margin-top: 10px;">
+            ${(narrative.hook_candidates || []).map((hook) => `<span class="pill">${escapeHtml(hook)}</span>`).join("") || '<span class="pill">暂无开头候选</span>'}
+          </div>
+        </div>
+      `;
+    }
+
+    async function buildPacketPreview() {
+      if (!state.selectedIds.size) {
+        setStatus("先勾选至少一条 NightHawk 正文，再生成创作包。");
+        return;
+      }
+      setStatus("正在把选中的 NightHawk 正文整理成 source-driven 创作包...");
+      const payload = await requestJson("/api/create/nighthawk/creation-packet", {
+        method: "POST",
+        body: JSON.stringify(currentPayload()),
+      });
+      state.packetPreview = payload;
+      renderPacketPreview(payload);
+      setStatus(`创作包预览已生成。当前这批材料共 ${payload.selected_items.length} 条，可以继续进入编排。`);
+    }
+
+    async function createTaskFromSelection() {
+      if (!state.selectedIds.size) {
+        setStatus("先勾选至少一条 NightHawk 正文，再进入编排。");
+        return;
+      }
+      setStatus("正在把选中的 NightHawk 正文转成正式创作任务...");
+      const payload = await requestJson("/api/create/nighthawk/to-task", {
+        method: "POST",
+        body: JSON.stringify(currentPayload()),
+      });
+      window.location.href = payload.next_url;
+    }
+
+    document.getElementById("filter-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      state.page = 1;
+      await loadItems();
+    });
+
+    document.getElementById("prev-page-btn").addEventListener("click", async () => {
+      if (state.page <= 1) return;
+      state.page -= 1;
+      await loadItems();
+    });
+
+    document.getElementById("next-page-btn").addEventListener("click", async () => {
+      if (state.page >= state.totalPages) return;
+      state.page += 1;
+      await loadItems();
+    });
+
+    document.getElementById("clear-selection-btn").addEventListener("click", () => {
+      state.selectedIds.clear();
+      renderItemList();
+      updateMetrics();
+      renderSelectionSummary();
+    });
+
+    document.getElementById("build-packet-btn").addEventListener("click", buildPacketPreview);
+    document.getElementById("to-task-btn").addEventListener("click", createTaskFromSelection);
+    document.getElementById("close-detail-btn").addEventListener("click", closeDetail);
+
+    detailModal.addEventListener("click", (event) => {
+      if (event.target === detailModal) {
+        closeDetail();
+      }
+    });
+
+    Promise.all([loadProfile(), loadItems()]).catch((error) => {
+      console.error(error);
+      setStatus(`NightHawk 页面初始化失败：${error.message}`);
+      articleList.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自媒体工作台</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --paper: rgba(255, 252, 247, 0.92);
+      --paper-strong: #fffaf2;
+      --line: rgba(151, 121, 88, 0.24);
+      --line-strong: rgba(126, 98, 68, 0.38);
+      --text: #261d15;
+      --muted: #6a5b4d;
+      --accent: #1f5f82;
+      --accent-strong: #174963;
+      --accent-soft: rgba(31, 95, 130, 0.1);
+      --warm: #a45b2a;
+      --ok: #2e7257;
+      --warn: #9a6a21;
+      --shadow: 0 26px 70px rgba(77, 57, 36, 0.12);
+      --shadow-soft: 0 14px 34px rgba(77, 57, 36, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(206, 172, 132, 0.28), transparent 26%),
+        radial-gradient(circle at 86% 18%, rgba(31, 95, 130, 0.14), transparent 22%),
+        linear-gradient(180deg, #fbf7ef 0%, #f1e6d8 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1180px, calc(100vw - 40px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 34px 0 46px;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+    }
+
+    .hero {
+      padding: clamp(28px, 5vw, 54px);
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(245, 236, 224, 0.9));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -90px -120px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: rgba(31, 95, 130, 0.08);
+      pointer-events: none;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 13px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .kicker-mark {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(31, 95, 130, 0.08);
+    }
+
+    .utility-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .utility-nav a,
+    .status-link {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.18);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 850;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .utility-nav a:hover,
+    .status-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(31, 95, 130, 0.32);
+      background: rgba(31, 95, 130, 0.14);
+    }
+
+    h1 {
+      margin: 22px 0 12px;
+      max-width: 850px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: clamp(46px, 7vw, 86px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 19px);
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
+    }
+
+    .entries {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .entry {
+      min-height: 210px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.58);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .entry:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 18px 38px rgba(77, 57, 36, 0.12);
+    }
+
+    .entry-label {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(164, 91, 42, 0.08);
+      color: var(--warm);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .entry h2 {
+      margin: 14px 0 8px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    .entry p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .entry-action {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .status-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 250, 242, 0.82);
+      box-shadow: var(--shadow-soft);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .status-dot {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 0 6px rgba(154, 106, 33, 0.12);
+    }
+
+    .status-dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 0 6px rgba(46, 114, 87, 0.12);
+    }
+
+    .status-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .runtime {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric {
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.54);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--accent);
+      font-size: 22px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero, .status-bar, .entry {
+        animation: rise-in 0.42s ease both;
+      }
+      .entry:nth-child(2) { animation-delay: 0.04s; }
+      .entry:nth-child(3) { animation-delay: 0.08s; }
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .page { align-content: start; padding-top: 24px; }
+      .entries, .runtime { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topline { align-items: flex-start; flex-direction: column; }
+      .utility-nav { justify-content: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(100vw - 24px, 1180px); padding: 18px 0 28px; }
+      .hero { border-radius: 26px; padding: 24px; }
+      .entries, .runtime, .status-bar { grid-template-columns: 1fr; }
+      h1 { font-size: 44px; letter-spacing: -0.03em; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="topline">
+        <div class="kicker"><span class="kicker-mark"></span>SELF MEDIA WORKBENCH</div>
+        <nav class="utility-nav" aria-label="主导航">
+          <a id="navIntelligence" href="/search">内容情报台</a>
+          <a href="/create">创作前台</a>
+          <a href="/config">配置中心</a>
+        </nav>
+      </div>
+
+      <h1>从情报到创作，都从这里进入。</h1>
+      <p class="subtitle">这是一套本地优先的自媒体工作台。内容情报负责发现和整理信号，创作前台负责把材料编排成任务，配置中心负责把路径、凭证、渠道和定时任务收束到一个地方。</p>
+
+      <div class="entries" aria-label="工作台入口">
+        <a class="entry" id="cardIntelligence" href="/search">
+          <div>
+            <span class="entry-label">Intelligence</span>
+            <h2>内容情报台</h2>
+            <p>查看主题、事件、账号源和正文池，确认采集、聚类与索引链条是否健康。</p>
+          </div>
+          <span class="entry-action">打开情报工作台 <span>→</span></span>
+        </a>
+
+        <a class="entry" href="/create">
+          <div>
+            <span class="entry-label">Creation</span>
+            <h2>创作前台</h2>
+            <p>从主题、正文池和知识库创建任务，进入检索、引用、大纲和写作流程。</p>
+          </div>
+          <span class="entry-action">进入创作编排 <span>→</span></span>
+        </a>
+
+        <a class="entry" href="/config">
+          <div>
+            <span class="entry-label">Config</span>
+            <h2>配置中心</h2>
+            <p>集中管理路径、端口、凭证、渠道源、外部工具、定时任务和模板导入导出。</p>
+          </div>
+          <span class="entry-action">管理本地配置 <span>→</span></span>
+        </a>
+      </div>
+
+      <div class="runtime" aria-label="运行状态">
+        <div class="metric"><strong id="enabledJobs">-</strong><span>启用定时任务</span></div>
+        <div class="metric"><strong id="envCount">-</strong><span>已设置环境变量</span></div>
+        <div class="metric"><strong id="localState">-</strong><span>本地配置状态</span></div>
+        <div class="metric"><strong id="toolCount">-</strong><span>可用外部工具</span></div>
+      </div>
+    </section>
+
+    <section class="status-bar">
+      <div class="status-main">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">正在读取本地配置状态...</span>
+      </div>
+      <a class="status-link" href="/config">检查配置</a>
+    </section>
+  </main>
+
+  <script>
+    async function boot() {
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      try {
+        const res = await fetch('/api/config/summary', { cache: 'no-store' });
+        const data = await res.json();
+        const urls = data.service_urls || {};
+        const searchUrl = urls.content_search_layer || '/search';
+        document.getElementById('navIntelligence').href = searchUrl;
+        document.getElementById('cardIntelligence').href = searchUrl;
+        document.getElementById('enabledJobs').textContent = (data.scheduler?.enabled || []).length;
+        document.getElementById('envCount').textContent = (data.env || []).filter((item) => item.set).length;
+        document.getElementById('localState').textContent = data.local_exists ? 'local' : 'sample';
+        document.getElementById('toolCount').textContent = Object.values(data.tools || {}).filter((item) => item.available).length;
+        statusDot.classList.add('ok');
+        statusText.textContent = `配置读取成功。创作前台：${urls.creative_studio || location.origin}；内容情报台：${searchUrl}`;
+      } catch (error) {
+        statusDot.classList.remove('ok');
+        statusText.textContent = '配置状态读取失败，请进入配置中心检查本地服务。';
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>

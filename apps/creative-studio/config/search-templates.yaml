@@ -1,0 +1,49 @@
+version: 1
+updated_at: '2026-04-09'
+description: X 监控账号池搜索模板（可在页面表单中直接套用）
+templates:
+- id: ai-news-daily
+  name: AI 日更资讯
+  mode: pool_latest
+  sort_by: time
+  query: OpenAI OR Claude OR Gemini OR DeepMind OR Agent
+  search_type: latest
+  since: ''
+  until: ''
+  lang: ''
+  limit_per_account: 3
+  notes: 每天刷一次，追新品发布与重要讨论。
+- id: ai-builder-practical
+  name: AI 实战工作流
+  mode: pool_latest
+  sort_by: hybrid
+  query: workflow OR prompt OR RAG OR agent OR automation
+  search_type: latest
+  since: ''
+  until: ''
+  lang: ''
+  limit_per_account: 4
+  notes: 偏方法论和可复用流程。
+- id: weekly-high-signal
+  name: 周报高信号
+  mode: pool_top
+  sort_by: engagement
+  query: release OR benchmark OR open source OR paper
+  search_type: top
+  since: ''
+  until: ''
+  lang: ''
+  limit_per_account: 5
+  notes: 每周汇总时用，减少噪音。
+- id: single-source-verify
+  name: 单账号验证
+  mode: source_recent
+  sort_by: time
+  query: release
+  target_handle: OpenAI
+  search_type: latest
+  since: ''
+  until: ''
+  lang: ''
+  limit_per_account: 8
+  notes: 用于验证某个账号最近内容是否包含目标关键词。

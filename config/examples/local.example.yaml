@@ -1,0 +1,127 @@
+# Copy this file to config/local/local.yaml and edit only this one file.
+
+paths:
+  runtime_dir: ${repo_root}/runtime
+  sample_vault_path: ${runtime_dir}/sample-vault
+  event_radar_db_path: ${runtime_dir}/event_radar.db
+  create_studio_db_path: ${runtime_dir}/create_studio.db
+  creation_data_root: ${runtime_dir}/creation
+  fetch_output_dir: ${runtime_dir}/fetched
+
+services:
+  creative_studio:
+    host: 127.0.0.1
+    port: 8791
+  content_fetch_hub:
+    host: 127.0.0.1
+    port: 8788
+  content_search_layer:
+    host: 127.0.0.1
+    port: 8787
+  rsshub:
+    enabled: false
+    base_url: http://127.0.0.1:1200
+
+credentials:
+  openai_api_key_env: OPENAI_API_KEY
+  writing_api_key_env: CREATE_STUDIO_WRITING_API_KEY
+  autofill_api_key_env: CREATE_STUDIO_AUTOFILL_API_KEY
+  twitter_auth_token_env: TWITTER_AUTH_TOKEN
+  twitter_ct0_env: TWITTER_CT0
+  youtube_cookies_path_env: YT_DLP_COOKIES_PATH
+  bilibili_cookies_path_env: BILIBILI_COOKIES_PATH
+  telegram_bot_token_env: NIGHTHAWK_TELEGRAM_BOT_TOKEN
+
+external_tools:
+  yt_dlp_bin: ""
+  twitter_bin: ""
+  funasr_transcribe_script: ""
+  ffmpeg_bin: ""
+
+sources:
+  feeds:
+    - id: openai-blog
+      name: OpenAI Blog
+      url: https://openai.com/blog/rss.xml
+      category: official_blog
+      enabled: true
+  youtube_channels: []
+  wechat_sources: []
+  feishu_sources: []
+  douyin_sources: []
+  x_accounts: []
+
+content_fetch_hub:
+  retry_count: 1
+  write_obsidian_default: false
+  vault_path: ${sample_vault_path}
+  youtube_cookies_path: ""
+  bilibili_cookies_path: ""
+
+creative_studio:
+  nighthawk:
+    # Keep this disabled for sample/fresh-clone mode. Enable only when content-search-layer is running.
+    enable_upstream_raw_sync: false
+    upstream_timeout_sec: 2
+  writing:
+    provider: disabled
+    model: ""
+    api_base: https://api.openai.com/v1
+    api_key_env: CREATE_STUDIO_WRITING_API_KEY
+  autofill:
+    provider: mock
+    model: ""
+    api_base: https://api.openai.com/v1
+    api_key_env: CREATE_STUDIO_AUTOFILL_API_KEY
+  writer_adapters:
+    default_writer: generic-longform
+    profiles:
+      khazix-writer:
+        available: false
+        skill_prompt_path: ""
+      generic-longform:
+        available: true
+
+notifications:
+  telegram:
+    enabled: false
+    chat_id: ""
+    account_id: ""
+    openclaw_config: ""
+  knowledge_base:
+    enabled: false
+    vault_path: ${sample_vault_path}
+    folder: strong-recommendations
+  rules:
+    strong_threshold: 8.5
+    watch_threshold: 5.0
+
+scheduler:
+  jobs:
+    collector:
+      enabled: false
+      interval_minutes: 20
+      lookback_hours: 48
+      concurrency: 1
+      retry_count: 1
+    body_worker:
+      enabled: false
+      interval_minutes: 10
+      concurrency: 1
+      retry_count: 1
+    topic_pipeline:
+      enabled: false
+      interval_minutes: 20
+      lookback_hours: 48
+      concurrency: 1
+      retry_count: 1
+    index_sync:
+      enabled: true
+      interval_minutes: 60
+      concurrency: 1
+      retry_count: 0
+    notifier:
+      enabled: false
+      interval_minutes: 5
+      concurrency: 1
+      retry_count: 1

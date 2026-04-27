@@ -1,0 +1,40 @@
+# Compatibility placeholder. Notification settings are centralized in:
+# config/local/local.yaml
+#
+# This file intentionally contains no private chat ids, tokens, or local paths.
+telegram:
+  enabled: false
+  chat_id: ""
+  account_id: ""
+  openclaw_config: ""
+
+knowledge_base:
+  enabled: false
+  vault_path: ""
+  folder: strong-recommendations
+
+rules:
+  strong_threshold: 8.5
+  watch_threshold: 5.0
+  bootstrap_skip_older_than_hours: 6
+  notify_cooldown_minutes: 10
+  cluster_window_minutes: 180
+  scan_limit: 100
+  send_limit_per_cycle: 1
+  failed_retry_limit: 3
+  strong_keywords:
+    - launch
+    - release
+    - benchmark
+    - model
+    - agent
+  deep_value_keywords:
+    - report
+    - evaluation
+    - engineering blog
+    - research
+    - paper
+  short_term_keywords:
+    - available now
+    - now live
+    - today only

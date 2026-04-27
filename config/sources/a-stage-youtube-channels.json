@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "channels": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "enabled": true,
+      "priority": 10,
+      "category": "official",
+      "channel_url": "https://www.youtube.com/@OpenAI",
+      "fetch_method": "channel_videos",
+      "notes": "最高优先级；官方发布、演示、产品更新价值高。"
+    },
+    {
+      "id": "google_deepmind",
+      "name": "Google DeepMind",
+      "enabled": true,
+      "priority": 10,
+      "category": "official",
+      "channel_url": "https://www.youtube.com/@GoogleDeepMind",
+      "fetch_method": "channel_videos",
+      "notes": "最高优先级；模型、研究、产品演示都值得跟。"
+    },
+    {
+      "id": "microsoft_developer",
+      "name": "Microsoft Developer",
+      "enabled": true,
+      "priority": 9,
+      "category": "official",
+      "channel_url": "https://www.youtube.com/@MicrosoftDeveloper",
+      "fetch_method": "channel_videos",
+      "notes": "Azure AI、Copilot、开发者能力更新较多，适合工程与产品结合视角。"
+    },
+    {
+      "id": "nvidia_developer",
+      "name": "NVIDIA Developer",
+      "enabled": true,
+      "priority": 9,
+      "category": "official",
+      "channel_url": "https://www.youtube.com/@NVIDIADeveloper",
+      "fetch_method": "channel_videos",
+      "notes": "偏开发者与平台能力，适合补基础设施与生态动态。"
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face",
+      "enabled": true,
+      "priority": 8,
+      "category": "official",
+      "channel_url": "https://www.youtube.com/@HuggingFace",
+      "fetch_method": "channel_videos",
+      "notes": "开源模型、社区工具、实践类内容较多，适合补开源生态。"
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "enabled": false,
+      "priority": 9,
+      "category": "official_candidate",
+      "channel_url": "https://www.youtube.com/@AnthropicAI",
+      "fetch_method": "channel_videos",
+      "notes": "候选；若频道存在且最近更新可抓，再升为正式启用。"
+    },
+    {
+      "id": "latent_space",
+      "name": "Latent Space",
+      "enabled": false,
+      "priority": 8,
+      "category": "podcast_candidate",
+      "channel_url": "https://www.youtube.com/@LatentSpacePod",
+      "fetch_method": "channel_videos",
+      "notes": "候选；偏深度访谈与 builder 观点，适合 transcript 验证第二批。"
+    },
+    {
+      "id": "cognitive_revolution",
+      "name": "The Cognitive Revolution",
+      "enabled": false,
+      "priority": 8,
+      "category": "podcast_candidate",
+      "channel_url": "https://www.youtube.com/@CognitiveRevolutionPodcast",
+      "fetch_method": "channel_videos",
+      "notes": "候选；偏深度播客，价值高但长度长，建议 metadata 跑通后再开。"
+    },
+    {
+      "platform": "youtube",
+      "id": "muzibuxiedaima",
+      "name": "木子不写代码",
+      "enabled": true,
+      "priority": 5,
+      "category": "",
+      "channel_url": "https://www.youtube.com/@%E6%9C%A8%E5%AD%90%E4%B8%8D%E5%86%99%E4%BB%A3%E7%A0%81",
+      "fetch_method": "channel_videos",
+      "notes": ""
+    }
+  ]
+}

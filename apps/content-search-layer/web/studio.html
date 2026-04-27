@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创作前台</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --panel: rgba(255, 252, 247, 0.92);
+      --panel-strong: rgba(255, 255, 255, 0.82);
+      --panel-soft: rgba(246, 239, 228, 0.76);
+      --line: rgba(162, 133, 103, 0.22);
+      --line-strong: rgba(142, 112, 82, 0.36);
+      --text: #271d15;
+      --muted: #6b5b4d;
+      --accent: #1f5f82;
+      --accent-soft: rgba(31, 95, 130, 0.08);
+      --warm: #a45b2a;
+      --success: #2f6b52;
+      --shadow: 0 24px 60px rgba(77, 57, 36, 0.12);
+      --shadow-soft: 0 12px 28px rgba(77, 57, 36, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(212, 182, 148, 0.22), transparent 24%),
+        radial-gradient(circle at right 18%, rgba(84, 138, 170, 0.12), transparent 16%),
+        linear-gradient(180deg, #f8f4ed 0%, #f0e5d7 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      animation: rise-in .45s ease both;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: var(--shadow-soft);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1f5f82, #13445d);
+      color: #f7fbff;
+      font-weight: 700;
+      font-family: "Georgia", serif;
+    }
+
+    .top-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .top-links a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.56);
+      color: var(--muted);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, 420px);
+      gap: 20px;
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255, 252, 248, 0.97), rgba(244, 236, 224, 0.92));
+      box-shadow: var(--shadow);
+      animation: rise-in .55s ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 130, 0.16);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      margin: 18px 0 12px;
+      font-size: 48px;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      color: #f8fbff;
+      background: linear-gradient(135deg, #1f5f82, #174863);
+      box-shadow: 0 14px 26px rgba(27, 72, 99, 0.18);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .hero-aside {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .hero-panel {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.56);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-panel h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .pathway {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .pathway-step {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .pathway-step strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .step-no {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(31, 95, 130, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+      animation: rise-in .65s ease both;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 26px;
+      color: var(--accent);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .metric em {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--warm);
+      font-style: normal;
+      font-size: 12px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow-soft);
+      animation: rise-in .75s ease both;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .card-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .entry-card,
+    .status-card,
+    .topic-card {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .entry-card:hover,
+    .status-card:hover,
+    .topic-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-strong);
+      box-shadow: 0 16px 34px rgba(77, 57, 36, 0.1);
+    }
+
+    .entry-top,
+    .status-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .entry-card p,
+    .status-card p,
+    .topic-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 13px;
+    }
+
+    .entry-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      color: var(--warm);
+      font-size: 12px;
+    }
+
+    .status-value {
+      font-size: 26px;
+      color: var(--accent);
+      font-weight: 700;
+      font-family: "Georgia", serif;
+    }
+
+    .status-list,
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+      border-top: 1px solid rgba(162, 133, 103, 0.16);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .line:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .line strong {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .topic-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .topic-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .topic-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(31, 95, 130, 0.08);
+      color: var(--accent);
+      font-size: 12px;
+      border: 1px solid rgba(31, 95, 130, 0.14);
+    }
+
+    .status-banner {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--muted);
+      line-height: 1.8;
+      box-shadow: var(--shadow-soft);
+      animation: rise-in .7s ease both;
+      white-space: pre-wrap;
+    }
+
+    .empty {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: var(--panel-soft);
+      color: var(--muted);
+      line-height: 1.7;
+      border: 1px dashed rgba(162, 133, 103, 0.26);
+    }
+
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 18px 14px 34px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero {
+        padding: 20px;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .metrics,
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand-mark">C</span>
+        <span>Creative Studio Front</span>
+      </div>
+      <div class="top-links">
+        <a href="/">NightHawk 情报台</a>
+        <a href="/create/topic">主题搜索</a>
+        <a href="/create/nighthawk">正文资料池</a>
+        <a href="/create/workspace">后续编排台</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Creative Operating Layer</span>
+        <h1>创作前台</h1>
+        <p>
+          这里不是又一个功能入口，而是把 NightHawk 正文、热点事件、主题搜索和后续编排收成同一套工作流。
+          你可以先看热点，再挑正文，也可以先从主题出发，最后都汇到同一个创作动作里。
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="/create/topic">从主题开始</a>
+          <a class="button button-secondary" href="/create/nighthawk">从正文开始</a>
+          <a class="button button-secondary" href="/">查看热点事件</a>
+        </div>
+      </div>
+
+      <div class="hero-aside">
+        <div class="hero-panel">
+          <h3>今天怎么开始最顺</h3>
+          <p>把找题、看证据、进任务这三段串短，让创作台像一个产品，而不是几个工具页。</p>
+          <div class="pathway">
+            <div class="pathway-step">
+              <span class="step-no">1</span>
+              <div>
+                <strong>从主题判断机会</strong>
+                <p>先拆题，再看召回和排序，适合做选题探索。</p>
+              </div>
+            </div>
+            <div class="pathway-step">
+              <span class="step-no">2</span>
+              <div>
+                <strong>从正文确认材料</strong>
+                <p>直接浏览 NightHawk 正文，挑出真正值得写的证据。</p>
+              </div>
+            </div>
+            <div class="pathway-step">
+              <span class="step-no">3</span>
+              <div>
+                <strong>进入编排和写作</strong>
+                <p>把材料落成资料包，再送进后续编排或 writer 适配层。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <h3>这页负责什么</h3>
+          <p>给出清晰入口、当前状态和推荐路径。真正的搜索、资料筛选和编排，继续在下游专页里完成。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics" id="studio-summary">
+      <div class="metric">
+        <strong id="metric-body-ready">-</strong>
+        <span>NightHawk 已抓到完整正文的可用材料量。</span>
+        <em id="metric-body-note">正在读取正文供给...</em>
+      </div>
+      <div class="metric">
+        <strong id="metric-objects">-</strong>
+        <span>创作台索引里已收口的内容对象规模。</span>
+        <em id="metric-chunks-note">正在读取索引状态...</em>
+      </div>
+      <div class="metric">
+        <strong id="metric-topics">-</strong>
+        <span>当前热点主题页可继续追踪的话题数量。</span>
+        <em id="metric-topics-note">正在读取热点主题...</em>
+      </div>
+      <div class="metric">
+        <strong id="metric-semantic">-</strong>
+        <span>语义检索当前是否已在主链路里启用。</span>
+        <em id="metric-semantic-note">正在读取系统配置...</em>
+      </div>
+    </section>
+
+    <div id="status-banner" class="status-banner">正在汇总创作前台所需信息...</div>
+
+    <section class="layout">
+      <div class="stack">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>四个入口，一套工作流</h2>
+              <p>先让人知道自己该从哪里开始，再决定往哪条链路深入。</p>
+            </div>
+          </div>
+          <div id="pathway-grid" class="grid-two">
+            <a class="entry-card" href="/create/topic">
+              <div class="entry-top">
+                <h3>主题搜索</h3>
+                <span class="chip">选题入口</span>
+              </div>
+              <p>适合从一个题目出发，先看系统如何理解，再看召回、重排和资料包生成。</p>
+              <div class="entry-footer">
+                <span>适合做题目判断</span>
+                <span>打开</span>
+              </div>
+            </a>
+
+            <a class="entry-card" href="/create/nighthawk">
+              <div class="entry-top">
+                <h3>正文资料池</h3>
+                <span class="chip">证据入口</span>
+              </div>
+              <p>适合先看 NightHawk 已抓到的正文，直接挑材料、预览创作包，再进入编排。</p>
+              <div class="entry-footer">
+                <span>适合先看正文</span>
+                <span>打开</span>
+              </div>
+            </a>
+
+            <a class="entry-card" href="/">
+              <div class="entry-top">
+                <h3>热点事件台</h3>
+                <span class="chip">信号入口</span>
+              </div>
+              <p>适合先从热点和事件波动切入，再钻到单条正文或事件工作台里做判断。</p>
+              <div class="entry-footer">
+                <span>适合追热点</span>
+                <span>打开</span>
+              </div>
+            </a>
+
+            <a class="entry-card" href="/create/workspace">
+              <div class="entry-top">
+                <h3>后续编排台</h3>
+                <span class="chip">落地入口</span>
+              </div>
+              <p>适合在资料已经明确之后继续做引用清单、大纲、writer packet 和任务推进。</p>
+              <div class="entry-footer">
+                <span>适合进入执行</span>
+                <span>打开</span>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>本轮热点主题</h2>
+              <p>先看最近值得继续追的主题，再决定要不要进事件台或正文池。</p>
+            </div>
+            <a class="chip" href="/">去 NightHawk 情报台</a>
+          </div>
+          <div id="hot-topic-list" class="topic-list">
+            <div class="empty">正在读取热点主题...</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>系统状态</h2>
+              <p>前台真正关心的不是字段，而是现在能不能放心开始。</p>
+            </div>
+          </div>
+          <div class="status-list">
+            <div class="status-card">
+              <div class="status-top">
+                <h3>NightHawk 供给</h3>
+                <span id="profile-status" class="chip">读取中</span>
+              </div>
+              <div id="profile-value" class="status-value">-</div>
+              <p id="profile-copy">确认上游到底能喂多少正文、多少事件关联材料。</p>
+            </div>
+
+            <div class="status-card">
+              <div class="status-top">
+                <h3>索引准备度</h3>
+                <span id="index-status" class="chip">读取中</span>
+              </div>
+              <div id="index-value" class="status-value">-</div>
+              <p id="index-copy">不是只看数据库在不在，而是看内容是否已经被创作台收口。</p>
+            </div>
+
+            <div class="status-card">
+              <div class="status-top">
+                <h3>创作配置</h3>
+                <span id="config-status" class="chip">读取中</span>
+              </div>
+              <div id="config-value" class="status-value">-</div>
+              <p id="config-copy">语义检索、事件聚合和创作数据目录是否已按当前环境生效。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>推荐路径</h2>
+              <p>不同创作起点，建议走不同的路径，避免页面之间来回跳。</p>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="line">
+              <div>
+                <strong>想找题</strong>
+                <div>先去主题搜索，确定角度后再落资料包。</div>
+              </div>
+              <a class="chip" href="/create/topic">从主题开始</a>
+            </div>
+            <div class="line">
+              <div>
+                <strong>已有正文线索</strong>
+                <div>先去正文池挑证据，再一键转到创作任务。</div>
+              </div>
+              <a class="chip" href="/create/nighthawk">从正文开始</a>
+            </div>
+            <div class="line">
+              <div>
+                <strong>想追热点</strong>
+                <div>先去 NightHawk 情报台和事件工作台，再决定要不要进入创作。</div>
+              </div>
+              <a class="chip" href="/">看热点</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const statusBanner = document.getElementById("status-banner");
+    const hotTopicList = document.getElementById("hot-topic-list");
+
+    async function fetchJson(url) {
+      const response = await fetch(url);
+      const payload = await response.json();
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `Request failed: ${url}`);
+      }
+      return payload;
+    }
+
+    function formatNumber(value) {
+      if (typeof value !== "number" || Number.isNaN(value)) {
+        return "-";
+      }
+      return new Intl.NumberFormat("zh-CN").format(value);
+    }
+
+    function setText(id, value) {
+      const node = document.getElementById(id);
+      if (node) {
+        node.textContent = value;
+      }
+    }
+
+    function renderTopics(items) {
+      if (!Array.isArray(items) || !items.length) {
+        hotTopicList.innerHTML = '<div class="empty">当前还没有可展示的热点主题，先去 NightHawk 情报台拉一轮最新数据。</div>';
+        return;
+      }
+
+      hotTopicList.innerHTML = items.slice(0, 4).map((item) => {
+        const title = item.title || item.topic || "未命名主题";
+        const summary = item.summary || item.why_hot || item.reason || "这条主题已经进入热点池，可以继续下钻查看事件和正文。";
+        const eventCount = Number(item.event_count || item.events_count || 0);
+        const score = Number(item.overall_score || item.score || item.hot_score || 0);
+        return `
+          <a class="topic-card" href="/">
+            <h4>${escapeHtml(title)}</h4>
+            <p>${escapeHtml(summary)}</p>
+            <div class="topic-meta">
+              <span class="pill">事件 ${formatNumber(eventCount)}</span>
+              <span class="pill">热度 ${formatNumber(score)}</span>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    async function loadStudioSummary() {
+      statusBanner.textContent = "正在汇总创作前台状态...";
+      try {
+        const [configPayload, indexPayload, profilePayload, topicsPayload] = await Promise.all([
+          fetchJson("/api/create/config"),
+          fetchJson("/api/create/index/status"),
+          fetchJson("/api/create/nighthawk/profile"),
+          fetchJson("/api/topics?sort=overall&limit=4&page=1")
+        ]);
+
+        const semanticEnabled = !!(((configPayload.semantic_search || {}).enable_semantic_search));
+        const semanticLabel = semanticEnabled ? "已开启" : "未开启";
+        const eventMode = ((configPayload.event_clustering || {}).mode || "未配置");
+        const tableCounts = indexPayload.table_counts || {};
+        const objectCount = Number(tableCounts.content_objects || 0);
+        const chunkCount = Number(tableCounts.content_chunks || 0);
+        const rawCount = Number(profilePayload.raw_items_count || 0);
+        const bodyReadyCount = Number(profilePayload.body_ready_count || 0);
+        const eventLinkedCount = Number(profilePayload.event_linked_count || 0);
+        const topics = Array.isArray(topicsPayload.items) ? topicsPayload.items : [];
+
+        setText("metric-body-ready", formatNumber(bodyReadyCount));
+        setText("metric-body-note", `总正文池 ${formatNumber(rawCount)}，已挂到事件 ${formatNumber(eventLinkedCount)}`);
+        setText("metric-objects", formatNumber(objectCount));
+        setText("metric-chunks-note", `正文切块 ${formatNumber(chunkCount)}，索引已${indexPayload.initialized ? "" : "未"}初始化`);
+        setText("metric-topics", formatNumber(topics.length ? Number(topicsPayload.total || topics.length) : 0));
+        setText("metric-topics-note", topics.length ? "本轮热点已可继续下钻" : "热点池暂时为空");
+        setText("metric-semantic", semanticLabel);
+        setText("metric-semantic-note", `事件模式：${eventMode}`);
+
+        setText("profile-status", bodyReadyCount > 0 ? "可直接用" : "待补齐");
+        setText("profile-value", `${formatNumber(bodyReadyCount)}/${formatNumber(rawCount)}`);
+        setText("profile-copy", bodyReadyCount > 0
+          ? "NightHawk 已经能稳定给出可直接进入创作的正文材料。"
+          : "NightHawk 目前以元数据为主，先谨慎判断正文可用度。 ");
+
+        setText("index-status", indexPayload.initialized ? "已收口" : "待初始化");
+        setText("index-value", `${formatNumber(objectCount)}`);
+        setText("index-copy", indexPayload.initialized
+          ? `内容对象和切块已进入创作台索引，当前切块规模 ${formatNumber(chunkCount)}。`
+          : "索引库还没准备好，先完成初始化和同步再用前台。");
+
+        setText("config-status", semanticEnabled ? "配置就绪" : "基础就绪");
+        setText("config-value", semanticLabel);
+        setText("config-copy", `当前事件聚合模式为 ${eventMode}，配置文件和环境覆盖已生效。`);
+
+        renderTopics(topics);
+        statusBanner.textContent = "创作前台已就绪。建议按“主题、正文、热点、编排”四条路径选一条开始，不必再在页面之间盲跳。";
+      } catch (error) {
+        console.error(error);
+        statusBanner.textContent = `读取创作前台状态失败：${error.message}`;
+        hotTopicList.innerHTML = '<div class="empty">热点主题暂时读取失败，可以先从主题搜索页或 NightHawk 正文池进入。</div>';
+      }
+    }
+
+    loadStudioSummary();
+  </script>
+</body>
+</html>

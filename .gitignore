@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+coverage/
+
+# Local runtime and private config
+runtime/*
+!runtime/.gitkeep
+config/local/*
+!config/local/.gitkeep
+.env
+.env.*
+!.env.example
+
+# Logs, caches, generated state
+logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+*.jsonl
+.tmp/
+tmp/
+backups/
+
+# Credentials and browser/session exports
+*cookie*
+*cookies*
+*token*
+*.pem
+*.key
+*.p12
+
+# Local OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Internal handoff notes
+HANDOFF_FOR_CODEX.md

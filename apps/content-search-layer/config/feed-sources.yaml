@@ -1,0 +1,27 @@
+version: 1
+updated_at: '2026-04-10'
+description: Feed / 官方博客搜索源（用于 content-search-layer provider=feed）
+sources:
+  - id: openai-blog
+    name: OpenAI Blog
+    url: https://openai.com/blog/rss.xml
+    category: official_blog
+    enabled: true
+
+  - id: google-deepmind-blog
+    name: Google DeepMind Blog
+    url: https://blog.google/technology/ai/rss/
+    category: official_blog
+    enabled: true
+
+  - id: venturebeat-ai
+    name: VentureBeat AI
+    url: https://venturebeat.com/category/ai/feed/
+    category: media
+    enabled: true
+
+  - id: techcrunch-ai
+    name: TechCrunch AI
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    category: media
+    enabled: true

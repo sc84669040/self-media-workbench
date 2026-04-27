@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>主题搜索台</title>
+  <style>
+    :root {
+      --bg: #f3f6f9;
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-soft: rgba(247, 250, 252, 0.96);
+      --line: rgba(23, 48, 66, 0.1);
+      --line-strong: rgba(23, 48, 66, 0.18);
+      --text: #173042;
+      --muted: #607286;
+      --accent: #1f5f88;
+      --accent-soft: rgba(31, 95, 136, 0.08);
+      --success: #2d7657;
+      --warn: #b0731d;
+      --shadow-lg: 0 28px 60px rgba(46, 73, 94, 0.1);
+      --shadow-md: 0 16px 32px rgba(46, 73, 94, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(146, 184, 215, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7fafc 0%, #e9f0f5 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 380px);
+      gap: 18px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 247, 251, 0.96));
+      box-shadow: var(--shadow-lg);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(31, 95, 136, 0.14);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    h1, h2, h3, h4 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+    .hero h1 {
+      margin-top: 16px;
+      margin-bottom: 10px;
+      font-size: 40px;
+      line-height: 1.12;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+    .hero-links a {
+      padding: 11px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--text);
+    }
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.76);
+    }
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 24px;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .status-banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-header p,
+    .hint,
+    .empty,
+    .field-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #f7fbff;
+      background: linear-gradient(135deg, #1f5f88, #184866);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(31, 95, 136, 0.18);
+    }
+    button.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+    button.ghost {
+      color: var(--text);
+      background: transparent;
+      border: 1px dashed var(--line-strong);
+      box-shadow: none;
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .checkbox-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .checkbox-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .checkbox-pill input {
+      width: auto;
+      margin: 0;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 95, 136, 0.16);
+      background: rgba(31, 95, 136, 0.08);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .result-summary {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .result-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .result-card {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    }
+    .result-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(31, 95, 136, 0.24);
+      box-shadow: 0 16px 30px rgba(46, 73, 94, 0.1);
+    }
+    .result-card h4 {
+      margin-bottom: 8px;
+      font-size: 20px;
+      line-height: 1.45;
+    }
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+    }
+    .result-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    .result-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .result-footer strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+    .progress-card {
+      display: none;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 95, 136, 0.14);
+      background: rgba(31, 95, 136, 0.06);
+    }
+    .progress-card.active {
+      display: block;
+    }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(31, 95, 136, 0.12);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2d7bb0, #1f5f88);
+      transition: width 200ms ease;
+    }
+    .progress-stages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .progress-stage {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .progress-stage.active {
+      color: var(--accent);
+      border-color: rgba(31, 95, 136, 0.22);
+      background: rgba(31, 95, 136, 0.08);
+    }
+    .panel-section {
+      display: grid;
+      gap: 14px;
+    }
+    .packet-summary {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .packet-export-panel {
+      display: none;
+      margin-top: 12px;
+    }
+    .packet-export-panel.active {
+      display: block;
+    }
+    .tab-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .tab-row button.active {
+      background: linear-gradient(135deg, #2d7657, #21563f);
+    }
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(248, 251, 253, 0.92);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 360px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #395368;
+    }
+    .empty {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--line-strong);
+      background: rgba(255, 255, 255, 0.74);
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(16, 32, 43, 0.42);
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-panel {
+      width: min(980px, 100%);
+      max-height: min(90vh, 940px);
+      overflow: auto;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .modal-close {
+      min-width: 42px;
+      min-height: 42px;
+      border-radius: 999px;
+      padding: 0;
+      box-shadow: none;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      font-size: 24px;
+    }
+    .modal-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .modal-section {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(248, 251, 253, 0.9);
+    }
+    .modal-section h4 {
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    .modal-section p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .mini-item {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .mini-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .mini-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    @media (max-width: 1180px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .hero-links {
+        justify-content: flex-start;
+      }
+    }
+    @media (max-width: 720px) {
+      .page {
+        padding: 18px 14px 28px;
+      }
+      .overview {
+        grid-template-columns: 1fr 1fr;
+      }
+      .hero h1 {
+        font-size: 34px;
+      }
+      .modal {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Front Stage / Topic Desk</span>
+        <h1>主题搜索台</h1>
+        <p>这里既能主动搜索一个新主题，也能像正文资料池一样直接浏览当前已经沉淀出的主题列表。正文资料池看的是单篇文章，主题台看的是一组文章围绕同一个议题形成的主题集合。</p>
+        <div class="overview">
+          <div class="metric">
+            <strong id="topic-total-count">-</strong>
+            <span>当前已沉淀主题数</span>
+          </div>
+          <div class="metric">
+            <strong id="topic-sort-label">热度</strong>
+            <span>当前列表排序方式</span>
+          </div>
+          <div class="metric">
+            <strong id="topic-result-mode">主题池</strong>
+            <span>右侧主视图当前显示内容</span>
+          </div>
+          <div class="metric">
+            <strong id="topic-search-status">待搜索</strong>
+            <span>主动搜索只在需要时出现，不常驻占位</span>
+          </div>
+        </div>
+        <div id="status-banner" class="status-banner">先看已有主题，还是直接搜索一个新主题，都可以从这里开始。</div>
+      </div>
+      <div class="hero-links">
+        <a href="/create">进入创作前台</a>
+        <a href="/create/nighthawk">进入正文资料池</a>
+        <a href="/create/workspace">进入后续编排台</a>
+        <a href="/create/topic">刷新主题搜索页</a>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">主动主题搜索</h2>
+              <p>当你想验证一个新选题时，用这里把它转换成一组可进入创作的文章集合。</p>
+            </div>
+          </div>
+          <form id="topic-search-form">
+            <label>主题
+              <input id="topic-input" type="text" placeholder="比如：Claude 为什么反复强调上下文工程" />
+            </label>
+            <label>召回数量
+              <select id="limit-input">
+                <option value="8">8</option>
+                <option value="12" selected>12</option>
+                <option value="20">20</option>
+              </select>
+            </label>
+            <div>
+              <div class="field-note">资料范围</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-pill"><input type="checkbox" name="source_scope" value="analysis_cards" checked /> 分析卡</label>
+                <label class="checkbox-pill"><input type="checkbox" name="source_scope" value="raw_articles" checked /> 原文资料</label>
+                <label class="checkbox-pill"><input type="checkbox" name="source_scope" value="transcripts" checked /> Transcript</label>
+              </div>
+            </div>
+            <div class="button-row">
+              <button id="run-topic-search-btn" type="submit">开始主题搜索</button>
+              <button id="clear-topic-search-btn" type="button" class="secondary">清空搜索结果</button>
+            </div>
+          </form>
+          <div id="search-progress" class="progress-card" aria-live="polite" style="margin-top: 14px;">
+            <div class="progress-top">
+              <strong id="progress-text">系统正在理解主题。</strong>
+              <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="progress-stages" class="progress-stages"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">主题池筛选</h2>
+              <p>像正文资料池一样先筛已有主题，再决定要不要点进详情或继续做主动搜索。</p>
+            </div>
+          </div>
+          <form id="topic-feed-form">
+            <label>关键词
+              <input id="topic-feed-keyword" type="text" placeholder="按主题标题筛选，比如 DeepSeek" />
+            </label>
+            <label>排序
+              <select id="topic-feed-sort">
+                <option value="latest">按时间</option>
+                <option value="overall" selected>按热度</option>
+                <option value="importance">按重要度</option>
+                <option value="impact">按影响力</option>
+                <option value="articles">按文章数</option>
+            </select>
+            </label>
+            <div class="button-row">
+              <button id="apply-topic-feed-btn" type="submit">刷新主题池</button>
+              <button id="reset-topic-feed-btn" type="button" class="ghost">重置筛选</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card panel-section">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">Topic Packet</h2>
+              <p>主动搜索满意后，再把这组文章沉淀成资料包。</p>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="generate-topic-packet-btn" type="button" disabled>生成 Topic Packet</button>
+            <button id="reload-topic-packet-btn" type="button" class="secondary" disabled>重新读取</button>
+            <a id="open-packet-detail-link" href="#" style="display:none;"><button id="open-packet-detail-btn" type="button" class="ghost">打开资料包详情</button></a>
+          </div>
+          <div id="packet-summary" class="packet-summary">还没有 Topic Packet。先完成一次主动主题搜索，再决定是否沉淀成资料包。</div>
+          <div id="packet-export-panel" class="packet-export-panel">
+            <div class="tab-row">
+              <button id="packet-markdown-tab" type="button" class="secondary active">Markdown 预览</button>
+              <button id="packet-json-tab" type="button" class="secondary">JSON 预览</button>
+            </div>
+            <pre id="packet-export-preview"></pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section id="active-search-section" class="card" style="display:none;">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">主动搜索结果</h2>
+              <p>这里展示的是“这次新搜索出来的一组文章集合”，不是已有主题池本身。</p>
+            </div>
+          </div>
+          <div id="active-search-summary" class="result-summary">还没有主动搜索结果。</div>
+          <div id="active-search-results" class="result-list"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">已有主题池</h2>
+              <p>这里列的是现在已经沉淀出来的主题。点击卡片后，会在弹窗里看到主题摘要，以及这个主题目前挂着的文章。</p>
+            </div>
+            <span id="topic-feed-count" class="pill">-</span>
+          </div>
+          <div id="topic-feed-summary" class="result-summary">正在读取当前主题池。</div>
+          <div id="topic-feed-list" class="result-list"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="detail-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <div>
+          <h3 id="detail-title">主题详情</h3>
+        </div>
+        <button id="close-detail-modal-btn" type="button" class="modal-close" aria-label="关闭">×</button>
+      </div>
+      <div id="detail-body" class="modal-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const STAGES = ["理解主题", "展开检索意图", "召回文章", "重排结果", "整理完成"];
+    const state = {
+      searchPayload: null,
+      searchResponse: null,
+      packetResponse: null,
+      packetTab: "markdown",
+      progressTimer: null,
+      progressValue: 0,
+      topicFeed: null,
+      topicFeedSort: "overall",
+      topicFeedKeyword: "",
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, options);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `请求失败：${response.status}`);
+      }
+      return payload;
+    }
+
+    function setButtonBusy(button, busy, idleText, busyText) {
+      if (!button) return;
+      button.disabled = busy;
+      button.textContent = busy ? busyText : idleText;
+    }
+
+    function getSourceScope() {
+      return Array.from(document.querySelectorAll('input[name="source_scope"]:checked'))
+        .map((node) => node.value)
+        .filter(Boolean);
+    }
+
+    function buildSearchPayload() {
+      const topic = $("#topic-input").value.trim();
+      const limit = Number($("#limit-input").value || 12);
+      const sourceScope = getSourceScope();
+      return {
+        topic,
+        limit,
+        source_scope: sourceScope,
+        filters: {
+          limit,
+          source_scope: sourceScope,
+        },
+      };
+    }
+
+    function renderProgress(percent, stageIndex, text) {
+      const card = $("#search-progress");
+      card.classList.add("active");
+      $("#progress-fill").style.width = `${percent}%`;
+      $("#progress-percent").textContent = `${percent}%`;
+      $("#progress-text").textContent = text;
+      $("#progress-stages").innerHTML = STAGES.map((stage, index) => `
+        <span class="progress-stage ${index <= stageIndex ? "active" : ""}">${escapeHtml(stage)}</span>
+      `).join("");
+    }
+
+    function startProgress() {
+      clearInterval(state.progressTimer);
+      state.progressValue = 8;
+      renderProgress(8, 0, "系统正在理解主题。");
+      state.progressTimer = window.setInterval(() => {
+        state.progressValue = Math.min(state.progressValue + 9, 88);
+        const stageIndex = Math.min(Math.floor(state.progressValue / 22), STAGES.length - 1);
+        const textMap = [
+          "系统正在理解主题。",
+          "系统正在展开检索意图。",
+          "系统正在召回相关文章。",
+          "系统正在重排结果。",
+          "系统正在整理结果。",
+        ];
+        renderProgress(state.progressValue, stageIndex, textMap[stageIndex]);
+      }, 280);
+    }
+
+    function finishProgress(text) {
+      clearInterval(state.progressTimer);
+      state.progressTimer = null;
+      renderProgress(100, STAGES.length - 1, text);
+      window.setTimeout(() => {
+        $("#search-progress").classList.remove("active");
+      }, 900);
+    }
+
+    function hideProgress() {
+      clearInterval(state.progressTimer);
+      state.progressTimer = null;
+      $("#search-progress").classList.remove("active");
+    }
+
+    function updateHeaderStatus(modeText) {
+      $("#topic-result-mode").textContent = modeText;
+    }
+
+    function updateStatusBanner(text) {
+      $("#status-banner").textContent = text;
+    }
+
+    function renderActiveSearchResults() {
+      const section = $("#active-search-section");
+      const searchResult = state.searchResponse?.search_result || {};
+      const summary = searchResult.summary || {};
+      const results = Array.isArray(searchResult.results) ? searchResult.results : [];
+      if (!results.length) {
+        section.style.display = "none";
+        $("#topic-search-status").textContent = "待搜索";
+        updateHeaderStatus("主题池");
+        return;
+      }
+
+      section.style.display = "";
+      $("#topic-search-status").textContent = "已完成";
+      updateHeaderStatus("搜索结果 + 主题池");
+      const topTitles = results.slice(0, 5).map((item) => item.title).filter(Boolean);
+      $("#active-search-summary").innerHTML = `
+        本次新主题共召回 <strong>${Number(searchResult.count || results.length)}</strong> 篇文章。
+        优先结果 <strong>${Number(summary.strong_results || 0)}</strong> 篇，观察结果 <strong>${Number(summary.watch_results || 0)}</strong> 篇。
+        ${topTitles.length ? `<div class="pill-row" style="margin-top:10px;">${topTitles.map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}</div>` : ""}
+      `;
+      $("#active-search-results").innerHTML = results.map((item, index) => `
+        <article class="result-card" data-search-index="${index}">
+          <h4>${escapeHtml(item.title || item.source_id || "未命名文章")}</h4>
+          <div class="meta-line">
+            ${[item.source, item.channel, item.content_type, item.bucket, item.published_at].filter(Boolean).map((tag) => `<span class="meta-chip">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+          <p>${escapeHtml(item.summary || item.text || "暂无摘要。")}</p>
+          <div class="result-footer">
+            <strong>${escapeHtml(item.why_pick || "这篇文章之所以被召回，是因为它与当前主题存在直接关联。")}</strong>
+            <span class="pill">点击看文章详情</span>
+          </div>
+        </article>
+      `).join("");
+      Array.from(document.querySelectorAll("[data-search-index]")).forEach((node) => {
+        node.addEventListener("click", () => {
+          const index = Number(node.getAttribute("data-search-index") || 0);
+          openSearchArticleDetail(index);
+        });
+      });
+    }
+
+    function openSearchArticleDetail(index) {
+      const results = Array.isArray(state.searchResponse?.search_result?.results) ? state.searchResponse.search_result.results : [];
+      const item = results[index];
+      if (!item) return;
+      $("#detail-title").textContent = item.title || item.source_id || "文章详情";
+      $("#detail-body").innerHTML = `
+        <section class="modal-section">
+          <h4>为什么它进入这次主题搜索</h4>
+          <p>${escapeHtml(item.why_pick || "这篇文章和当前主题直接相关。")}</p>
+        </section>
+        <section class="modal-section">
+          <h4>摘要</h4>
+          <p>${escapeHtml(item.summary || "暂无摘要。")}</p>
+        </section>
+        <section class="modal-section">
+          <h4>正文</h4>
+          <p>${escapeHtml(item.text || "这条结果当前没有可展示的正文。")}</p>
+        </section>
+      `;
+      $("#detail-modal").classList.add("active");
+    }
+
+    async function loadTopicFeed() {
+      const sort = $("#topic-feed-sort").value;
+      const keyword = $("#topic-feed-keyword").value.trim();
+      state.topicFeedSort = sort;
+      state.topicFeedKeyword = keyword;
+      const params = new URLSearchParams({
+        sort,
+        limit: "12",
+        page: "1",
+        keyword,
+      });
+      const payload = await requestJson(`/api/topics?${params.toString()}`);
+      state.topicFeed = payload;
+      renderTopicFeed();
+    }
+
+    function renderTopicFeed() {
+      const payload = state.topicFeed || {};
+      const items = Array.isArray(payload.items) ? payload.items : [];
+      const sortLabels = {
+        latest: "时间",
+        overall: "热度",
+        importance: "重要度",
+        impact: "影响力",
+        articles: "文章数",
+      };
+      $("#topic-sort-label").textContent = sortLabels[state.topicFeedSort] || "热度";
+      $("#topic-total-count").textContent = String(Number(payload.total || 0));
+      $("#topic-feed-count").textContent = `${Number(payload.total || 0)} 个主题`;
+      $("#topic-feed-summary").textContent = items.length
+        ? `当前按“${sortLabels[state.topicFeedSort] || state.topicFeedSort}”排序，展示 ${items.length} 个主题。点开卡片可以直接看这个主题包含的文章。`
+        : "当前没有可展示的主题。";
+
+      if (!items.length) {
+        $("#topic-feed-list").innerHTML = `<div class="empty">没有命中现有主题。你可以换个关键词试试，或者直接从左侧发起一个新主题搜索。</div>`;
+        updateStatusBanner("当前主题池为空，或者筛选条件过窄。");
+        return;
+      }
+
+      updateStatusBanner("你可以先浏览已有主题池，再决定是否发起一个新的主题搜索。");
+      $("#topic-feed-list").innerHTML = items.map((item) => `
+        <article class="result-card" data-topic-id="${item.id}">
+              <h4>${escapeHtml(item.title || item.topic_key || "未命名主题")}</h4>
+              <div class="meta-line">
+                ${[
+                  item.topic_type,
+                  item.status,
+                  item.last_seen_at ? `最近：${item.last_seen_at}` : "",
+                  `文章 ${Number(item.evidence_article_count || 0)}`,
+                ].filter(Boolean).map((tag) => `<span class="meta-chip">${escapeHtml(tag)}</span>`).join("")}
+              </div>
+          <p>${escapeHtml(item.card_summary || item.summary || "暂无摘要。")}</p>
+          <div class="result-footer">
+            <strong>热度 ${Number(item.overall_score || 0)} / 影响 ${Number(item.impact_score || 0)}</strong>
+            <span class="pill">点击看主题详情</span>
+          </div>
+        </article>
+      `).join("");
+      Array.from(document.querySelectorAll("[data-topic-id]")).forEach((node) => {
+        node.addEventListener("click", () => openTopicDetail(Number(node.getAttribute("data-topic-id") || 0)));
+      });
+    }
+
+    async function openTopicDetail(topicId) {
+      if (!topicId) return;
+      $("#detail-title").textContent = "主题详情";
+      $("#detail-body").innerHTML = `<section class="modal-section"><p>正在读取主题详情。</p></section>`;
+      $("#detail-modal").classList.add("active");
+      try {
+        const payload = await requestJson(`/api/topics/${topicId}?event_page=1&event_limit=6&article_page=1&article_limit=8`);
+        const topic = payload.topic || {};
+        const articles = Array.isArray(payload.articles) ? payload.articles : [];
+        $("#detail-title").textContent = topic.title || topic.topic_key || "主题详情";
+        $("#detail-body").innerHTML = `
+          <section class="modal-section">
+            <h4>主题摘要</h4>
+            <p>${escapeHtml(topic.summary || topic.card_summary || "暂无摘要。")}</p>
+            <div class="pill-row" style="margin-top:10px;">
+              ${[topic.topic_type, topic.status, topic.last_seen_at ? `最近：${topic.last_seen_at}` : "", `文章 ${Number(topic.evidence_article_count || 0)}`]
+                .filter(Boolean)
+                .map((item) => `<span class="pill">${escapeHtml(item)}</span>`).join("")}
+            </div>
+          </section>
+          <section class="modal-section">
+            <h4>当前挂着的文章</h4>
+            ${articles.length ? `<div class="mini-list">${articles.map((item) => `
+              <div class="mini-item">
+                <strong>${escapeHtml(item.title || "未命名文章")}</strong>
+                <span>${escapeHtml(item.content_excerpt || "暂无正文摘要。")}</span>
+                <span>${escapeHtml(item.platform || "-")} · ${escapeHtml(item.published_at || item.fetched_at || "-")} · ${escapeHtml(item.body_status || "-")}</span>
+              </div>
+            `).join("")}</div>` : `<p>当前没有挂接文章。</p>`}
+          </section>
+        `;
+      } catch (error) {
+        $("#detail-body").innerHTML = `<section class="modal-section"><p>${escapeHtml(error.message || "主题详情读取失败。")}</p></section>`;
+      }
+    }
+
+    function renderPacketPanel() {
+      const packet = state.packetResponse?.topic_packet;
+      const exportPanel = $("#packet-export-panel");
+      const openLink = $("#open-packet-detail-link");
+      if (!packet) {
+        $("#packet-summary").textContent = "还没有 Topic Packet。先完成一次主动主题搜索，再决定是否沉淀成资料包。";
+        exportPanel.classList.remove("active");
+        $("#reload-topic-packet-btn").disabled = true;
+        openLink.style.display = "none";
+        return;
+      }
+      const summary = packet.summary || {};
+      $("#packet-summary").innerHTML = `
+        已生成 Topic Packet：<strong>${escapeHtml(packet.packet_id || "-")}</strong><br />
+        主题：${escapeHtml(packet.topic || "-")}<br />
+        文章数：${Number(summary.total_results || 0)}，优先结果：${Number(summary.strong_results || 0)}，观察结果：${Number(summary.watch_results || 0)}
+      `;
+      exportPanel.classList.add("active");
+      $("#packet-export-preview").textContent = state.packetTab === "json"
+        ? (state.packetResponse?.exports?.json || "")
+        : (state.packetResponse?.exports?.markdown || "");
+      $("#reload-topic-packet-btn").disabled = !(packet.packet_id);
+      openLink.style.display = "inline-flex";
+      openLink.href = `/create/packets/${encodeURIComponent(packet.packet_id || "")}`;
+    }
+
+    async function runTopicSearch(event) {
+      event?.preventDefault();
+      const button = $("#run-topic-search-btn");
+      const payload = buildSearchPayload();
+      if (!payload.topic) {
+        window.alert("请先输入一个主题。");
+        return;
+      }
+      state.searchPayload = payload;
+      state.packetResponse = null;
+      renderPacketPanel();
+      setButtonBusy(button, true, "开始主题搜索", "搜索中...");
+      $("#generate-topic-packet-btn").disabled = true;
+      startProgress();
+      updateStatusBanner("系统正在为这个新主题整理文章集合。");
+      try {
+        state.searchResponse = await requestJson("/api/create/topic-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        renderActiveSearchResults();
+        $("#generate-topic-packet-btn").disabled = false;
+        finishProgress("主题搜索完成，已经整理出一组文章集合。");
+      } catch (error) {
+        hideProgress();
+        $("#active-search-section").style.display = "";
+        $("#active-search-summary").textContent = error.message || "主题搜索失败。";
+        $("#active-search-results").innerHTML = "";
+        $("#topic-search-status").textContent = "失败";
+      } finally {
+        setButtonBusy(button, false, "开始主题搜索", "搜索中...");
+      }
+    }
+
+    async function generatePacket() {
+      if (!state.searchPayload) {
+        window.alert("请先完成一次主动主题搜索。");
+        return;
+      }
+      const button = $("#generate-topic-packet-btn");
+      setButtonBusy(button, true, "生成 Topic Packet", "生成中...");
+      try {
+        state.packetResponse = await requestJson("/api/create/topic-packets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(state.searchPayload),
+        });
+        renderPacketPanel();
+      } catch (error) {
+        window.alert(error.message || "Topic Packet 生成失败。");
+      } finally {
+        setButtonBusy(button, false, "生成 Topic Packet", "生成中...");
+      }
+    }
+
+    async function reloadPacket() {
+      const packetId = state.packetResponse?.topic_packet?.packet_id;
+      if (!packetId) return;
+      const button = $("#reload-topic-packet-btn");
+      setButtonBusy(button, true, "重新读取", "读取中...");
+      try {
+        state.packetResponse = await requestJson(`/api/create/topic-packets/${encodeURIComponent(packetId)}`);
+        renderPacketPanel();
+      } catch (error) {
+        window.alert(error.message || "资料包读取失败。");
+      } finally {
+        setButtonBusy(button, false, "重新读取", "读取中...");
+      }
+    }
+
+    function switchPacketTab(tab) {
+      state.packetTab = tab;
+      $("#packet-markdown-tab").classList.toggle("active", tab === "markdown");
+      $("#packet-json-tab").classList.toggle("active", tab === "json");
+      renderPacketPanel();
+    }
+
+    function clearActiveSearch() {
+      state.searchPayload = null;
+      state.searchResponse = null;
+      hideProgress();
+      $("#active-search-section").style.display = "none";
+      $("#generate-topic-packet-btn").disabled = true;
+      $("#topic-search-status").textContent = "待搜索";
+      updateHeaderStatus("主题池");
+      updateStatusBanner("主动搜索结果已清空。你可以继续浏览已有主题池，或者重新搜索一个新主题。");
+    }
+
+    $("#topic-search-form").addEventListener("submit", runTopicSearch);
+    $("#clear-topic-search-btn").addEventListener("click", clearActiveSearch);
+    $("#topic-feed-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      await loadTopicFeed();
+    });
+    $("#reset-topic-feed-btn").addEventListener("click", async () => {
+      $("#topic-feed-keyword").value = "";
+      $("#topic-feed-sort").value = "overall";
+      await loadTopicFeed();
+    });
+    $("#generate-topic-packet-btn").addEventListener("click", generatePacket);
+    $("#reload-topic-packet-btn").addEventListener("click", reloadPacket);
+    $("#packet-markdown-tab").addEventListener("click", () => switchPacketTab("markdown"));
+    $("#packet-json-tab").addEventListener("click", () => switchPacketTab("json"));
+    $("#close-detail-modal-btn").addEventListener("click", () => $("#detail-modal").classList.remove("active"));
+    $("#detail-modal").addEventListener("click", (event) => {
+      if (event.target === $("#detail-modal")) {
+        $("#detail-modal").classList.remove("active");
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        $("#detail-modal").classList.remove("active");
+      }
+    });
+
+    renderPacketPanel();
+    loadTopicFeed().catch((error) => {
+      $("#topic-feed-summary").textContent = error.message || "主题池读取失败。";
+      $("#topic-feed-list").innerHTML = `<div class="empty">当前无法读取已有主题列表。</div>`;
+    });
+  </script>
+</body>
+</html>

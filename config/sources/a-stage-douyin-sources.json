@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "example_douyin_creator",
+      "name": "示例抖音账号",
+      "enabled": false,
+      "priority": 8,
+      "category": "creator_candidate",
+      "profile_url": "https://www.douyin.com/user/EXAMPLE",
+      "fetch_method": "profile_playlist",
+      "notes": "把这里替换成真实抖音创作者主页后再启用。"
+    }
+  ]
+}

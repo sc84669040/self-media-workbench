@@ -1,0 +1,5 @@
+# Compatibility placeholder. Runtime configuration is centralized in:
+# config/local/local.yaml
+#
+# This file intentionally contains no private paths, tokens, or cookies.
+content_fetch_hub: {}

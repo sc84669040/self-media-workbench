@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>事件资料包详情页</title>
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --panel: rgba(255, 251, 246, 0.96);
+      --panel-soft: rgba(248, 240, 231, 0.94);
+      --line: #d7c8b7;
+      --text: #31251c;
+      --muted: #736252;
+      --accent: #9b5a2f;
+      --accent-soft: #f1dac8;
+      --shadow: 0 24px 60px rgba(89, 64, 39, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(211, 165, 121, 0.2), transparent 28%),
+        linear-gradient(180deg, #f8f3ec 0%, #e9ddcd 100%);
+    }
+    a { color: var(--accent); }
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+      gap: 18px;
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(215, 200, 183, 0.92);
+      background: linear-gradient(135deg, rgba(255, 251, 246, 0.98), rgba(242, 232, 220, 0.94));
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(155, 90, 47, 0.18);
+      background: rgba(155, 90, 47, 0.08);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 {
+      font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+      font-weight: 700;
+    }
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: 40px;
+      line-height: 1.12;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      align-content: start;
+    }
+    .hero-links a {
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(215, 200, 183, 0.95);
+      color: var(--text);
+    }
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(215, 200, 183, 0.88);
+      background: rgba(255, 255, 255, 0.68);
+    }
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 6px;
+      color: var(--accent);
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .status-banner {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(215, 200, 183, 0.95);
+      background: rgba(255, 252, 247, 0.92);
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 420px minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+    .stack { display: grid; gap: 18px; }
+    .card {
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(215, 200, 183, 0.92);
+      background: var(--panel);
+      box-shadow: 0 18px 40px rgba(89, 64, 39, 0.08);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff8f1;
+      background: linear-gradient(135deg, #9b5a2f, #834820);
+      box-shadow: 0 10px 24px rgba(137, 77, 35, 0.16);
+    }
+    button.secondary {
+      background: rgba(255,255,255,0.84);
+      color: var(--text);
+      border: 1px solid rgba(215, 200, 183, 0.95);
+      box-shadow: none;
+    }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .empty {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px dashed rgba(215, 200, 183, 1);
+      background: rgba(250, 247, 242, 0.9);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(155, 90, 47, 0.18);
+      background: rgba(155, 90, 47, 0.08);
+      color: var(--text);
+      font-size: 12px;
+    }
+    .article-list {
+      display: grid;
+      gap: 10px;
+      max-height: 760px;
+      overflow: auto;
+    }
+    .article-item {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(215, 200, 183, 0.92);
+      background: rgba(255, 253, 250, 0.96);
+      cursor: pointer;
+    }
+    .article-item.active {
+      border-color: rgba(155, 90, 47, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(155, 90, 47, 0.15);
+      background: rgba(241, 218, 200, 0.36);
+    }
+    .article-item h4 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .body-panel {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(215, 200, 183, 0.92);
+      background: var(--panel-soft);
+    }
+    .body-text {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      font-size: 14px;
+      color: #3b2c22;
+      max-height: 580px;
+      overflow: auto;
+    }
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(215, 200, 183, 0.92);
+      background: rgba(249, 251, 248, 0.9);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #4c5f54;
+      max-height: 320px;
+      overflow: auto;
+    }
+    @media (max-width: 1200px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-links { justify-content: flex-start; }
+    }
+    @media (max-width: 720px) {
+      .page { padding: 18px 14px 30px; }
+      .overview { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Event Packet / Reusable Event Material</span>
+        <h1 id="packet-title">事件资料包详情页</h1>
+        <p id="packet-subtitle">这里会把一条热点事件沉淀成正式资料包，方便继续复用、导出和进入创作任务。</p>
+        <div class="overview">
+          <div class="metric"><strong id="metric-articles">0</strong><span>这条事件里收进来的正文材料数</span></div>
+          <div class="metric"><strong id="metric-primary">0</strong><span>被视作主证据的正文数</span></div>
+          <div class="metric"><strong id="metric-topics">0</strong><span>和这条事件发生关联的主题数</span></div>
+          <div class="metric"><strong id="metric-body-ready">0</strong><span>可以直接进入创作的完整正文数</span></div>
+        </div>
+        <div id="status-banner" class="status-banner">正在读取事件资料包...</div>
+      </div>
+      <div class="hero-links">
+        <a href="/create/studio">进入创作前台</a>
+        <a id="back-event-link" href="/">回到事件页</a>
+        <a href="/create/nighthawk">进入 NightHawk 正文池</a>
+        <a href="/create/workspace">进入后续编排工作台</a>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="stack">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin: 0 0 6px;">事件摘要</h2>
+              <p>先看这条事件到底被沉淀成了什么，再决定是否直接进入创作。</p>
+            </div>
+          </div>
+          <div id="packet-summary" class="empty">正在读取事件摘要...</div>
+          <div id="topic-pills" class="pill-row" style="margin-top: 12px;"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin: 0 0 6px;">进入创作</h2>
+              <p>这里会把 Event Packet 直接转换成正式创作任务，而不是重新手工挑一遍正文。</p>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="packet-to-task-btn" type="button">从 Event Packet 进入编排</button>
+            <button id="open-create-link" type="button" class="secondary">打开后续编排台</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin: 0 0 6px;">导出内容</h2>
+              <p>导出的 Markdown 和 JSON 会把事件判断、证据正文和关联主题一起带出来。</p>
+            </div>
+          </div>
+          <pre id="export-preview">正在读取导出内容...</pre>
+        </article>
+      </aside>
+
+      <main class="stack">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 style="margin: 0 0 6px;">事件证据正文</h2>
+              <p>点击左侧材料后，右侧会展开这条正文的核心内容和它在事件里的位置。</p>
+            </div>
+          </div>
+          <div class="layout" style="grid-template-columns: 360px minmax(0, 1fr); margin-top: 0;">
+            <div id="article-list" class="article-list"></div>
+            <section class="body-panel">
+              <h3 style="margin-top: 0;">正文展开</h3>
+              <div id="article-detail" class="empty">选择任意一条事件证据，右侧会展开正文和它在事件里的用途。</div>
+            </section>
+          </div>
+        </article>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    const packetId = window.location.pathname.split('/').pop() || '';
+    const statusBanner = document.getElementById('status-banner');
+    const packetTitle = document.getElementById('packet-title');
+    const packetSubtitle = document.getElementById('packet-subtitle');
+    const packetSummary = document.getElementById('packet-summary');
+    const topicPills = document.getElementById('topic-pills');
+    const articleList = document.getElementById('article-list');
+    const articleDetail = document.getElementById('article-detail');
+    const exportPreview = document.getElementById('export-preview');
+    const backEventLink = document.getElementById('back-event-link');
+
+    let currentPacket = null;
+    let currentExportMode = 'markdown';
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    async function requestJson(path, options = {}) {
+      const response = await fetch(path, {
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options,
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.message || `请求失败：${response.status}`);
+      return payload;
+    }
+
+    function setStatus(message) {
+      statusBanner.textContent = message;
+    }
+
+    function selectArticle(index) {
+      const packet = currentPacket || {};
+      const articles = packet.articles || [];
+      const article = articles[index];
+      if (!article) return;
+      articleList.querySelectorAll('.article-item').forEach((node, nodeIndex) => {
+        node.classList.toggle('active', nodeIndex === index);
+      });
+      articleDetail.innerHTML = `
+        <div class="meta-line">
+          <span>角色：${escapeHtml(article.evidence_role || 'secondary')}</span>
+          <span>来源：${escapeHtml(article.source || '-')}</span>
+          <span>平台：${escapeHtml(article.platform || '-')}</span>
+        </div>
+        <h3 style="margin-top: 0;">${escapeHtml(article.title || '未命名正文')}</h3>
+        <p style="color: var(--muted); line-height: 1.8;">${escapeHtml(article.summary || article.why_pick || '暂无摘要')}</p>
+        <div class="body-text">${escapeHtml(article.body_text || article.body_preview || '暂无正文')}</div>
+      `;
+    }
+
+    function renderPacket(packet, exportsPayload) {
+      currentPacket = packet || {};
+      const event = packet.event || {};
+      const summary = packet.summary || {};
+      const articles = packet.articles || [];
+      const topics = packet.topics || [];
+      const bodyReadyCount = Number(summary.body_ready_count || 0);
+
+      packetTitle.textContent = packet.title || event.title || packet.packet_id || '事件资料包';
+      packetSubtitle.textContent = event.summary || '这份 Event Packet 会把一条热点事件对应的正文证据和主题关系沉淀下来。';
+      document.getElementById('metric-articles').textContent = String(summary.article_count || articles.length || 0);
+      document.getElementById('metric-primary').textContent = String(summary.primary_count || 0);
+      document.getElementById('metric-topics').textContent = String(summary.topic_count || topics.length || 0);
+      document.getElementById('metric-body-ready').textContent = String(bodyReadyCount);
+
+      packetSummary.innerHTML = `
+        <p style="margin: 0 0 10px; line-height: 1.8;">${escapeHtml(event.summary || '暂无事件摘要')}</p>
+        <div class="meta-line">
+          <span>事件类型：${escapeHtml(event.event_type || '-')}</span>
+          <span>置信度：${escapeHtml(event.confidence ?? '-')}</span>
+          <span>状态：${escapeHtml(event.status || '-')}</span>
+        </div>
+      `;
+      topicPills.innerHTML = topics.map((topic) => (
+        `<span class="pill">${escapeHtml(topic.title || topic.topic_key || `#${topic.topic_id}`)}</span>`
+      )).join('') || '<span class="pill">暂无关联主题</span>';
+
+      articleList.innerHTML = articles.map((article, index) => `
+        <article class="article-item" data-index="${index}">
+          <h4>${escapeHtml(article.title || `证据 ${index + 1}`)}</h4>
+          <div class="meta-line">
+            <span>${escapeHtml(article.evidence_role || 'secondary')}</span>
+            <span>${escapeHtml(article.platform || '-')}</span>
+            <span>${article.body_ready ? '正文已齐' : '正文待补'}</span>
+          </div>
+          <div style="color: var(--muted); line-height: 1.75; font-size: 13px;">${escapeHtml(article.summary || article.body_preview || '暂无摘要')}</div>
+        </article>
+      `).join('') || '<div class="empty">这份 Event Packet 里还没有正文证据。</div>';
+      articleList.querySelectorAll('.article-item').forEach((node) => {
+        node.addEventListener('click', () => selectArticle(Number(node.dataset.index || 0)));
+      });
+      if (articles.length) {
+        selectArticle(0);
+      }
+
+      exportPreview.textContent = (exportsPayload || {})[currentExportMode] || '';
+      const eventId = Number(packet.event_id || event.event_id || 0);
+      backEventLink.href = eventId > 0 ? `/create/events/${eventId}` : '/';
+    }
+
+    async function loadPacket() {
+      setStatus('正在读取事件资料包...');
+      try {
+        const payload = await requestJson(`/api/create/event-packets/${packetId}`);
+        renderPacket(payload.event_packet || {}, payload.exports || {});
+        setStatus('Event Packet 已就绪。你现在可以直接从这份事件包进入创作，不必再回去重选正文。');
+      } catch (error) {
+        console.error(error);
+        setStatus(`读取事件资料包失败：${error.message}`);
+      }
+    }
+
+    document.getElementById('packet-to-task-btn').addEventListener('click', async () => {
+      try {
+        setStatus('正在把 Event Packet 转成创作任务...');
+        const payload = await requestJson(`/api/create/packets/${packetId}/to-task`, {
+          method: 'POST',
+          body: JSON.stringify({}),
+        });
+        const nextUrl = payload.next_url || '/create/workspace';
+        setStatus('Event Packet 已转成创作任务，正在进入后续编排台...');
+        window.location.href = nextUrl;
+      } catch (error) {
+        console.error(error);
+        setStatus(`Event Packet 转任务失败：${error.message}`);
+      }
+    });
+
+    document.getElementById('open-create-link').addEventListener('click', () => {
+      window.location.href = '/create/workspace';
+    });
+
+    loadPacket();
+  </script>
+</body>
+</html>

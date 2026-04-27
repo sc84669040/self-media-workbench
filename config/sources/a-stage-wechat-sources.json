@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "qbitai",
+      "name": "量子位",
+      "enabled": true,
+      "priority": 8,
+      "category": "ai_news",
+      "entry_url": "https://www.qbitai.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "第一批正式候选，RSS稳定"
+    },
+    {
+      "id": "leiphone_ai",
+      "name": "AI科技评论",
+      "enabled": true,
+      "priority": 8,
+      "category": "ai_analysis",
+      "entry_url": "https://www.leiphone.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "第一批正式候选，RSS稳定"
+    },
+    {
+      "id": "hyperai",
+      "name": "HyperAI超神经",
+      "enabled": true,
+      "priority": 8,
+      "category": "ai_analysis",
+      "entry_url": "https://hyper.ai/en/feed.xml",
+      "fetch_method": "official_atom",
+      "notes": "第一批正式候选，Atom稳定；正文抓取可能受反爬影响"
+    },
+    {
+      "id": "36kr",
+      "name": "36氪",
+      "enabled": false,
+      "priority": 7,
+      "category": "tech_media",
+      "entry_url": "https://www.36kr.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "第一批正式候选，RSS稳定"
+    },
+    {
+      "id": "infoq_cn",
+      "name": "InfoQ中文",
+      "enabled": true,
+      "priority": 8,
+      "category": "tech_analysis",
+      "entry_url": "https://www.infoq.cn/feed",
+      "fetch_method": "official_feed",
+      "notes": "第一批正式候选，正文抓取已验证可行"
+    },
+    {
+      "id": "ifanr",
+      "name": "爱范儿",
+      "enabled": true,
+      "priority": 6,
+      "category": "tech_media",
+      "entry_url": "https://www.ifanr.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "补充候选，RSS稳定"
+    },
+    {
+      "id": "tmtpost",
+      "name": "钛媒体",
+      "enabled": false,
+      "priority": 6,
+      "category": "tech_media",
+      "entry_url": "https://www.tmtpost.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "补充候选，RSS稳定"
+    },
+    {
+      "id": "sspai",
+      "name": "少数派",
+      "enabled": true,
+      "priority": 7,
+      "category": "productivity",
+      "entry_url": "https://sspai.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "第一批正式候选，RSS稳定"
+    },
+    {
+      "id": "ithome",
+      "name": "IT之家",
+      "enabled": true,
+      "priority": 6,
+      "category": "tech_news",
+      "entry_url": "https://www.ithome.com/feed",
+      "fetch_method": "official_feed",
+      "notes": "补充候选，RSS稳定"
+    },
+    {
+      "id": "zhidx_candidate",
+      "name": "智东西",
+      "enabled": true,
+      "priority": 8,
+      "category": "ai_analysis",
+      "entry_url": "https://www.zhidx.com/rss",
+      "fetch_method": "official_feed",
+      "notes": "已升为正式层：RSS 与正文抓取验证通过。"
+    },
+    {
+      "platform": "wechat",
+      "id": "saibochanxin",
+      "name": "赛博禅心",
+      "enabled": true,
+      "priority": 8,
+      "category": "",
+      "entry_url": "https://mp.weixin.qq.com/s/i71pNQopVcfnq6SGclpk7w",
+      "fetch_method": "official_feed",
+      "notes": ""
+    },
+    {
+      "platform": "wechat",
+      "id": "xinzhiyuan",
+      "name": "新智元",
+      "enabled": true,
+      "priority": 5,
+      "category": "",
+      "entry_url": "https://mp.weixin.qq.com/s/9_ULueQmIqtcpoN47Et7xA",
+      "fetch_method": "official_feed",
+      "notes": ""
+    }
+  ]
+}

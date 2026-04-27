@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "accounts": [
+    {
+      "name": "机器之心",
+      "handle": "jiqizhixin",
+      "lang": "中文",
+      "tier": "正式",
+      "origin": "existing_a_stage",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "宝玉",
+      "handle": "dotey",
+      "lang": "中文",
+      "tier": "正式",
+      "origin": "existing_a_stage",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Rowan Cheung",
+      "handle": "rowancheung",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "existing_a_stage",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Jim Fan",
+      "handle": "DrJimFan",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "existing_a_stage",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "levelsio",
+      "handle": "levelsio",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "existing_a_stage",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "歸藏",
+      "handle": "op7418",
+      "lang": "中文",
+      "tier": "正式",
+      "origin": "custom",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Peter Yang",
+      "handle": "petergyang",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Aaron Levie",
+      "handle": "levie",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Garry Tan",
+      "handle": "garrytan",
+      "lang": "英文",
+      "tier": "正式",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Zara Zhang",
+      "handle": "zarazhangrui",
+      "lang": "中文/英文",
+      "tier": "正式",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "formal"
+    },
+    {
+      "name": "Sam Altman",
+      "handle": "sama",
+      "lang": "英文",
+      "tier": "补充",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "supplementary"
+    },
+    {
+      "name": "Andrej Karpathy",
+      "handle": "karpathy",
+      "lang": "英文",
+      "tier": "补充",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "supplementary"
+    },
+    {
+      "name": "Dan Shipper",
+      "handle": "danshipper",
+      "lang": "英文",
+      "tier": "补充",
+      "origin": "follow_builders_default",
+      "enabled": true,
+      "group": "supplementary"
+    },
+    {
+      "name": "Swyx",
+      "handle": "swyx",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Kevin Weil",
+      "handle": "kevinweil",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Amanda Askell",
+      "handle": "AmandaAskell",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Cat Wu",
+      "handle": "_catwu",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Thariq",
+      "handle": "trq212",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Google Labs",
+      "handle": "GoogleLabs",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Amjad Masad",
+      "handle": "amasad",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Guillermo Rauch",
+      "handle": "rauchg",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Alex Albert",
+      "handle": "alexalbert__",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Matt Turck",
+      "handle": "mattturck",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Nikunj Kothari",
+      "handle": "nikunj",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Peter Steinberger",
+      "handle": "steipete",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Aditya Agarwal",
+      "handle": "adityaag",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Claude",
+      "handle": "claudeai",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Josh Woodward",
+      "handle": "joshwoodward",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Nan Yu",
+      "handle": "thenanyu",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Madhu Guru",
+      "handle": "realmadhuguru",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    },
+    {
+      "name": "Ryo Lu",
+      "handle": "ryolu_",
+      "origin": "follow_builders_default",
+      "group": "watch"
+    }
+  ]
+}
