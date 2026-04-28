@@ -42,6 +42,20 @@ def test_runtime_initialization_creates_sample_chain() -> None:
     assert get_path(config, "paths.sample_vault_path").joinpath("analysis-cards", "sample-card.md").exists()
 
 
+def test_runtime_initialization_keeps_public_source_catalogs() -> None:
+    source_files = [
+        REPO_ROOT / "config" / "sources" / "a-stage-wechat-sources.json",
+        REPO_ROOT / "config" / "sources" / "a-stage-youtube-channels.json",
+        REPO_ROOT / "config" / "sources" / "a-stage-x-sources.json",
+    ]
+    before = {path: path.read_text(encoding="utf-8") for path in source_files}
+
+    completed = run_script("scripts/init_runtime.py", "--profile", "sample")
+
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+    assert {path: path.read_text(encoding="utf-8") for path in source_files} == before
+
+
 def test_secret_scan_passes() -> None:
     completed = run_script("scripts/scan_secrets.py", "--verbose")
     assert completed.returncode == 0, completed.stderr or completed.stdout

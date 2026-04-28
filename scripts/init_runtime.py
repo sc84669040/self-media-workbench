@@ -413,7 +413,11 @@ def ensure_source_files(config: dict) -> None:
         "a-stage-x-sources.json": {"version": 1, "accounts": sources.get("x_accounts") or []},
     }
     for name, payload in payloads.items():
-        (source_dir / name).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        target = source_dir / name
+        has_entries = any(isinstance(value, list) and value for value in payload.values())
+        if target.exists() and not has_entries:
+            continue
+        target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
